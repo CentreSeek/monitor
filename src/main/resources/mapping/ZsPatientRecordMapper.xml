@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjjk.monitor.mapper.ZsPatientRecordMapper">
+    <resultMap id="BaseResultMap" type="com.yjjk.monitor.entity.ZsPatientRecord">
+        <id column="record_id" jdbcType="BIGINT" property="recordId"/>
+        <result column="patient_id" jdbcType="INTEGER" property="patientId"/>
+        <result column="machine_id" jdbcType="INTEGER" property="machineId"/>
+        <result column="start_time" jdbcType="VARCHAR" property="startTime"/>
+        <result column="end_time" jdbcType="VARCHAR" property="endTime"/>
+        <result column="usage_state" jdbcType="INTEGER" property="usageState"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+    </resultMap>
+    <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.yjjk.monitor.entity.ZsPatientRecord">
+        <result column="temperature_history" jdbcType="LONGVARCHAR" property="temperatureHistory"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    record_id, patient_id, machine_id, start_time, end_time, usage_state, create_time, 
+    `status`
+  </sql>
+    <sql id="Blob_Column_List">
+    temperature_history
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from zs_patient_record
+        where record_id = #{recordId,jdbcType=BIGINT}
+    </select>
+
+    <select id="getMonitorsInfo" resultType="com.yjjk.monitor.entity.vo.UseMachine">
+        SELECT
+        zpr.`record_id` AS recordId, zpr.`machine_id` AS machineId,
+        zpi.`name` AS patientName, zpi.`case_num` AS caseNum,
+        zdi.name AS departmentName,zri.name AS roomName, zbi.name AS bedName,
+        zmi.machine_num AS machineNum
+        FROM `zs_patient_record` zpr
+        LEFT JOIN `zs_patient_info` zpi ON zpr.`patient_id` = zpi.`patient_id`
+        LEFT JOIN `zs_bed_info` zbi ON zpi.`bed_id` = zbi.bed_id
+        LEFT JOIN `zs_room_info` zri ON zbi.room_id = zri.room_id
+        LEFT JOIN `zs_department_info` zdi ON zri.department_id = zdi.department_id
+        LEFT JOIN `zs_machine_info` zmi ON zpr.`machine_id` = zmi.machine_id
+        WHERE zpr.`usage_state` = 0
+        order by zbi.bed_id
+    </select>
+
+    <select id="getMinitorsTemperature" resultType="com.yjjk.monitor.entity.vo.PatientTemperature">
+        SELECT
+        zpr.`record_id` AS recordId, zpr.`machine_id` AS machineId,
+        zpi.`name` AS patientName, zpi.`case_num` AS caseNum,
+        zdi.name AS departmentName,zri.name AS roomName, zbi.name AS bedName,
+        zmi.machine_num AS machineNum
+
+        FROM `zs_patient_record` zpr
+        LEFT JOIN `zs_patient_info` zpi ON zpr.`patient_id` = zpi.`patient_id`
+        LEFT JOIN `zs_bed_info` zbi ON zpi.`bed_id` = zbi.bed_id
+        LEFT JOIN `zs_room_info` zri ON zbi.room_id = zri.room_id
+        LEFT JOIN `zs_department_info` zdi ON zri.department_id = zdi.department_id
+        LEFT JOIN `zs_machine_info` zmi ON zpr.`machine_id` = zmi.machine_id
+        WHERE zpr.`usage_state` = 0
+        order by zbi.bed_id
+  </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from zs_patient_record
+    where record_id = #{recordId,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.yjjk.monitor.entity.ZsPatientRecord">
+    insert into zs_patient_record (record_id, patient_id, machine_id, 
+      start_time, end_time, usage_state, 
+      create_time, `status`, temperature_history
+      )
+    values (#{recordId,jdbcType=BIGINT}, #{patientId,jdbcType=INTEGER}, #{machineId,jdbcType=INTEGER}, 
+      #{startTime,jdbcType=VARCHAR}, #{endTime,jdbcType=VARCHAR}, #{usageState,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, #{temperatureHistory,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+    <insert id="insertSelective" parameterType="com.yjjk.monitor.entity.ZsPatientRecord">
+        insert into zs_patient_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="recordId != null">
+                record_id,
+            </if>
+            <if test="patientId != null">
+                patient_id,
+            </if>
+            <if test="machineId != null">
+                machine_id,
+            </if>
+            <if test="startTime != null">
+                start_time,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+            <if test="usageState != null">
+                usage_state,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="status != null">
+                `status`,
+            </if>
+            <if test="temperatureHistory != null">
+                temperature_history,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="recordId != null">
+                #{recordId,jdbcType=BIGINT},
+            </if>
+            <if test="patientId != null">
+                #{patientId,jdbcType=INTEGER},
+            </if>
+            <if test="machineId != null">
+                #{machineId,jdbcType=INTEGER},
+            </if>
+            <if test="startTime != null">
+                #{startTime,jdbcType=VARCHAR},
+            </if>
+            <if test="endTime != null">
+                #{endTime,jdbcType=VARCHAR},
+            </if>
+            <if test="usageState != null">
+                #{usageState,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="temperatureHistory != null">
+                #{temperatureHistory,jdbcType=LONGVARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.yjjk.monitor.entity.ZsPatientRecord">
+        update zs_patient_record
+        <set>
+            <if test="patientId != null">
+                patient_id = #{patientId,jdbcType=INTEGER},
+            </if>
+            <if test="machineId != null">
+                machine_id = #{machineId,jdbcType=INTEGER},
+            </if>
+            <if test="startTime != null">
+                start_time = #{startTime,jdbcType=VARCHAR},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime,jdbcType=VARCHAR},
+            </if>
+            <if test="usageState != null">
+                usage_state = #{usageState,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="temperatureHistory != null">
+                temperature_history = #{temperatureHistory,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where record_id = #{recordId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.yjjk.monitor.entity.ZsPatientRecord">
+    update zs_patient_record
+    set patient_id = #{patientId,jdbcType=INTEGER},
+      machine_id = #{machineId,jdbcType=INTEGER},
+      start_time = #{startTime,jdbcType=VARCHAR},
+      end_time = #{endTime,jdbcType=VARCHAR},
+      usage_state = #{usageState,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      `status` = #{status,jdbcType=INTEGER},
+      temperature_history = #{temperatureHistory,jdbcType=LONGVARCHAR}
+    where record_id = #{recordId,jdbcType=BIGINT}
+  </update>
+    <update id="updateByPrimaryKey" parameterType="com.yjjk.monitor.entity.ZsPatientRecord">
+    update zs_patient_record
+    set patient_id = #{patientId,jdbcType=INTEGER},
+      machine_id = #{machineId,jdbcType=INTEGER},
+      start_time = #{startTime,jdbcType=VARCHAR},
+      end_time = #{endTime,jdbcType=VARCHAR},
+      usage_state = #{usageState,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      `status` = #{status,jdbcType=INTEGER}
+    where record_id = #{recordId,jdbcType=BIGINT}
+  </update>
+</mapper>
