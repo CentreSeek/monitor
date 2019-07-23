@@ -48,13 +48,8 @@ public class HospitalController extends BaseController {
 
 
         List<ZsDepartmentInfo> list = super.hospitalService.selectDetail(departmentId);
-        if (StringUtils.isNullorEmpty(list)) {
-            message = "信息查询失败";
-            returnResult(startTime, request, response, resultCode, message,list);
-            return;
-        }
         message = "信息查询成功";
         resultCode = true;
-        returnResult(startTime, request, response, resultCode, message, list);
+        returnResult(startTime, request, response, resultCode, message, list == null ? "":list);
     }
 }

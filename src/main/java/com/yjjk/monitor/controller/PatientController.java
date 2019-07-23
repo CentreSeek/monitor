@@ -11,12 +11,8 @@
 package com.yjjk.monitor.controller;
 
 import com.alibaba.fastjson.JSON;
-import com.sun.javafx.scene.shape.PathUtils;
-import com.yjjk.monitor.entity.ZsDepartmentInfo;
-import com.yjjk.monitor.entity.ZsMachineInfo;
 import com.yjjk.monitor.entity.ZsPatientInfo;
 import com.yjjk.monitor.entity.ZsPatientRecord;
-import com.yjjk.monitor.entity.json.TemperatureHistory;
 import com.yjjk.monitor.entity.vo.PatientTemperature;
 import com.yjjk.monitor.entity.vo.RecordHistory;
 import com.yjjk.monitor.entity.vo.UseMachine;

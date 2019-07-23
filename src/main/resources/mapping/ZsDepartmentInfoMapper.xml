@@ -42,7 +42,7 @@
         <where>
             zdi.status = 0 and zri.status = 0 and zbi.status = 0
             <if test="departmentId != null">
-                and department_id = #{departmentId,jdbcType=INTEGER}
+                and zdi.department_id = #{departmentId,jdbcType=INTEGER}
             </if>
         </where>
     </select>
