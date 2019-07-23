@@ -10,11 +10,15 @@
  */
 package com.yjjk.monitor.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.sun.javafx.scene.shape.PathUtils;
 import com.yjjk.monitor.entity.ZsDepartmentInfo;
 import com.yjjk.monitor.entity.ZsMachineInfo;
 import com.yjjk.monitor.entity.ZsPatientInfo;
 import com.yjjk.monitor.entity.ZsPatientRecord;
+import com.yjjk.monitor.entity.json.TemperatureHistory;
 import com.yjjk.monitor.entity.vo.PatientTemperature;
+import com.yjjk.monitor.entity.vo.RecordHistory;
 import com.yjjk.monitor.entity.vo.UseMachine;
 import com.yjjk.monitor.utility.DateUtil;
 import com.yjjk.monitor.utility.StringUtils;
@@ -25,7 +29,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author CentreS
@@ -38,6 +44,7 @@ public class PatientController extends BaseController {
 
     /**
      * 启用设备
+     *
      * @param bedId
      * @param machineId
      * @param name
@@ -77,6 +84,7 @@ public class PatientController extends BaseController {
 
     /**
      * 更换设备
+     *
      * @param recordId
      * @param machineId
      * @param request
@@ -84,8 +92,8 @@ public class PatientController extends BaseController {
      */
     @RequestMapping(value = "/patient", method = RequestMethod.PUT)
     public void changeMachine(@RequestParam(value = "recordId") Long recordId,
-                           @RequestParam(value = "machineId") Integer machineId,
-                           HttpServletRequest request, HttpServletResponse response) {
+                              @RequestParam(value = "machineId") Integer machineId,
+                              HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
         long startTime = System.currentTimeMillis();
         boolean resultCode = false;
@@ -111,6 +119,7 @@ public class PatientController extends BaseController {
 
     /**
      * 停止检测
+     *
      * @param recordId
      * @param request
      * @param response
@@ -125,13 +134,12 @@ public class PatientController extends BaseController {
 
         ZsPatientRecord patientRecord = super.patientRecordService.selectByPrimaryKey(recordId);
         if (StringUtils.isNullorEmpty(patientRecord)) {
-            message = "获取失败";
+            message = "未找到该记录";
             returnResult(startTime, request, response, resultCode, message, "");
             return;
         }
 
-        patientRecord.setUsageState(1);
-        int i = super.patientRecordService.updateByPrimaryKey(patientRecord);
+        int i = super.patientRecordService.stopMonitoring(patientRecord.getPatientId());
         if (i == 0) {
             message = "停用失败";
             returnResult(startTime, request, response, resultCode, message, "");
@@ -144,10 +152,11 @@ public class PatientController extends BaseController {
 
     /**
      * 获取监控基础信息
+     *
      * @param request
      * @param response
      */
-    @RequestMapping(value = "/record", method = RequestMethod.GET)
+    @RequestMapping(value = "/monitor", method = RequestMethod.GET)
     public void getMinitors(HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
         long startTime = System.currentTimeMillis();
@@ -155,8 +164,7 @@ public class PatientController extends BaseController {
         String message = "";
 
         List<UseMachine> monitorsInfo = super.patientRecordService.getMonitorsInfo();
-        List<PatientTemperature> minitorsTemperature = super.patientRecordService.getMinitorsTemperature();
-        if (StringUtils.isNullorEmpty(monitorsInfo) || StringUtils.isNullorEmpty(minitorsTemperature)) {
+        if (StringUtils.isNullorEmpty(monitorsInfo)) {
             message = "获取失败";
             returnResult(startTime, request, response, resultCode, message, "");
             return;
@@ -168,11 +176,12 @@ public class PatientController extends BaseController {
 
     /**
      * 获取实时监控信息
+     *
      * @param request
      * @param response
      */
-    @RequestMapping(value = "/monitor", method = RequestMethod.GET)
-    public void getCunnentInfo(HttpServletRequest request, HttpServletResponse response) {
+    @RequestMapping(value = "/current", method = RequestMethod.GET)
+    public void getCurrentInfo(HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
         long startTime = System.currentTimeMillis();
         boolean resultCode = false;
@@ -189,4 +198,62 @@ public class PatientController extends BaseController {
         returnResult(startTime, request, response, resultCode, message, minitorsTemperature);
     }
 
+    /**
+     * 查询历史记录
+     * @param recordHistory
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "/record", method = RequestMethod.GET)
+    public void getRecordHistory(RecordHistory recordHistory, HttpServletRequest request, HttpServletResponse response) {
+        /********************** 参数初始化 **********************/
+        long startTime = System.currentTimeMillis();
+        boolean resultCode = false;
+        String message = "";
+        Map<String, Object> map = new HashMap<>();
+
+        if (!StringUtils.isNullorEmpty(recordHistory.getCurrentPage()) && !StringUtils.isNullorEmpty(recordHistory.getPageSize())) {
+            int currentPage = recordHistory.getCurrentPage();
+            int pageSize = recordHistory.getPageSize();
+            // 查询总条数
+            int totalCount = super.patientRecordService.getRecordHistoryCount(recordHistory);
+            // 分页必须信息
+            int startLine = (currentPage - 1) * (pageSize);
+            // 计算总页数
+            int totalPage = (totalCount + pageSize - 1) / pageSize;
+            recordHistory.setStartLine(startLine);
+            map.put("totalPage", totalPage);
+            map.put("currentPage", currentPage);
+        }
+
+        List<RecordHistory> list = super.patientRecordService.getRecordHistory(recordHistory);
+        map.put("list", list == null ? "" : list);
+        message = "查询成功";
+        resultCode = true;
+        returnResult(startTime, request, response, resultCode, message, map);
+    }
+
+    /**
+     * 查询体温历史记录
+     * @param recordId
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "/temperature", method = RequestMethod.GET)
+    public void getTemperatureHistory(@RequestParam(value = "recordId") Long recordId,
+                                      HttpServletRequest request, HttpServletResponse response) {
+        /********************** 参数初始化 **********************/
+        long startTime = System.currentTimeMillis();
+        boolean resultCode = false;
+        String message = "";
+
+        ZsPatientRecord patientRecord = super.patientRecordService.selectByPrimaryKey(recordId);
+        String resultJson = null;
+        if (StringUtils.isNullorEmpty(patientRecord.getTemperatureHistory())){
+            resultJson = JSON.toJSONString(super.patientRecordService.getCurrentTemperatureRecord(patientRecord.getPatientId()));
+        }
+        message = "查询成功";
+        resultCode = true;
+        returnResult(startTime, request, response, resultCode, message, patientRecord.getTemperatureHistory() == null ? resultJson : patientRecord.getTemperatureHistory());
+    }
 }

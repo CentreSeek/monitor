@@ -11,7 +11,9 @@
 package com.yjjk.monitor.service;
 
 import com.yjjk.monitor.entity.ZsPatientRecord;
+import com.yjjk.monitor.entity.json.TemperatureHistory;
 import com.yjjk.monitor.entity.vo.PatientTemperature;
+import com.yjjk.monitor.entity.vo.RecordHistory;
 import com.yjjk.monitor.entity.vo.UseMachine;
 
 import java.util.List;
@@ -55,4 +57,31 @@ public interface PatientRecordService {
      * @return
      */
     List<PatientTemperature> getMinitorsTemperature();
+
+    /**
+     * 获取历史记录
+     * @return
+     */
+    List<RecordHistory> getRecordHistory(RecordHistory recordHistory);
+
+    /**
+     * 获取历史记录总数
+     * @param recordHistory
+     * @return
+     */
+    int getRecordHistoryCount(RecordHistory recordHistory);
+
+    /**
+     * 停止监测
+     * @return
+     */
+    int stopMonitoring(Integer patientId);
+
+    /**
+     * 获取实时体温记录
+     * @param patientId
+     * @return
+     */
+    List<TemperatureHistory> getCurrentTemperatureRecord(Integer patientId);
+
 }
