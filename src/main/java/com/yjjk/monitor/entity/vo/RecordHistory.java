@@ -30,6 +30,7 @@ public class RecordHistory {
     private String bedName;
     private String startTime;
     private String endTime;
+    private Integer usageState;
 
     /** mappingParam */
     private Integer departmentId;

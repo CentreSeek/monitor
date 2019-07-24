@@ -35,8 +35,17 @@ public class BaseController {
 
     protected static Logger logger = Logger.getLogger(BaseController.class);
 
+    /** 返回值数值 */
     private static String RESULT_CODE_SUCCESS = "200";
     private static String RESULT_CODE_FAIL = "300";
+
+    /** 模块编号 */
+    protected static Integer PLATEFORM = 0;
+    protected static Integer HISTORY_RECORD = 1;
+    protected static Integer BED_MANAGE = 2;
+    protected static Integer MACHINE_MANAGE = 3;
+    protected static Integer ACCOUNT_MANAGE = 4;
+
 
     @Resource
     protected ManagerService managerService;

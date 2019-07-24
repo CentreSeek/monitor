@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author CentreS
@@ -46,14 +48,15 @@ public class ManagerController extends BaseController {
         String message = "";
         if (StringUtils.isNullorEmpty(managerInfo.getAccount()) || StringUtils.isNullorEmpty(managerInfo.getPassword())
                 || StringUtils.isNullorEmpty(managerInfo.getName()) || StringUtils.isNullorEmpty(managerInfo.getPhone())
-                || StringUtils.isNullorEmpty(managerInfo.getSex()) || StringUtils.isNullorEmpty(managerInfo.getDepartment())) {
+                || StringUtils.isNullorEmpty(managerInfo.getSex()) || StringUtils.isNullorEmpty(managerInfo.getDepartmentId())) {
             message = "参数错误";
             returnResult(startTime, request, response, resultCode, message, "");
             return;
         }
-
         // 密码加密
         managerInfo.setPassword(PasswordUtils.generate(managerInfo.getPassword()));
+        managerInfo.setRole(2);
+        managerInfo.setStatus(0);
         int i = super.managerService.insertManager(managerInfo);
         if (i == 0) {
             message = "新增失败";
@@ -99,6 +102,7 @@ public class ManagerController extends BaseController {
 
     /**
      * 删除管理员
+     *
      * @param managerId
      * @param request
      * @param response
@@ -134,6 +138,8 @@ public class ManagerController extends BaseController {
      */
     @RequestMapping(value = "/manager", method = RequestMethod.GET)
     public void getManagerInfo(@RequestParam(value = "managerId", required = false) Integer managerId,
+                               @RequestParam(value = "currentPage", required = false) Integer currentPage,
+                               @RequestParam(value = "pageSize", required = false) Integer pageSize,
                                HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
         long startTime = System.currentTimeMillis();
@@ -142,8 +148,17 @@ public class ManagerController extends BaseController {
 
         ZsManagerInfo managerInfo = null;
         List<ZsManagerInfo> zsManagerInfos = null;
+        Map<String, Object> paramMap = new HashMap<>();
+        Map<String, Object> reqMap = new HashMap<>();
         if (StringUtils.isNullorEmpty(managerId)) {
-            zsManagerInfos = super.managerService.selectNormalList();
+            int totalCount = super.managerService.selectNormalListCount(paramMap);
+            int startLine = (currentPage - 1) * (pageSize);
+            int totalPage = (totalCount + pageSize - 1) / pageSize;
+            paramMap.put("startLine", startLine);
+            paramMap.put("pageSize", pageSize);
+            reqMap.put("totalPage", totalPage);
+            reqMap.put("currentPage", currentPage);
+            zsManagerInfos = super.managerService.selectNormalList(paramMap);
         } else {
             managerInfo = super.managerService.getManagerInfo(managerId);
         }
@@ -152,9 +167,10 @@ public class ManagerController extends BaseController {
             returnResult(startTime, request, response, resultCode, message, "");
             return;
         }
+        reqMap.put("list", managerInfo == null ? managerId : zsManagerInfos);
         message = "获取成功";
         resultCode = true;
-        returnResult(startTime, request, response, resultCode, message, managerInfo == null ? zsManagerInfos : managerInfo);
+        returnResult(startTime, request, response, resultCode, message, reqMap);
     }
 
 
@@ -190,6 +206,46 @@ public class ManagerController extends BaseController {
             return;
         }
         message = "登录成功";
+        resultCode = true;
+        returnResult(startTime, request, response, resultCode, message, managerInfo.setPassword(null));
+    }
+
+    /**
+     * 权限验证
+     *
+     * @param managerId
+     * @param model
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "/access", method = RequestMethod.GET)
+    public void managerLogin(@RequestParam(value = "managerId") Integer managerId,
+                             @RequestParam(value = "model") Integer model,
+                             HttpServletRequest request, HttpServletResponse response) {
+        /********************** 参数初始化 **********************/
+        long startTime = System.currentTimeMillis();
+        boolean resultCode = false;
+        String message = "";
+
+        ZsManagerInfo managerInfo = super.managerService.getManagerInfo(managerId);
+        if (managerInfo == null) {
+            message = "账户不存在";
+            returnResult(startTime, request, response, resultCode, message, "");
+            return;
+        }
+        switch (managerInfo.getRole()) {
+            case 0:
+                break;
+            case 1:
+                break;
+            case 2:
+                if (!model.equals(PLATEFORM) && !model.equals(HISTORY_RECORD)) {
+                    message = "权限验证失败";
+                    returnResult(startTime, request, response, resultCode, message, "");
+                    return;
+                }
+        }
+        message = "验证成功";
         resultCode = true;
         returnResult(startTime, request, response, resultCode, message, managerInfo.setPassword(null));
     }

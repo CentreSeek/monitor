@@ -17,6 +17,7 @@ import com.yjjk.monitor.utility.PasswordUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author CentreS
@@ -42,8 +43,13 @@ public class ManagerServiceImpl extends BaseService implements ManagerService {
     }
 
     @Override
-    public List<ZsManagerInfo> selectNormalList() {
-        return super.ZsManagerInfoMapper.selectNormalList();
+    public List<ZsManagerInfo> selectNormalList(Map<String, Object> paramMap) {
+        return super.ZsManagerInfoMapper.selectNormalList(paramMap);
+    }
+
+    @Override
+    public int selectNormalListCount(Map<String, Object> paramMap) {
+        return super.ZsManagerInfoMapper.selectNormalListCount(paramMap);
     }
 
     @Override

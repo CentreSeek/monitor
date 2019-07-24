@@ -104,7 +104,8 @@ public class MachineController extends BaseController {
      * @param response
      */
     @RequestMapping(value = "/machine", method = RequestMethod.GET)
-    public void updateMachine(@RequestParam(value = "usageState") Integer usageState,
+    public void updateMachine(@RequestParam(value = "usageState", required = false) Integer usageState,
+                              @RequestParam(value = "departmentId", required = false) Integer departmentId,
                               @RequestParam(value = "currentPage", required = false) Integer currentPage,
                               @RequestParam(value = "pageSize", required = false) Integer pageSize,
                               HttpServletRequest request, HttpServletResponse response) {
@@ -115,9 +116,10 @@ public class MachineController extends BaseController {
         Map<String, Object> map = new HashMap<>();
         ZsMachineInfo machineInfo = new ZsMachineInfo();
         machineInfo.setUsageState(usageState);
+        machineInfo.setDepartmentId(departmentId);
         if (!StringUtils.isNullorEmpty(currentPage) && !StringUtils.isNullorEmpty(pageSize)) {
             // 查询总条数
-            int totalCount = super.machineService.selectCount(usageState);
+            int totalCount = super.machineService.selectCount(machineInfo);
             // 分页必须信息
             int startLine = (currentPage - 1) * (pageSize);
             // 计算总页数

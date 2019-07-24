@@ -45,10 +45,10 @@ public interface MachineService {
 
     /**
      * 查询设备总数(machineId, usageState)
-     * @param usageState
+     * @param machineInfo
      * @return
      */
-    int selectCount(Integer usageState);
+    int selectCount(ZsMachineInfo machineInfo);
 
     /**
      * 根据设备的使用状态查询

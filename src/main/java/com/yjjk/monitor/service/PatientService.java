@@ -26,5 +26,5 @@ public interface PatientService {
      * @param bedId
      * @return
      */
-    ZsPatientInfo addPatient(String name, String caseNum, Integer bedId);
+    ZsPatientInfo addPatient(String name, String caseNum, Integer bedId, Integer departmentId);
 }

@@ -3,6 +3,7 @@ import com.yjjk.monitor.entity.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface ZsManagerInfoMapper {
@@ -22,7 +23,14 @@ public interface ZsManagerInfoMapper {
      * select---查询所有正常管理员
      * @return
      */
-    List<ZsManagerInfo>  selectNormalList();
+    List<ZsManagerInfo>  selectNormalList(Map<String, Object> paramMap);
+
+    /**
+     * select---查询管理员数量
+     * @param paramMap
+     * @return
+     */
+    int selectNormalListCount(Map<String, Object> paramMap);
 
     /**
      * select---使用账户查询用户信息
@@ -30,4 +38,5 @@ public interface ZsManagerInfoMapper {
      * @return
      */
     ZsManagerInfo selectByAccount(ZsManagerInfo managerInfo);
+
 }

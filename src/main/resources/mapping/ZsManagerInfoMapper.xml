@@ -8,7 +8,7 @@
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="phone" jdbcType="VARCHAR" property="phone"/>
         <result column="post" jdbcType="VARCHAR" property="post"/>
-        <result column="department" jdbcType="VARCHAR" property="department"/>
+        <result column="department_id" jdbcType="INTEGER" property="departmentId"/>
         <result column="sex" jdbcType="INTEGER" property="sex"/>
         <result column="role" jdbcType="INTEGER" property="role"/>
         <result column="login_time" jdbcType="VARCHAR" property="loginTime"/>
@@ -16,7 +16,7 @@
         <result column="status" jdbcType="INTEGER" property="status"/>
     </resultMap>
     <sql id="Base_Column_List">
-        manager_id, account, `password`, `name`, phone, post, department, sex, `role`, login_time,
+        manager_id, account, `password`, `name`, phone, post, department_id, sex, `role`, login_time,
         create_time, `status`
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -25,9 +25,18 @@
         from zs_manager_info
         where manager_id = #{managerId,jdbcType=INTEGER} and status = 0
     </select>
-    <select id="selectNormalList" resultMap="BaseResultMap">
+    <select id="selectNormalList" resultMap="BaseResultMap" parameterType="java.util.Map">
         select
         <include refid="Base_Column_List"/>
+        from zs_manager_info
+        where status = 0
+        <if test="startLine != null and pageSize != null">
+            limit #{startLine},#{pageSize}
+        </if>
+    </select>
+    <select id="selectNormalListCount" resultType="java.lang.Integer" parameterType="java.util.Map">
+        select
+        count(1)
         from zs_manager_info
         where status = 0
     </select>
@@ -56,12 +65,12 @@
     <insert id="insert" parameterType="com.yjjk.monitor.entity.ZsManagerInfo">
     insert into zs_manager_info (manager_id, account, `password`, 
       `name`, phone, post, 
-      department, sex, `role`, 
+      department_id, sex, `role`,
       login_time, create_time, `status`
       )
     values (#{managerId,jdbcType=INTEGER}, #{account,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
       #{name,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{post,jdbcType=VARCHAR}, 
-      #{department,jdbcType=VARCHAR}, #{sex,jdbcType=INTEGER}, #{role,jdbcType=INTEGER}, 
+      #{departmentId,jdbcType=INTEGER}, #{sex,jdbcType=INTEGER}, #{role,jdbcType=INTEGER},
       #{loginTime,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}
       )
   </insert>
@@ -86,8 +95,8 @@
             <if test="post != null">
                 post,
             </if>
-            <if test="department != null">
-                department,
+            <if test="departmentId != null">
+                department_id,
             </if>
             <if test="sex != null">
                 sex,
@@ -124,8 +133,8 @@
             <if test="post != null">
                 #{post,jdbcType=VARCHAR},
             </if>
-            <if test="department != null">
-                #{department,jdbcType=VARCHAR},
+            <if test="departmentId != null">
+                #{departmentId,jdbcType=VARCHAR},
             </if>
             <if test="sex != null">
                 #{sex,jdbcType=INTEGER},
@@ -162,8 +171,8 @@
             <if test="post != null">
                 post = #{post,jdbcType=VARCHAR},
             </if>
-            <if test="department != null">
-                department = #{department,jdbcType=VARCHAR},
+            <if test="departmentId != null">
+                department_id = #{departmentId,jdbcType=VARCHAR},
             </if>
             <if test="sex != null">
                 sex = #{sex,jdbcType=INTEGER},
@@ -190,7 +199,7 @@
       `name` = #{name,jdbcType=VARCHAR},
       phone = #{phone,jdbcType=VARCHAR},
       post = #{post,jdbcType=VARCHAR},
-      department = #{department,jdbcType=VARCHAR},
+      department_id = #{departmentId,jdbcType=VARCHAR},
       sex = #{sex,jdbcType=INTEGER},
       `role` = #{role,jdbcType=INTEGER},
       login_time = #{loginTime,jdbcType=VARCHAR},

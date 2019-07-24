@@ -27,10 +27,11 @@ public class PatientServiceImpl extends BaseService implements PatientService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ZsPatientInfo addPatient(String name, String caseNum, Integer bedId) {
+    public ZsPatientInfo addPatient(String name, String caseNum, Integer bedId, Integer departmentId) {
         ZsPatientInfo zsPatientInfo = super.ZsPatientInfoMapper.selectByCaseNum(caseNum);
         if (zsPatientInfo == null){
-            zsPatientInfo.setBedId(bedId).setName(name).setCaseNum(caseNum);
+            zsPatientInfo = new ZsPatientInfo();
+            zsPatientInfo.setBedId(bedId).setName(name).setCaseNum(caseNum).setDepartmentId(departmentId);
             super.ZsPatientInfoMapper.insertSelective(zsPatientInfo);
             zsPatientInfo = super.ZsPatientInfoMapper.selectByCaseNum(caseNum);
         }

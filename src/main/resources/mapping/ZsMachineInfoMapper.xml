@@ -30,6 +30,9 @@
             <if test="machineId != null">
                 machine_id = #{machineId,jdbcType=INTEGER}
             </if>
+            <if test="departmentId != null">
+                department_id = #{departmentId, jdbcType=INTEGER}
+            </if>
             <if test="usageState != null">
                 and usage_state = #{usageState,jdbcType=INTEGER}
             </if>
@@ -43,6 +46,9 @@
         <where>
             <if test="machineId != null">
                 machine_id = #{machineId,jdbcType=INTEGER}
+            </if>
+            <if test="departmentId != null">
+                department_id = #{departmentId, jdbcType=INTEGER}
             </if>
             <if test="usageState != null">
                 and usage_state = #{usageState,jdbcType=INTEGER}

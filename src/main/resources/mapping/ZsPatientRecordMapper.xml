@@ -30,7 +30,7 @@
         where record_id = #{recordId,jdbcType=BIGINT}
     </select>
 
-    <select id="getMonitorsInfo" resultType="com.yjjk.monitor.entity.vo.UseMachine">
+    <select id="getMonitorsInfo" resultType="com.yjjk.monitor.entity.vo.UseMachine" parameterType="java.lang.Integer">
         SELECT
         zpr.`record_id` AS recordId, zpr.`machine_id` AS machineId,
         zpi.`name` AS patientName, zpi.`case_num` AS caseNum,
@@ -48,10 +48,13 @@
         LEFT JOIN `zs_room_info` zri ON zbi.room_id = zri.room_id
         LEFT JOIN `zs_department_info` zdi ON zri.department_id = zdi.department_id
         WHERE zpr.`usage_state` = 0
+        <if test="departmentId != null">
+            and zdi.department_id = #{departmentId, jdbcType=INTEGER}
+        </if>
         order by zbi.bed_id
     </select>
 
-    <select id="getMinitorsTemperature" resultType="com.yjjk.monitor.entity.vo.PatientTemperature">
+    <select id="getMinitorsTemperature" resultType="com.yjjk.monitor.entity.vo.PatientTemperature" parameterType="java.lang.Integer">
         SELECT
         zmi.`machine_id` as machineId,a.temperature, a.temperature_status as temperatureStatus, a.pattery, TIMEDIFF(a.create_time, zpr.create_time) AS useTimes
         FROM
@@ -60,13 +63,17 @@
         a  GROUP BY a.machine_num) a
         LEFT JOIN `zs_machine_info` zmi ON zmi.`machine_num` = a.machine_num
         LEFT JOIN `zs_patient_record` zpr ON zpr.`machine_id` = zmi.`machine_id`
+        WHERE zpr.`usage_state` = 0
+        <if test="departmentId != null">
+            and zmi.department_id = #{departmentId, jdbcType=INTEGER}
+        </if>
         ORDER BY zpr.machine_id
   </select>
     <select id="getRecordHistory" resultType="com.yjjk.monitor.entity.vo.RecordHistory" parameterType="com.yjjk.monitor.entity.vo.RecordHistory">
         SELECT
         zpr.`record_id` AS recordId, zpi.`name` AS patientName, zpi.`case_num` AS caseNum,
         zdi.`name` AS departmentName, zri.`name` AS roomName, zbi.`name` AS bedName,
-        zpr.`start_time` AS startTime, zpr.`end_time` AS endTime
+        zpr.`start_time` AS startTime, zpr.`end_time` AS endTime, zpr.usage_state as usageState
         FROM`zs_patient_record` zpr
         LEFT JOIN `zs_patient_info` zpi ON zpr.`patient_id` = zpi.`patient_id`
         LEFT JOIN `zs_bed_info` zbi ON zbi.`bed_id` = zpi.`bed_id`

@@ -10,7 +10,9 @@
  */
 package com.yjjk.monitor.controller;
 
+import ch.qos.logback.core.pattern.color.MagentaCompositeConverter;
 import com.alibaba.fastjson.JSON;
+import com.yjjk.monitor.entity.ZsManagerInfo;
 import com.yjjk.monitor.entity.ZsPatientInfo;
 import com.yjjk.monitor.entity.ZsPatientRecord;
 import com.yjjk.monitor.entity.vo.PatientTemperature;
@@ -53,13 +55,15 @@ public class PatientController extends BaseController {
                            @RequestParam(value = "machineId") Integer machineId,
                            @RequestParam(value = "name") String name,
                            @RequestParam(value = "caseNum") String caseNum,
+                           @RequestParam(value = "managerId") Integer managerId,
                            HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
         long startTime = System.currentTimeMillis();
         boolean resultCode = false;
         String message = "";
+        ZsManagerInfo managerInfo = super.managerService.getManagerInfo(managerId);
 
-        ZsPatientInfo zsPatientInfo = super.patientService.addPatient(name, caseNum, bedId);
+        ZsPatientInfo zsPatientInfo = super.patientService.addPatient(name, caseNum, bedId, managerInfo.getDepartmentId());
         if (StringUtils.isNullorEmpty(zsPatientInfo)) {
             message = "新增病人信息失败";
             returnResult(startTime, request, response, resultCode, message, "");
@@ -105,12 +109,12 @@ public class PatientController extends BaseController {
         int i = super.patientRecordService.updateByPrimaryKey(patientRecord);
         if (i == 0) {
             message = "绑定失败";
-            returnResult(startTime, request, response, resultCode, message, "");
+            returnResult(startTime, request, response, resultCode, message, i);
             return;
         }
         message = "绑定成功";
         resultCode = true;
-        returnResult(startTime, request, response, resultCode, message, "");
+        returnResult(startTime, request, response, resultCode, message, i);
     }
 
     /**
@@ -138,12 +142,12 @@ public class PatientController extends BaseController {
         int i = super.patientRecordService.stopMonitoring(patientRecord.getPatientId());
         if (i == 0) {
             message = "停用失败";
-            returnResult(startTime, request, response, resultCode, message, "");
+            returnResult(startTime, request, response, resultCode, message, i);
             return;
         }
         message = "停用成功";
         resultCode = true;
-        returnResult(startTime, request, response, resultCode, message, "");
+        returnResult(startTime, request, response, resultCode, message, i);
     }
 
     /**
@@ -153,21 +157,22 @@ public class PatientController extends BaseController {
      * @param response
      */
     @RequestMapping(value = "/monitor", method = RequestMethod.GET)
-    public void getMinitors(HttpServletRequest request, HttpServletResponse response) {
+    public void getMinitors(@RequestParam(value = "managerId") Integer managerId,
+                            HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
         long startTime = System.currentTimeMillis();
         boolean resultCode = false;
         String message = "";
 
-        List<UseMachine> monitorsInfo = super.patientRecordService.getMonitorsInfo();
-        if (StringUtils.isNullorEmpty(monitorsInfo)) {
-            message = "获取失败";
-            returnResult(startTime, request, response, resultCode, message, "");
-            return;
+        ZsManagerInfo managerInfo = super.managerService.getManagerInfo(managerId);
+        Integer departmentId = null;
+        if (managerInfo.getRole() == 2) {
+            departmentId = managerInfo.getDepartmentId();
         }
+        List<UseMachine> monitorsInfo = super.patientRecordService.getMonitorsInfo(departmentId);
         message = "查询成功";
         resultCode = true;
-        returnResult(startTime, request, response, resultCode, message, monitorsInfo);
+        returnResult(startTime, request, response, resultCode, message, monitorsInfo == null ? "" : monitorsInfo);
     }
 
     /**
@@ -177,13 +182,19 @@ public class PatientController extends BaseController {
      * @param response
      */
     @RequestMapping(value = "/current", method = RequestMethod.GET)
-    public void getCurrentInfo(HttpServletRequest request, HttpServletResponse response) {
+    public void getCurrentInfo(@RequestParam(value = "managerId") Integer managerId,
+                               HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
         long startTime = System.currentTimeMillis();
         boolean resultCode = false;
         String message = "";
 
-        List<PatientTemperature> minitorsTemperature = super.patientRecordService.getMinitorsTemperature();
+        ZsManagerInfo managerInfo = super.managerService.getManagerInfo(managerId);
+        Integer departmentId = null;
+        if (managerInfo.getRole() == 2) {
+            departmentId = managerInfo.getDepartmentId();
+        }
+        List<PatientTemperature> minitorsTemperature = super.patientRecordService.getMinitorsTemperature(departmentId);
         if (StringUtils.isNullorEmpty(minitorsTemperature)) {
             message = "更新失败";
             returnResult(startTime, request, response, resultCode, message, "");
@@ -196,6 +207,7 @@ public class PatientController extends BaseController {
 
     /**
      * 查询历史记录
+     *
      * @param recordHistory
      * @param request
      * @param response
@@ -231,6 +243,7 @@ public class PatientController extends BaseController {
 
     /**
      * 查询体温历史记录
+     *
      * @param recordId
      * @param request
      * @param response
@@ -245,7 +258,7 @@ public class PatientController extends BaseController {
 
         ZsPatientRecord patientRecord = super.patientRecordService.selectByPrimaryKey(recordId);
         String resultJson = null;
-        if (StringUtils.isNullorEmpty(patientRecord.getTemperatureHistory())){
+        if (StringUtils.isNullorEmpty(patientRecord.getTemperatureHistory())) {
             resultJson = JSON.toJSONString(super.patientRecordService.getCurrentTemperatureRecord(patientRecord.getPatientId()));
         }
         message = "查询成功";

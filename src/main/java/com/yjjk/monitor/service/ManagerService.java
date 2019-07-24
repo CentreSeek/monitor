@@ -13,6 +13,7 @@ package com.yjjk.monitor.service;
 import com.yjjk.monitor.entity.ZsManagerInfo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author CentreS
@@ -50,7 +51,14 @@ public interface ManagerService {
      *
      * @return
      */
-    List<ZsManagerInfo> selectNormalList();
+    List<ZsManagerInfo> selectNormalList(Map<String, Object> paramMap);
+
+    /**
+     * 查询所有正常管理员
+     *
+     * @return
+     */
+    int selectNormalListCount(Map<String, Object> paramMap);
 
     /**
      * 管理员登录

@@ -49,13 +49,13 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
     }
 
     @Override
-    public List<UseMachine> getMonitorsInfo() {
-        return super.ZsPatientRecordMapper.getMonitorsInfo();
+    public List<UseMachine> getMonitorsInfo(Integer departmentId) {
+        return super.ZsPatientRecordMapper.getMonitorsInfo(departmentId);
     }
 
     @Override
-    public List<PatientTemperature> getMinitorsTemperature() {
-        return super.ZsPatientRecordMapper.getMinitorsTemperature();
+    public List<PatientTemperature> getMinitorsTemperature(Integer departmentId) {
+        return super.ZsPatientRecordMapper.getMinitorsTemperature(departmentId);
     }
 
     @Override

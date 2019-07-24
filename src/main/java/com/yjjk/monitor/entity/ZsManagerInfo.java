@@ -36,7 +36,7 @@ public class ZsManagerInfo{
 
     private String post;
 
-    private String department;
+    private Integer departmentId;
 
     private Integer sex;
 

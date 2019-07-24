@@ -45,9 +45,7 @@ public class MachineServiceImpl extends BaseService implements MachineService {
     }
 
     @Override
-    public int selectCount(Integer usageState) {
-        ZsMachineInfo machineInfo = new ZsMachineInfo();
-        machineInfo.setUsageState(usageState);
+    public int selectCount(ZsMachineInfo machineInfo) {
         return super.ZsMachineInfoMapper.selectCount(machineInfo);
     }
 

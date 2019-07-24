@@ -31,13 +31,13 @@ public interface ZsPatientRecordMapper {
      * select---获取监控列表
      * @return
      */
-    List<UseMachine> getMonitorsInfo();
+    List<UseMachine> getMonitorsInfo(Integer departmentId);
 
     /**
      * select---获取实时监控信息
      * @return
      */
-    List<PatientTemperature> getMinitorsTemperature();
+    List<PatientTemperature> getMinitorsTemperature(Integer departmentId);
 
     /**
      * select---获取历史记录
