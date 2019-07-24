@@ -48,8 +48,14 @@ public class ManagerController extends BaseController {
         String message = "";
         if (StringUtils.isNullorEmpty(managerInfo.getAccount()) || StringUtils.isNullorEmpty(managerInfo.getPassword())
                 || StringUtils.isNullorEmpty(managerInfo.getName()) || StringUtils.isNullorEmpty(managerInfo.getPhone())
-                || StringUtils.isNullorEmpty(managerInfo.getSex()) || StringUtils.isNullorEmpty(managerInfo.getDepartmentId())) {
+                || managerInfo.getSex() == null || StringUtils.isNullorEmpty(managerInfo.getDepartmentId())) {
             message = "参数错误";
+            returnResult(startTime, request, response, resultCode, message, "");
+            return;
+        }
+        ZsManagerInfo temp = super.managerService.selectByAccount(managerInfo);
+        if (!StringUtils.isNullorEmpty(temp)) {
+            message = "新增失败，该账户已存在";
             returnResult(startTime, request, response, resultCode, message, "");
             return;
         }
