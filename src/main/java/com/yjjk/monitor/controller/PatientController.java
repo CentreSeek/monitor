@@ -273,10 +273,10 @@ public class PatientController extends BaseController {
         List<TemperatureHistory> list;
         if (StringUtils.isNullorEmpty(patientRecord.getTemperatureHistory())) {
             list = super.patientRecordService.getCurrentTemperatureRecord(patientRecord.getPatientId());
-            reqMap.put("useTImes", DateUtil.getDatePoor(patientRecord.getStartTime()));
+            reqMap.put("useTimes", DateUtil.getDatePoor(patientRecord.getStartTime()));
         } else {
             list = JSON.parseArray(patientRecord.getTemperatureHistory(), TemperatureHistory.class);
-            reqMap.put("useTImes", DateUtil.getDatePoor(patientRecord.getStartTime(), patientRecord.getEndTime()));
+            reqMap.put("useTimes", DateUtil.getDatePoor(patientRecord.getStartTime(), patientRecord.getEndTime()));
         }
         reqMap.put("list", list);
         message = "查询成功";
