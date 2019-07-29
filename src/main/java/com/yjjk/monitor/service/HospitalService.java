@@ -27,4 +27,11 @@ public interface HospitalService {
      * @return
      */
     List<ZsDepartmentInfo> selectDetail(Integer departmentId);
+
+    /**
+     * delete---定期清理temperatureInfo表数据
+     * @param dateOfOneMonthAgo
+     * @return
+     */
+    int temperatureInfoTask(String dateOfOneMonthAgo);
 }

@@ -115,4 +115,7 @@
       `timestamp` = #{timestamp,jdbcType=INTEGER}
     where temperature_id = #{temperatureId,jdbcType=INTEGER}
   </update>
+    <delete id="temperatureInfoTask" parameterType="java.lang.String">
+      DELETE FROM `zs_temperature_info` WHERE create_time <![CDATA[<]]> #{dateOfOneMonthAgo,jdbcType=VARCHAR};
+    </delete>
 </mapper>

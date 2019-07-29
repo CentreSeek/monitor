@@ -11,9 +11,6 @@
 package com.yjjk.monitor.utility;
 
 
-import com.yjjk.monitor.configer.SaticScheduleTask;
-
-import javax.xml.crypto.Data;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -88,5 +85,14 @@ public class DateUtil {
         return hour + "小时" + min + "分钟";
     }
 
-
+    /**
+     * 获取一个月前的日期
+     * @return
+     */
+    public static String getOneMonthAgo() {
+        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss");
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MONTH, -1);
+        return ft.format(cal.getTime());
+    }
 }

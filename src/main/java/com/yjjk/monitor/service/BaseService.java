@@ -39,4 +39,6 @@ public class BaseService {
     protected ZsPatientRecordMapper ZsPatientRecordMapper;
     @Resource
     protected ZsRoomInfoMapper ZsRoomInfoMapper;
+    @Resource
+    protected ZsTemperatureInfoMapper zsTemperatureInfoMapper;
 }

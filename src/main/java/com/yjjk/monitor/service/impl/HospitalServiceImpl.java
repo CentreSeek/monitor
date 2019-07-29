@@ -30,4 +30,9 @@ public class HospitalServiceImpl extends BaseService implements HospitalService 
     public List<ZsDepartmentInfo> selectDetail(Integer departmentId) {
         return super.ZsDepartmentInfoMapper.selectDetail(departmentId);
     }
+
+    @Override
+    public int temperatureInfoTask(String dateOfOneMonthAgo) {
+        return super.zsTemperatureInfoMapper.temperatureInfoTask(dateOfOneMonthAgo);
+    }
 }

@@ -14,4 +14,11 @@ public interface ZsTemperatureInfoMapper {
     int updateByPrimaryKeySelective(ZsTemperatureInfo record);
 
     int updateByPrimaryKey(ZsTemperatureInfo record);
+
+    /**
+     * delete---定期清理temperatureInfo表数据
+     * @param dateOfOneMonthAgo
+     * @return
+     */
+    int temperatureInfoTask(String dateOfOneMonthAgo);
 }
