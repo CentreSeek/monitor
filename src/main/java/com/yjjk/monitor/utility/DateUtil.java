@@ -11,6 +11,8 @@
 package com.yjjk.monitor.utility;
 
 
+import com.yjjk.monitor.configer.SaticScheduleTask;
+
 import javax.xml.crypto.Data;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -54,6 +56,36 @@ public class DateUtil {
         Date date = new Date();
         SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss");
         return ft.format(date);
+    }
+
+    public static String getDatePoor(String startTime) {
+        return getDatePoor(startTime, getCurrentTime());
+    }
+    public static String getDatePoor(String startTime, String endTime) {
+        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss");
+        Date startDate = null;
+        Date endDate = null;
+        try {
+            startDate = ft.parse(startTime);
+            endDate = ft.parse(endTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long nd = 1000 * 24 * 60 * 60;
+        long nh = 1000 * 60 * 60;
+        long nm = 1000 * 60;
+        // long ns = 1000;
+        // 获得两个时间的毫秒时间差异
+        long diff = endDate.getTime() - startDate.getTime();
+        // 计算差多少天
+        long day = diff / nd;
+        // 计算差多少小时
+        long hour = diff % nd / nh;
+        // 计算差多少分钟
+        long min = diff % nd % nh / nm;
+        // 计算差多少秒//输出结果
+        // long sec = diff % nd % nh % nm / ns;
+        return hour + "小时" + min + "分钟";
     }
 
 

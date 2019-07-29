@@ -13,6 +13,7 @@ package com.yjjk.monitor.controller;
 import ch.qos.logback.core.pattern.color.MagentaCompositeConverter;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.sun.org.apache.bcel.internal.generic.DUP2_X1;
 import com.yjjk.monitor.entity.ZsManagerInfo;
 import com.yjjk.monitor.entity.ZsPatientInfo;
 import com.yjjk.monitor.entity.ZsPatientRecord;
@@ -29,6 +30,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -257,9 +262,10 @@ public class PatientController extends BaseController {
         long startTime = System.currentTimeMillis();
         boolean resultCode = false;
         String message = "";
+        Map<String, Object> reqMap = new HashMap<>(2);
 
         ZsPatientRecord patientRecord = super.patientRecordService.selectByPrimaryKey(recordId);
-        if (StringUtils.isNullorEmpty(patientRecord)){
+        if (StringUtils.isNullorEmpty(patientRecord)) {
             message = "未找到该记录信息";
             returnResult(startTime, request, response, resultCode, message, "");
             return;
@@ -267,11 +273,14 @@ public class PatientController extends BaseController {
         List<TemperatureHistory> list;
         if (StringUtils.isNullorEmpty(patientRecord.getTemperatureHistory())) {
             list = super.patientRecordService.getCurrentTemperatureRecord(patientRecord.getPatientId());
-        }else {
+            reqMap.put("useTImes", DateUtil.getDatePoor(patientRecord.getStartTime()));
+        } else {
             list = JSON.parseArray(patientRecord.getTemperatureHistory(), TemperatureHistory.class);
+            reqMap.put("useTImes", DateUtil.getDatePoor(patientRecord.getStartTime(), patientRecord.getEndTime()));
         }
+        reqMap.put("list", list);
         message = "查询成功";
         resultCode = true;
-        returnResult(startTime, request, response, resultCode, message, list);
+        returnResult(startTime, request, response, resultCode, message, reqMap);
     }
 }
