@@ -56,14 +56,6 @@ public class StringUtils {
      * @param param
      * @return
      */
-    public static boolean isNullorEmpty(String param) {
-        boolean result = false;
-        if (param == null || param.length() <= 0) {
-            result = true;
-        }
-        return result;
-    }
-
     public static boolean isNullorEmpty(Object param) {
         if (param == null) {
             return true;

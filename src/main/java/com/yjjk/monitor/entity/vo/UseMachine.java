@@ -43,5 +43,6 @@ public class UseMachine {
     private Integer pattery;
     private String temperatureStatus;
     private String useTimes;
+    private Integer timestamp;
 
 }

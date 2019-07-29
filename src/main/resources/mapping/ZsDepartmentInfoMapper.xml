@@ -35,7 +35,7 @@
         select
         zdi.department_id, zdi.name, zdi.create_time, zdi.status,
         zri.room_id , zri.department_id as room_department_id, zri.name as room_name, zri.create_time as room_create_time, zri.status as room_status,
-        zbi.bed_id as bed_, zbi.room_id as bed_room_id, zbi.name as bed_name, zbi.create_time as bed_create_time, zbi.status as bed_status
+        zbi.bed_id as bed_id, zbi.room_id as bed_room_id, zbi.name as bed_name, zbi.create_time as bed_create_time, zbi.status as bed_status
         from zs_department_info zdi
         left join zs_room_info zri on zdi.department_id = zri.department_id
         left join zs_bed_info zbi on zri.room_id = zbi.room_id

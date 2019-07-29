@@ -11,15 +11,14 @@
 package com.yjjk.monitor.controller;
 
 import com.yjjk.monitor.entity.*;
+import com.yjjk.monitor.utility.DateUtil;
 import com.yjjk.monitor.utility.PasswordUtils;
 import com.yjjk.monitor.utility.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -151,9 +150,13 @@ public class ManagerController extends BaseController {
         long startTime = System.currentTimeMillis();
         boolean resultCode = false;
         String message = "";
+        if (managerId == null && (currentPage == null || currentPage <= 0 || pageSize == null || pageSize <= 0)){
+            message = "参数错误";
+            returnResult(startTime, request, response, resultCode, message, "");
+            return;
+        }
 
-        ZsManagerInfo managerInfo = null;
-        List<ZsManagerInfo> zsManagerInfos = null;
+        List<ZsManagerInfo> zsManagerInfos;
         Map<String, Object> paramMap = new HashMap<>();
         Map<String, Object> reqMap = new HashMap<>();
         if (StringUtils.isNullorEmpty(managerId)) {
@@ -164,16 +167,16 @@ public class ManagerController extends BaseController {
             paramMap.put("pageSize", pageSize);
             reqMap.put("totalPage", totalPage);
             reqMap.put("currentPage", currentPage);
-            zsManagerInfos = super.managerService.selectNormalList(paramMap);
-        } else {
-            managerInfo = super.managerService.getManagerInfo(managerId);
+        }else {
+            paramMap.put("managerId",managerId);
         }
-        if (StringUtils.isNullorEmpty(managerInfo) && StringUtils.isNullorEmpty(zsManagerInfos)) {
+        zsManagerInfos = super.managerService.selectNormalList(paramMap);
+        if (StringUtils.isNullorEmpty(zsManagerInfos)) {
             message = "获取失败";
             returnResult(startTime, request, response, resultCode, message, "");
             return;
         }
-        reqMap.put("list", managerInfo == null ? managerId : zsManagerInfos);
+        reqMap.put("list", zsManagerInfos);
         message = "获取成功";
         resultCode = true;
         returnResult(startTime, request, response, resultCode, message, reqMap);
@@ -206,11 +209,12 @@ public class ManagerController extends BaseController {
             return;
         }
         boolean login = super.managerService.login(param.setPassword(password), managerInfo.getPassword());
-        if (login) {
+        if (!login) {
             message = "密码错误";
             returnResult(startTime, request, response, resultCode, message, "");
             return;
         }
+        super.managerService.updateManger(managerInfo.setLoginTime(DateUtil.getCurrentTime()));
         message = "登录成功";
         resultCode = true;
         returnResult(startTime, request, response, resultCode, message, managerInfo.setPassword(null));

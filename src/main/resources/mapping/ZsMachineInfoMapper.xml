@@ -11,6 +11,8 @@
         <result column="remark" jdbcType="VARCHAR" property="remark"/>
         <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
+
+        <result column="department_name" jdbcType="VARCHAR" property="departmentName"/>
     </resultMap>
     <sql id="Base_Column_List">
     machine_id, `name`, machine_model, machine_num, department_id, usage_state, remark, 
@@ -28,10 +30,10 @@
         from zs_machine_info
         <where>
             <if test="machineId != null">
-                machine_id = #{machineId,jdbcType=INTEGER}
+                and machine_id = #{machineId,jdbcType=INTEGER}
             </if>
             <if test="departmentId != null">
-                department_id = #{departmentId, jdbcType=INTEGER}
+                and department_id = #{departmentId, jdbcType=INTEGER}
             </if>
             <if test="usageState != null">
                 and usage_state = #{usageState,jdbcType=INTEGER}
@@ -41,19 +43,21 @@
     </select>
     <select id="selectByUsageState" parameterType="com.yjjk.monitor.entity.ZsMachineInfo" resultMap="BaseResultMap">
         select
-        <include refid="Base_Column_List"/>
-        from zs_machine_info
+        zmi.machine_id, zmi.`name`, zmi.machine_model, zmi.machine_num, zmi.department_id,  zmi.usage_state, zmi.remark,
+        zmi.create_time, zmi.`status`, zdi.name as department_name
+        from zs_machine_info zmi
+        left join zs_department_info zdi on zmi.department_id = zdi.department_id
         <where>
             <if test="machineId != null">
-                machine_id = #{machineId,jdbcType=INTEGER}
+                and zmi.machine_id = #{machineId,jdbcType=INTEGER}
             </if>
             <if test="departmentId != null">
-                department_id = #{departmentId, jdbcType=INTEGER}
+                and zmi.department_id = #{departmentId, jdbcType=INTEGER}
             </if>
             <if test="usageState != null">
-                and usage_state = #{usageState,jdbcType=INTEGER}
+                and zmi.usage_state = #{usageState,jdbcType=INTEGER}
             </if>
-            and status = 0
+            and zmi.status = 0
         </where>
         <if test="startLine != null and pageSize != null">
             limit #{startLine},#{pageSize}

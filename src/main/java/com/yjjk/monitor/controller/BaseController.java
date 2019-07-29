@@ -15,6 +15,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.yjjk.monitor.filter.AliValueFilter;
 import com.yjjk.monitor.service.*;
 import org.apache.log4j.Logger;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
@@ -30,7 +31,7 @@ import java.util.Map;
  * @Description: BaseController
  * @create 2019-06-18
  */
-
+@CrossOrigin
 public class BaseController {
 
     protected static Logger logger = Logger.getLogger(BaseController.class);

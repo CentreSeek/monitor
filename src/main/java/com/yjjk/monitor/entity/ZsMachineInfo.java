@@ -40,4 +40,5 @@ public class ZsMachineInfo  {
     /** 分页信息 */
     private Integer startLine;
     private Integer pageSize;
+    private String departmentName;
 }

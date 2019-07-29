@@ -29,7 +29,7 @@ public class ManagerServiceImpl extends BaseService implements ManagerService {
 
     @Override
     public int insertManager(ZsManagerInfo managerInfo) {
-        return super.ZsManagerInfoMapper.insert(managerInfo);
+        return super.ZsManagerInfoMapper.insertSelective(managerInfo);
     }
 
     @Override

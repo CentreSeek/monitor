@@ -25,27 +25,17 @@ import java.util.Date;
 @Accessors(chain = true)
 public class ZsManagerInfo{
     private Integer managerId;
-
     private String account;
-
     private String password;
-
     private String name;
-
     private String phone;
-
     private String post;
-
     private Integer departmentId;
-
     private Integer sex;
-
     private Integer role;
-
     private String loginTime;
-
     private String createTime;
-
     private Integer status;
 
+    private String departmentName;
 }

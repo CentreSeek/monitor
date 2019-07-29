@@ -12,9 +12,11 @@ package com.yjjk.monitor.controller;
 
 import ch.qos.logback.core.pattern.color.MagentaCompositeConverter;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.yjjk.monitor.entity.ZsManagerInfo;
 import com.yjjk.monitor.entity.ZsPatientInfo;
 import com.yjjk.monitor.entity.ZsPatientRecord;
+import com.yjjk.monitor.entity.json.TemperatureHistory;
 import com.yjjk.monitor.entity.vo.PatientTemperature;
 import com.yjjk.monitor.entity.vo.RecordHistory;
 import com.yjjk.monitor.entity.vo.UseMachine;
@@ -257,12 +259,19 @@ public class PatientController extends BaseController {
         String message = "";
 
         ZsPatientRecord patientRecord = super.patientRecordService.selectByPrimaryKey(recordId);
-        String resultJson = null;
+        if (StringUtils.isNullorEmpty(patientRecord)){
+            message = "未找到该记录信息";
+            returnResult(startTime, request, response, resultCode, message, "");
+            return;
+        }
+        List<TemperatureHistory> list;
         if (StringUtils.isNullorEmpty(patientRecord.getTemperatureHistory())) {
-            resultJson = JSON.toJSONString(super.patientRecordService.getCurrentTemperatureRecord(patientRecord.getPatientId()));
+            list = super.patientRecordService.getCurrentTemperatureRecord(patientRecord.getPatientId());
+        }else {
+            list = JSON.parseArray(patientRecord.getTemperatureHistory(), TemperatureHistory.class);
         }
         message = "查询成功";
         resultCode = true;
-        returnResult(startTime, request, response, resultCode, message, patientRecord.getTemperatureHistory() == null ? resultJson : patientRecord.getTemperatureHistory());
+        returnResult(startTime, request, response, resultCode, message, list);
     }
 }

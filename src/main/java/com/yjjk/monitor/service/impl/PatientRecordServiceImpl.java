@@ -73,7 +73,7 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
         List<TemperatureHistory> list = super.ZsPatientRecordMapper.selectTemperatureHistory(patientId);
         List<TemperatureHistory> resultList = new ArrayList<>();
         // 每隔十分钟取一条数据
-        for (int i = 0; i < list.size(); i += 9) {
+        for (int i = 0; i < list.size(); i += 10) {
             resultList.add(list.get(i));
         }
         ZsPatientRecord patientRecord = new ZsPatientRecord();
