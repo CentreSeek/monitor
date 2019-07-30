@@ -37,6 +37,6 @@ public class ZsTemperatureInfo {
 
     private Date createTime;
 
-    private Integer timestamp;
+    private Long timestamp;
 
 }

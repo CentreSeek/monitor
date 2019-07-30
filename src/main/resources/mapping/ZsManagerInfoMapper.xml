@@ -36,6 +36,12 @@
         <if test="managerId != null">
             and zmi.manager_id = #{managerId,jdbcType=INTEGER}
         </if>
+        <if test="role != null">
+            and zmi.`role` = #{role,jdbcType=INTEGER}
+        </if>
+        <if test="roles != null">
+            and (zmi.`role` = 1 or zmi.`role` = 2)
+        </if>
         <if test="startLine != null and pageSize != null">
             limit #{startLine},#{pageSize}
         </if>
@@ -45,6 +51,9 @@
         count(1)
         from zs_manager_info
         where status = 0
+        <if test="role != null">
+            and ami.`role` = #{role,jdbcType=INTEGER}
+        </if>
     </select>
     <select id="selectAll" resultMap="BaseResultMap">
         select

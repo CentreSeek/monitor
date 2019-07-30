@@ -28,6 +28,6 @@ public class PatientTemperature {
     private Integer pattery;
     private String temperatureStatus;
     private String useTimes;
-    private Integer timestamp;
+    private Long timestamp;
 
 }

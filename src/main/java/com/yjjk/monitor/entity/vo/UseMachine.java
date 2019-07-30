@@ -29,6 +29,7 @@ public class UseMachine {
     private String departmentName;
     private String roomName;
     private String bedName;
+    private Integer bedId;
 
     /** record */
     private Long recordId;
@@ -43,6 +44,6 @@ public class UseMachine {
     private Integer pattery;
     private String temperatureStatus;
     private String useTimes;
-    private Integer timestamp;
+    private Long timestamp;
 
 }

@@ -11,6 +11,7 @@
 package com.yjjk.monitor.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.yjjk.monitor.entity.ZsMachineInfo;
 import com.yjjk.monitor.entity.ZsPatientRecord;
 import com.yjjk.monitor.entity.json.TemperatureHistory;
 import com.yjjk.monitor.entity.vo.PatientTemperature;
@@ -35,6 +36,12 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
 
     @Override
     public int addPatientRecord(ZsPatientRecord patientRecord) {
+        ZsMachineInfo machineInfo = new ZsMachineInfo();
+        if (patientRecord.getMachineId() != null){
+            // 修改设备的使用状态
+            machineInfo.setMachineId(patientRecord.getMachineId()).setUsageState(2);
+        }
+        super.ZsMachineInfoMapper.updateByPrimaryKeySelective(machineInfo);
         return super.ZsPatientRecordMapper.insertSelective(patientRecord);
     }
 

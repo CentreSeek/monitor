@@ -143,6 +143,7 @@ public class ManagerController extends BaseController {
      */
     @RequestMapping(value = "/manager", method = RequestMethod.GET)
     public void getManagerInfo(@RequestParam(value = "managerId", required = false) Integer managerId,
+                               @RequestParam(value = "role", required = false) Integer role,
                                @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                @RequestParam(value = "pageSize", required = false) Integer pageSize,
                                HttpServletRequest request, HttpServletResponse response) {
@@ -167,6 +168,12 @@ public class ManagerController extends BaseController {
             paramMap.put("pageSize", pageSize);
             reqMap.put("totalPage", totalPage);
             reqMap.put("currentPage", currentPage);
+            // 超管查询管理员+科室管理员账号, 管理员查看科室管理员账号
+            if (role == 0){
+                paramMap.put("roles", "get");
+            }else if (role == 1){
+                paramMap.put("role", role);
+            }
         }else {
             paramMap.put("managerId",managerId);
         }

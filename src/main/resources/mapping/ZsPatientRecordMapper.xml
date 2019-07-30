@@ -37,7 +37,7 @@
         zdi.name AS departmentName,zri.name AS roomName, zbi.name AS bedName,
         zmi.machine_num AS machineNum,
         a.temperature as temperature, a.temperature_status as temperatureStatus, a.pattery as pattery, TIMEDIFF(a.create_time, zpr.create_time) AS useTimes,
-        a.timestamp
+        a.timestamp, zbi.bed_id
         FROM
         (SELECT a.* FROM
         (SELECT a.* FROM `zs_temperature_info` a ORDER BY create_time DESC  LIMIT 100000000)

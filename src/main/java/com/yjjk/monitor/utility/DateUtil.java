@@ -51,7 +51,7 @@ public class DateUtil {
 
     public static String getCurrentTime(){
         Date date = new Date();
-        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
         return ft.format(date);
     }
 
@@ -59,7 +59,7 @@ public class DateUtil {
         return getDatePoor(startTime, getCurrentTime());
     }
     public static String getDatePoor(String startTime, String endTime) {
-        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
         Date startDate = null;
         Date endDate = null;
         try {
@@ -90,9 +90,10 @@ public class DateUtil {
      * @return
      */
     public static String getOneMonthAgo() {
-        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.MONTH, -1);
         return ft.format(cal.getTime());
     }
+
 }
