@@ -6,6 +6,7 @@
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="hospital_name" jdbcType="VARCHAR" property="hospitalName"/>
         <collection property="rooms" ofType="com.yjjk.monitor.entity.ZsRoomInfo" javaType="ArrayList">
             <id column="room_id" jdbcType="INTEGER" property="roomId"/>
             <result column="room_department_id" jdbcType="INTEGER" property="departmentId"/>
@@ -35,10 +36,11 @@
         select
         zdi.department_id, zdi.name, zdi.create_time, zdi.status,
         zri.room_id , zri.department_id as room_department_id, zri.name as room_name, zri.create_time as room_create_time, zri.status as room_status,
-        zbi.bed_id as bed_id, zbi.room_id as bed_room_id, zbi.name as bed_name, zbi.create_time as bed_create_time, zbi.status as bed_status
+        zbi.bed_id as bed_id, zbi.room_id as bed_room_id, zbi.name as bed_name, zbi.create_time as bed_create_time, zbi.status as bed_status, zhi.hospital_name
         from zs_department_info zdi
         left join zs_room_info zri on zdi.department_id = zri.department_id
         left join zs_bed_info zbi on zri.room_id = zbi.room_id
+        join zs_hospital_info zhi
         <where>
             zdi.status = 0 and zri.status = 0 and zbi.status = 0
             <if test="departmentId != null">

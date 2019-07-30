@@ -1,7 +1,9 @@
 package com.yjjk.monitor.mapper;
 
 import com.yjjk.monitor.entity.ZsTemperatureInfo;
+import org.apache.ibatis.annotations.Mapper;
 
+@Mapper
 public interface ZsTemperatureInfoMapper {
     int deleteByPrimaryKey(Integer temperatureId);
 

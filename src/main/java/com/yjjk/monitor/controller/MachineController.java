@@ -10,10 +10,7 @@
  */
 package com.yjjk.monitor.controller;
 
-import com.yjjk.monitor.configer.SaticScheduleTask;
 import com.yjjk.monitor.entity.ZsMachineInfo;
-import com.yjjk.monitor.entity.ZsManagerInfo;
-import com.yjjk.monitor.utility.PasswordUtils;
 import com.yjjk.monitor.utility.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

@@ -11,12 +11,14 @@
 package com.yjjk.monitor.configer;
 
 import com.yjjk.monitor.controller.BaseController;
+import com.yjjk.monitor.service.HospitalService;
 import com.yjjk.monitor.utility.DateUtil;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Resource;
 import javax.xml.transform.Source;
@@ -31,15 +33,18 @@ import java.util.Date;
  * @Description: 定时批量过期预约
  * @create 2019-06-21
  */
-public class TimingPlan extends BaseController {
+public class TimingPlan{
 
+
+    @Resource
+    private HospitalService hospitalService;
     /**
      * 定时清理过期预约
      */
     @Scheduled(cron = "0 0 0 1 * ?")
     private void configureTasks() {
         String date = DateUtil.getOneMonthAgo();
-        int i = super.hospitalService.temperatureInfoTask(date);
+        int i = hospitalService.temperatureInfoTask(date);
         System.err.println("执行预约过期定时计划     时间: " + date + "   执行条数:" + i);
     }
 

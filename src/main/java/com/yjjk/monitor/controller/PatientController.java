@@ -10,10 +10,7 @@
  */
 package com.yjjk.monitor.controller;
 
-import ch.qos.logback.core.pattern.color.MagentaCompositeConverter;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.sun.org.apache.bcel.internal.generic.DUP2_X1;
 import com.yjjk.monitor.entity.ZsManagerInfo;
 import com.yjjk.monitor.entity.ZsPatientInfo;
 import com.yjjk.monitor.entity.ZsPatientRecord;
@@ -30,10 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

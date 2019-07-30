@@ -31,4 +31,6 @@ public class ZsDepartmentInfo{
     private Integer status;
 
     private List<ZsRoomInfo> rooms;
+
+    private String hospitalName;
 }

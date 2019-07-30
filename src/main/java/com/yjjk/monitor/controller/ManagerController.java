@@ -191,7 +191,7 @@ public class ManagerController extends BaseController {
      * @param request
      * @param response
      */
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
     public void managerLogin(@RequestParam(value = "account") String account,
                              @RequestParam(value = "password") String password,
                              HttpServletRequest request, HttpServletResponse response) {
