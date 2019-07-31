@@ -84,10 +84,10 @@
         <where>
             zpr.status = 0
             <if test="startDate != null">
-                and zpr.create_time <![CDATA[>]]> #{startDate, jdbcType=VARCHAR}
+                and zpr.create_time <![CDATA[>=]]> #{startDate, jdbcType=VARCHAR}
             </if>
             <if test="endDate != null">
-                and zpr.create_time <![CDATA[<]]> #{endDate, jdbcType=VARCHAR}
+                and zpr.create_time <![CDATA[<=]]> #{endDate, jdbcType=VARCHAR}
             </if>
             <if test="departmentId != null">
                 and zdi.department_id = #{departmentId, jdbcType=INTEGER}
@@ -112,10 +112,10 @@
         <where>
             zpr.status = 0
             <if test="startDate != null">
-                and zpr.create_time <![CDATA[>]]> #{startDate, jdbcType=VARCHAR}
+                and zpr.create_time <![CDATA[>=]]> #{startDate, jdbcType=VARCHAR}
             </if>
             <if test="endDate != null">
-                and zpr.create_time <![CDATA[<]]> #{endDate, jdbcType=VARCHAR}
+                and zpr.create_time <![CDATA[<=]]> #{endDate, jdbcType=VARCHAR}
             </if>
             <if test="departmentId != null">
                 and zdi.department_id = #{departmentId, jdbcType=INTEGER}
@@ -133,8 +133,8 @@
         LEFT JOIN `zs_machine_info` zmi ON zmi.machine_num = zti.`machine_num`
         LEFT JOIN `zs_patient_record` zpr ON zpr.`machine_id` = zmi.`machine_id`
         WHERE
-        zti.`create_time` <![CDATA[>]]> zpr.`start_time`
-        AND zti.`create_time` <![CDATA[<]]> zpr.`end_time`
+        zti.`create_time` <![CDATA[>=]]> zpr.`start_time`
+        AND zti.`create_time` <![CDATA[<=]]> zpr.`end_time`
         AND zpr.`patient_id` = #{patientId, jdbcType=INTEGER}
         ORDER BY zti.`temperature_id`;
     </select>

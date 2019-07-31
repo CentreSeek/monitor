@@ -84,4 +84,12 @@ public interface PatientRecordService {
      */
     List<TemperatureHistory> getCurrentTemperatureRecord(Integer patientId);
 
+    /**
+     * 更换设备
+     * @param machineId1 停用的设备
+     * @param machineId2 启用的设备
+     * @return
+     */
+    boolean changeMachine(Integer machineId1, Integer machineId2);
+
 }

@@ -8,6 +8,8 @@ server:
 #    keyStoreType: JKS
 
 spring:
+  application:
+    name: monitor
   datasource:
     username: yjjk
 #    password: YJjk_2018
@@ -43,6 +45,7 @@ mybatis:
 
 #showSql
 logging:
+  file: logs/${spring.application.name}.log
   level:
     com:
       yjjk:
