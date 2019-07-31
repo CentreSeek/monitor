@@ -21,7 +21,9 @@ import com.yjjk.monitor.service.BaseService;
 import com.yjjk.monitor.service.PatientRecordService;
 import com.yjjk.monitor.utility.DateUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,20 +77,30 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
         return super.ZsPatientRecordMapper.getRecordHistoryCount(recordHistory);
     }
 
+    @Transactional(rollbackFor = RuntimeException.class)
     @Override
-    public int stopMonitoring(Integer patientId) {
+    public int stopMonitoring(Integer patientId, Integer machineId) {
         List<TemperatureHistory> list = super.ZsPatientRecordMapper.selectTemperatureHistory(patientId);
         List<TemperatureHistory> resultList = new ArrayList<>();
         // 每隔十分钟取一条数据
         for (int i = 0; i < list.size(); i += 10) {
             resultList.add(list.get(i));
         }
+
+        ZsMachineInfo machineInfo = new ZsMachineInfo();
+            // 修改设备的使用状态
+        machineInfo.setMachineId(machineId).setUsageState(0);
+        int j = super.ZsMachineInfoMapper.updateByPrimaryKeySelective(machineInfo);
+
         ZsPatientRecord patientRecord = new ZsPatientRecord();
         patientRecord.setPatientId(patientId);
         patientRecord.setTemperatureHistory(JSON.toJSONString(resultList));
         patientRecord.setUsageState(1);
         patientRecord.setEndTime(DateUtil.getCurrentTime());
         int i = super.ZsPatientRecordMapper.updateSelectiveByPatientId(patientRecord);
+        if (i == 0 || j == 0){
+            throw new RuntimeException("停止失败");
+        }
         return i;
     }
 

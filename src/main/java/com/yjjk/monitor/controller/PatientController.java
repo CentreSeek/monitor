@@ -139,7 +139,7 @@ public class PatientController extends BaseController {
             return;
         }
 
-        int i = super.patientRecordService.stopMonitoring(patientRecord.getPatientId());
+        int i = super.patientRecordService.stopMonitoring(patientRecord.getPatientId(), patientRecord.getMachineId());
         if (i == 0) {
             message = "停用失败";
             returnResult(startTime, request, response, resultCode, message, i);
