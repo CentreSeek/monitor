@@ -84,10 +84,10 @@
         <where>
             zpr.status = 0
             <if test="startDate != null">
-                and zpr.create_time <![CDATA[>=]]> #{startDate, jdbcType=VARCHAR}
+                and zpr.create_time <![CDATA[>=]]> CONCAT(#{startDate, jdbcType=VARCHAR},' 00:00:00')
             </if>
             <if test="endDate != null">
-                and zpr.create_time <![CDATA[<=]]> #{endDate, jdbcType=VARCHAR}
+                and zpr.create_time <![CDATA[<=]]> CONCAT(#{endDate, jdbcType=VARCHAR},' 24:00:00')
             </if>
             <if test="departmentId != null">
                 and zdi.department_id = #{departmentId, jdbcType=INTEGER}
@@ -112,10 +112,10 @@
         <where>
             zpr.status = 0
             <if test="startDate != null">
-                and zpr.create_time <![CDATA[>=]]> #{startDate, jdbcType=VARCHAR}
+                and zpr.create_time <![CDATA[>=]]> CONCAT(#{startDate, jdbcType=VARCHAR},' 00:00:00')
             </if>
             <if test="endDate != null">
-                and zpr.create_time <![CDATA[<=]]> #{endDate, jdbcType=VARCHAR}
+                and zpr.create_time <![CDATA[<=]]> CONCAT(#{endDate, jdbcType=VARCHAR},' 24:00:00')
             </if>
             <if test="departmentId != null">
                 and zdi.department_id = #{departmentId, jdbcType=INTEGER}

@@ -42,4 +42,5 @@ public class RecordHistory {
     /** requestParam */
     private Integer currentPage;
     private Integer timestamp;
+
 }
