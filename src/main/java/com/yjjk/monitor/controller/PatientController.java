@@ -107,7 +107,8 @@ public class PatientController extends BaseController {
         }
         patientRecord.setMachineId(machineId);
         int i = super.patientRecordService.updateByPrimaryKey(patientRecord);
-        if (i == 0) {
+        boolean b = super.patientRecordService.changeMachine(patientRecord.getMachineId(), machineId);
+        if (i == 0 && b) {
             message = "绑定失败";
             returnResult(startTime, request, response, resultCode, message, i);
             return;
@@ -190,6 +191,11 @@ public class PatientController extends BaseController {
         String message = "";
 
         ZsManagerInfo managerInfo = super.managerService.getManagerInfo(managerId);
+        if (managerInfo == null){
+            message = "未查询到管理员个人信息";
+            returnResult(startTime, request, response, resultCode, message, "");
+            return;
+        }
         Integer departmentId = null;
         if (managerInfo.getRole() == 2) {
             departmentId = managerInfo.getDepartmentId();
