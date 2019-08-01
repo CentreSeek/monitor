@@ -116,7 +116,7 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
         // 修改设备的使用状态
         machineInfo.setMachineId(machineId1).setUsageState(0);
         int i = super.ZsMachineInfoMapper.updateByPrimaryKeySelective(machineInfo);
-        machineInfo.setMachineId(machineId1).setUsageState(2);
+        machineInfo.setMachineId(machineId2).setUsageState(2);
         int j = super.ZsMachineInfoMapper.updateByPrimaryKeySelective(machineInfo);
         if (i == 0 || j == 0){
             return false;
