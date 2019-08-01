@@ -108,6 +108,10 @@ public class DateUtil {
             long hour = (between / (60 * 60 * 1000) - day * 24);
             long min = ((between / (60 * 1000)) - day * 24 * 60 - hour * 60);
             long s = (between / 1000 - day * 24 * 60 * 60 - hour * 60 * 60 - min * 60);
+            day = day < 0 ? 0 : day;
+            hour = hour < 0 ? 0 : hour;
+            min = min < 0 ? 0 : min;
+            s = s < 0 ? 0 : s;
             return day + "天" + hour + "小时" + min + "分";
         } catch (ParseException e) {
             e.printStackTrace();
