@@ -41,4 +41,8 @@ public class ZsMachineInfo  {
     private Integer startLine;
     private Integer pageSize;
     private String departmentName;
+
+    private String normalStatus;
+    private String deleteStatus;
+
 }
