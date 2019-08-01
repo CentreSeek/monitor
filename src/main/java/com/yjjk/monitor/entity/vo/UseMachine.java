@@ -43,7 +43,10 @@ public class UseMachine {
     private String temperature;
     private Integer pattery;
     private String temperatureStatus;
-    private String useTimes;
     private Long timestamp;
+    private String useTimes;
+
+    private String startTime;
+    private String endTime;
 
 }

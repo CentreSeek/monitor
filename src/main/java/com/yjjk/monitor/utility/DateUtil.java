@@ -17,15 +17,15 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * @Description: 时间工具
  * @author CentreS
+ * @Description: 时间工具
  * @create 2019-06-21
  */
 public class DateUtil {
 
     public static String dateToWeek(String datetime) {
         SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
-        String[] weekDays = { "星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六" };
+        String[] weekDays = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
         // 获得一个日历
         Calendar cal = Calendar.getInstance();
         Date datet = null;
@@ -37,29 +37,30 @@ public class DateUtil {
         }
         // 指示一个星期中的某天。
         int w = cal.get(Calendar.DAY_OF_WEEK) - 1;
-        if (w < 0){
+        if (w < 0) {
             w = 0;
         }
         return weekDays[w];
     }
 
-    public static String getRecordId(){
+    public static String getRecordId() {
         Date date = new Date();
-        SimpleDateFormat ft = new SimpleDateFormat ("yyyyMMdd");
+        SimpleDateFormat ft = new SimpleDateFormat("yyyyMMdd");
         return ft.format(date);
     }
 
-    public static String getCurrentTime(){
+    public static String getCurrentTime() {
         Date date = new Date();
-        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return ft.format(date);
     }
 
     public static String getDatePoor(String startTime) {
         return getDatePoor(startTime, getCurrentTime());
     }
+
     public static String getDatePoor(String startTime, String endTime) {
-        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date startDate = null;
         Date endDate = null;
         try {
@@ -87,13 +88,30 @@ public class DateUtil {
 
     /**
      * 获取一个月前的日期
+     *
      * @return
      */
     public static String getOneMonthAgo() {
-        SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.MONTH, -1);
         return ft.format(cal.getTime());
     }
 
+    public static String timeDifferent(String startTime, String endTime) {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date start = format.parse(startTime);
+            Date end = format.parse(endTime);
+            long between = end.getTime() - start.getTime();
+            long day = between / (24 * 60 * 60 * 1000);
+            long hour = (between / (60 * 60 * 1000) - day * 24);
+            long min = ((between / (60 * 1000)) - day * 24 * 60 - hour * 60);
+            long s = (between / 1000 - day * 24 * 60 * 60 - hour * 60 * 60 - min * 60);
+            return day + "天" + hour + "小时" + min + "分";
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 }

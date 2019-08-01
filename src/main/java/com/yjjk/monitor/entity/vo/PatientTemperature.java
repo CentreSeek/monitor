@@ -30,4 +30,7 @@ public class PatientTemperature {
     private String useTimes;
     private Long timestamp;
 
+    private String startTime;
+    private String endTime;
+
 }

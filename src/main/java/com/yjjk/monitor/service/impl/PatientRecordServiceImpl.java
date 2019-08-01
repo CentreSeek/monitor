@@ -20,6 +20,7 @@ import com.yjjk.monitor.entity.vo.UseMachine;
 import com.yjjk.monitor.service.BaseService;
 import com.yjjk.monitor.service.PatientRecordService;
 import com.yjjk.monitor.utility.DateUtil;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,13 +61,21 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
     }
 
     @Override
-    public List<UseMachine> getMonitorsInfo(Integer departmentId) {
-        return super.ZsPatientRecordMapper.getMonitorsInfo(departmentId);
+    public List<UseMachine> getMonitorsInfo(Integer departmentId){
+        List<UseMachine> list = super.ZsPatientRecordMapper.getMonitorsInfo(departmentId);
+        for (int i = 0; i < list.size(); i++) {
+            list.get(i).setUseTimes(DateUtil.timeDifferent(list.get(i).getStartTime(), list.get(i).getEndTime()));
+        }
+        return list;
     }
 
     @Override
     public List<PatientTemperature> getMinitorsTemperature(Integer departmentId) {
-        return super.ZsPatientRecordMapper.getMinitorsTemperature(departmentId);
+        List<PatientTemperature> list = super.ZsPatientRecordMapper.getMinitorsTemperature(departmentId);
+        for (int i = 0; i < list.size(); i++) {
+            list.get(i).setUseTimes(DateUtil.timeDifferent(list.get(i).getStartTime(), list.get(i).getEndTime()));
+        }
+        return list;
     }
 
     @Override
