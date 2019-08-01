@@ -56,12 +56,19 @@ public interface ZsPatientRecordMapper {
      * select---体温历史记录
      * @return
      */
-    List<TemperatureHistory> selectTemperatureHistory(Integer patientId);
+    List<TemperatureHistory> selectTemperatureHistory(Map<String,Object> paraMap);
 
     /**
-     * update----使用病人id更新历史记录表
+     * update---使用病人id更新历史记录表
      * @param patientRecord
      * @return
      */
     int updateSelectiveByPatientId(ZsPatientRecord patientRecord);
+
+    /**
+     * select---查询当前病床已绑定病人的数量
+     * @param bedId
+     * @return
+     */
+    int selectByBedId(Integer bedId);
 }

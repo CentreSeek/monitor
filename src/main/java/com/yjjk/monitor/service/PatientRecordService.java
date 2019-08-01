@@ -17,6 +17,7 @@ import com.yjjk.monitor.entity.vo.RecordHistory;
 import com.yjjk.monitor.entity.vo.UseMachine;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 历史记录
@@ -79,10 +80,10 @@ public interface PatientRecordService {
 
     /**
      * 获取实时体温记录
-     * @param patientId
+     * @param paraMap
      * @return
      */
-    List<TemperatureHistory> getCurrentTemperatureRecord(Integer patientId);
+    List<TemperatureHistory> getCurrentTemperatureRecord(Map<String,Object> paraMap);
 
     /**
      * 更换设备
@@ -91,5 +92,12 @@ public interface PatientRecordService {
      * @return
      */
     boolean changeMachine(Integer machineId1, Integer machineId2);
+
+    /**
+     * 查询当前病床已绑定病人的数量
+     * @param bedId
+     * @return
+     */
+    int selectByBedId(Integer bedId);
 
 }

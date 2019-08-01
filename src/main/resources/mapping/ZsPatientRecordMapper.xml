@@ -36,12 +36,13 @@
         zpi.`name` AS patientName, zpi.`case_num` AS caseNum,
         zdi.name AS departmentName,zri.name AS roomName, zbi.name AS bedName,
         zmi.machine_num AS machineNum,
-        a.temperature as temperature, a.temperature_status as temperatureStatus, a.pattery as pattery, TIMEDIFF(a.create_time, zpr.create_time) AS useTimes,
+        a.temperature as temperature, a.temperature_status as temperatureStatus, a.pattery as pattery,
+        TIMEDIFF(a.create_time, zpr.create_time) AS useTimes,
         a.timestamp, zbi.bed_id as bedId
         FROM
         (SELECT a.* FROM
-        (SELECT a.* FROM `zs_temperature_info` a ORDER BY create_time DESC  LIMIT 100000000)
-        a  GROUP BY a.machine_num) a
+        (SELECT a.* FROM `zs_temperature_info` a ORDER BY create_time DESC LIMIT 100000000)
+        a GROUP BY a.machine_num) a
         LEFT JOIN `zs_machine_info` zmi ON a.machine_num = zmi.`machine_num`
         LEFT JOIN `zs_patient_record` zpr ON zpr.`machine_id` = zmi.`machine_id`
         LEFT JOIN `zs_patient_info` zpi ON zpr.`patient_id` = zpi.`patient_id`
@@ -55,14 +56,16 @@
         order by zbi.bed_id
     </select>
 
-    <select id="getMinitorsTemperature" resultType="com.yjjk.monitor.entity.vo.PatientTemperature" parameterType="java.lang.Integer">
+    <select id="getMinitorsTemperature" resultType="com.yjjk.monitor.entity.vo.PatientTemperature"
+            parameterType="java.lang.Integer">
         SELECT
-        zmi.`machine_id` as machineId,a.temperature, a.temperature_status as temperatureStatus, a.pattery, TIMEDIFF(a.create_time, zpr.create_time) AS useTimes,
+        zmi.`machine_id` as machineId,a.temperature, a.temperature_status as temperatureStatus, a.pattery,
+        TIMEDIFF(a.create_time, zpr.create_time) AS useTimes,
         a.timestamp
         FROM
         (SELECT a.* FROM
-        (SELECT a.* FROM `zs_temperature_info` a ORDER BY create_time DESC  LIMIT 100000000)
-        a  GROUP BY a.machine_num) a
+        (SELECT a.* FROM `zs_temperature_info` a ORDER BY create_time DESC LIMIT 100000000)
+        a GROUP BY a.machine_num) a
         LEFT JOIN `zs_machine_info` zmi ON zmi.`machine_num` = a.machine_num
         LEFT JOIN `zs_patient_record` zpr ON zpr.`machine_id` = zmi.`machine_id`
         WHERE zpr.`usage_state` = 0
@@ -70,8 +73,9 @@
             and zmi.department_id = #{departmentId, jdbcType=INTEGER}
         </if>
         ORDER BY zpr.machine_id
-  </select>
-    <select id="getRecordHistory" resultType="com.yjjk.monitor.entity.vo.RecordHistory" parameterType="com.yjjk.monitor.entity.vo.RecordHistory">
+    </select>
+    <select id="getRecordHistory" resultType="com.yjjk.monitor.entity.vo.RecordHistory"
+            parameterType="com.yjjk.monitor.entity.vo.RecordHistory">
         SELECT
         zpr.`record_id` AS recordId, zpi.`name` AS patientName, zpi.`case_num` AS caseNum,
         zdi.`name` AS departmentName, zri.`name` AS roomName, zbi.`name` AS bedName,
@@ -101,7 +105,8 @@
         </if>
     </select>
 
-    <select id="getRecordHistoryCount" resultType="java.lang.Integer" parameterType="com.yjjk.monitor.entity.vo.RecordHistory">
+    <select id="getRecordHistoryCount" resultType="java.lang.Integer"
+            parameterType="com.yjjk.monitor.entity.vo.RecordHistory">
         SELECT
         count(1)
         FROM`zs_patient_record` zpr
@@ -126,7 +131,8 @@
         </where>
     </select>
 
-    <select id="selectTemperatureHistory" resultType="com.yjjk.monitor.entity.json.TemperatureHistory" parameterType="java.lang.Integer">
+    <select id="selectTemperatureHistory" resultType="com.yjjk.monitor.entity.json.TemperatureHistory"
+            parameterType="java.util.Map">
         SELECT
         zti.temperature, zti.`create_time` AS dateTime
         FROM `zs_temperature_info` zti
@@ -134,9 +140,17 @@
         LEFT JOIN `zs_patient_record` zpr ON zpr.`machine_id` = zmi.`machine_id`
         WHERE
         zti.`create_time` <![CDATA[>=]]> zpr.`start_time`
-        AND zti.`create_time` <![CDATA[<=]]> zpr.`end_time`
+        AND zti.`create_time` <![CDATA[<=]]> #{endTime, jdbcType=VARCHAR}
         AND zpr.`patient_id` = #{patientId, jdbcType=INTEGER}
         ORDER BY zti.`temperature_id`;
+    </select>
+
+    <select id="selectByBedId" parameterType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM `zs_patient_record`zpr
+        LEFT JOIN `zs_patient_info` zpi ON zpr.`patient_id` = zpi.`patient_id`
+        WHERE zpr.`usage_state` = 0 AND zpi.`status` = 0
+        AND zpi.`bed_id` = #{bedId, jdbcType=INTEGER}
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
@@ -292,6 +306,6 @@
                 temperature_history = #{temperatureHistory,jdbcType=LONGVARCHAR},
             </if>
         </set>
-        where  patient_id = #{patientId,jdbcType=INTEGER}
+        where patient_id = #{patientId,jdbcType=INTEGER}
     </update>
 </mapper>

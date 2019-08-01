@@ -25,11 +25,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.beans.Transient;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * @Description: 历史记录
  * @author CentreS
+ * @Description: 历史记录
  * @create 2019/7/22
  */
 @Service
@@ -39,7 +41,7 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
     @Override
     public int addPatientRecord(ZsPatientRecord patientRecord) {
         ZsMachineInfo machineInfo = new ZsMachineInfo();
-        if (patientRecord.getMachineId() != null){
+        if (patientRecord.getMachineId() != null) {
             // 修改设备的使用状态
             machineInfo.setMachineId(patientRecord.getMachineId()).setUsageState(2);
         }
@@ -86,12 +88,16 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
         patientRecord.setEndTime(DateUtil.getCurrentTime());
         int x = super.ZsPatientRecordMapper.updateSelectiveByPatientId(patientRecord);
 
-        List<TemperatureHistory> list = super.ZsPatientRecordMapper.selectTemperatureHistory(patientId);
+        Map<String, Object> paraMap = new HashMap<>();
+        paraMap.put("endTime", patientRecord.getEndTime());
+        paraMap.put("patientId", patientId);
+        List<TemperatureHistory> list = super.ZsPatientRecordMapper.selectTemperatureHistory(paraMap);
         List<TemperatureHistory> resultList = new ArrayList<>();
         // 每隔十分钟取一条数据
-        for (int i = 0; i < list.size(); i += 10) {
+        for (int i = 0; i < list.size(); i += 30) {
             resultList.add(list.get(i));
         }
+        // 将历史体温写回patient_record表
         patientRecord.setTemperatureHistory(JSON.toJSONString(resultList));
         int z = super.ZsPatientRecordMapper.updateSelectiveByPatientId(patientRecord);
 
@@ -100,15 +106,20 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
         machineInfo.setMachineId(machineId).setUsageState(0);
         int j = super.ZsMachineInfoMapper.updateByPrimaryKeySelective(machineInfo);
 
-        if (z == 0 || j == 0 || x == 0){
+        if (z == 0 || j == 0 || x == 0) {
             throw new RuntimeException("停止失败");
         }
         return z;
     }
 
     @Override
-    public List<TemperatureHistory> getCurrentTemperatureRecord(Integer patientId) {
-        return super.ZsPatientRecordMapper.selectTemperatureHistory(patientId);
+    public List<TemperatureHistory> getCurrentTemperatureRecord(Map<String, Object> paraMap) {
+        List<TemperatureHistory> list = super.ZsPatientRecordMapper.selectTemperatureHistory(paraMap);
+        List<TemperatureHistory> temp = new ArrayList<>();
+        for (int i = 0; i < list.size(); i += 30) {
+            temp.add(list.get(i));
+        }
+        return temp;
     }
 
     @Transactional(rollbackFor = RuntimeException.class)
@@ -120,9 +131,14 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
         int i = super.ZsMachineInfoMapper.updateByPrimaryKeySelective(machineInfo);
         machineInfo.setMachineId(machineId2).setUsageState(2);
         int j = super.ZsMachineInfoMapper.updateByPrimaryKeySelective(machineInfo);
-        if (i == 0 || j == 0){
+        if (i == 0 || j == 0) {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int selectByBedId(Integer bedId) {
+        return super.ZsPatientRecordMapper.selectByBedId(bedId);
     }
 }

@@ -20,6 +20,7 @@ import com.yjjk.monitor.entity.vo.RecordHistory;
 import com.yjjk.monitor.entity.vo.UseMachine;
 import com.yjjk.monitor.utility.DateUtil;
 import com.yjjk.monitor.utility.StringUtils;
+import org.springframework.beans.AbstractPropertyAccessor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -61,6 +62,12 @@ public class PatientController extends BaseController {
         long startTime = System.currentTimeMillis();
         boolean resultCode = false;
         String message = "";
+        int patientCount = patientRecordService.selectByBedId(bedId);
+        if (patientCount > 0){
+            message = "该病床已绑定病人";
+            returnResult(startTime, request, response, resultCode, message, "");
+            return;
+        }
         ZsManagerInfo managerInfo = super.managerService.getManagerInfo(managerId);
 
         ZsPatientInfo zsPatientInfo = super.patientService.addPatient(name, caseNum, bedId, managerInfo.getDepartmentId());
@@ -262,6 +269,7 @@ public class PatientController extends BaseController {
         boolean resultCode = false;
         String message = "";
         Map<String, Object> reqMap = new HashMap<>(2);
+        Map<String, Object> paraMap = new HashMap<>();
 
         ZsPatientRecord patientRecord = super.patientRecordService.selectByPrimaryKey(recordId);
         if (StringUtils.isNullorEmpty(patientRecord)) {
@@ -269,9 +277,16 @@ public class PatientController extends BaseController {
             returnResult(startTime, request, response, resultCode, message, "");
             return;
         }
-        List<TemperatureHistory> list;
+        String endTime = patientRecord.getEndTime();
+        if (StringUtils.isNullorEmpty(endTime)){
+            paraMap.put("endTime", DateUtil.getCurrentTime());
+        }else {
+            paraMap.put("endTime", endTime);
+        }
+        paraMap.put("patientId", patientRecord.getPatientId());
+
+        List<TemperatureHistory> list = super.patientRecordService.getCurrentTemperatureRecord(paraMap);
         if (StringUtils.isNullorEmpty(patientRecord.getTemperatureHistory())) {
-            list = super.patientRecordService.getCurrentTemperatureRecord(patientRecord.getPatientId());
             reqMap.put("useTimes", DateUtil.getDatePoor(patientRecord.getStartTime()));
         } else {
             list = JSON.parseArray(patientRecord.getTemperatureHistory(), TemperatureHistory.class);

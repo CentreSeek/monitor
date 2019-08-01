@@ -34,6 +34,9 @@ public class PatientServiceImpl extends BaseService implements PatientService {
             zsPatientInfo.setBedId(bedId).setName(name).setCaseNum(caseNum).setDepartmentId(departmentId);
             super.ZsPatientInfoMapper.insertSelective(zsPatientInfo);
             zsPatientInfo = super.ZsPatientInfoMapper.selectByCaseNum(caseNum);
+        }else {
+            zsPatientInfo.setBedId(bedId).setName(name).setDepartmentId(departmentId);
+            super.ZsPatientInfoMapper.updateByPrimaryKeySelective(zsPatientInfo);
         }
         return zsPatientInfo;
     }
