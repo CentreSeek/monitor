@@ -80,28 +80,30 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
     public int stopMonitoring(Integer patientId, Integer machineId) {
+        ZsPatientRecord patientRecord = new ZsPatientRecord();
+        patientRecord.setPatientId(patientId);
+        patientRecord.setUsageState(1);
+        patientRecord.setEndTime(DateUtil.getCurrentTime());
+        int x = super.ZsPatientRecordMapper.updateSelectiveByPatientId(patientRecord);
+
         List<TemperatureHistory> list = super.ZsPatientRecordMapper.selectTemperatureHistory(patientId);
         List<TemperatureHistory> resultList = new ArrayList<>();
         // 每隔十分钟取一条数据
         for (int i = 0; i < list.size(); i += 10) {
             resultList.add(list.get(i));
         }
+        patientRecord.setTemperatureHistory(JSON.toJSONString(resultList));
+        int z = super.ZsPatientRecordMapper.updateSelectiveByPatientId(patientRecord);
 
         ZsMachineInfo machineInfo = new ZsMachineInfo();
-            // 修改设备的使用状态
+        // 修改设备的使用状态
         machineInfo.setMachineId(machineId).setUsageState(0);
         int j = super.ZsMachineInfoMapper.updateByPrimaryKeySelective(machineInfo);
 
-        ZsPatientRecord patientRecord = new ZsPatientRecord();
-        patientRecord.setPatientId(patientId);
-        patientRecord.setTemperatureHistory(JSON.toJSONString(resultList));
-        patientRecord.setUsageState(1);
-        patientRecord.setEndTime(DateUtil.getCurrentTime());
-        int i = super.ZsPatientRecordMapper.updateSelectiveByPatientId(patientRecord);
-        if (i == 0 || j == 0){
+        if (z == 0 || j == 0 || x == 0){
             throw new RuntimeException("停止失败");
         }
-        return i;
+        return z;
     }
 
     @Override
