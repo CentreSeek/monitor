@@ -37,7 +37,7 @@
         zdi.name AS departmentName,zri.name AS roomName, zbi.name AS bedName,
         zmi.machine_num AS machineNum,
         a.temperature as temperature, a.temperature_status as temperatureStatus, a.pattery as pattery,
-        a.create_time as endTime,  zpr.create_time as satrtTime
+        a.create_time as endTime,  zpr.create_time as satrtTime,
         a.timestamp, zbi.bed_id as bedId
         FROM
         (SELECT a.* FROM
@@ -145,9 +145,9 @@
         ORDER BY zti.`temperature_id`;
     </select>
 
-    <select id="selectByBedId" parameterType="java.lang.Integer">
+    <select id="selectByBedId" resultType="java.lang.Integer">
         SELECT COUNT(1)
-        FROM `zs_patient_record`zpr
+        FROM `zs_patient_record` zpr
         LEFT JOIN `zs_patient_info` zpi ON zpr.`patient_id` = zpi.`patient_id`
         WHERE zpr.`usage_state` = 0 AND zpi.`status` = 0
         AND zpi.`bed_id` = #{bedId, jdbcType=INTEGER}
