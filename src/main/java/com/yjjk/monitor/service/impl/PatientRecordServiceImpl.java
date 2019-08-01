@@ -45,8 +45,8 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
         if (patientRecord.getMachineId() != null) {
             // 修改设备的使用状态
             machineInfo.setMachineId(patientRecord.getMachineId()).setUsageState(2);
+            super.ZsMachineInfoMapper.updateByPrimaryKeySelective(machineInfo);
         }
-        super.ZsMachineInfoMapper.updateByPrimaryKeySelective(machineInfo);
         return super.ZsPatientRecordMapper.insertSelective(patientRecord);
     }
 
@@ -61,7 +61,7 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
     }
 
     @Override
-    public List<UseMachine> getMonitorsInfo(Integer departmentId){
+    public List<UseMachine> getMonitorsInfo(Integer departmentId) {
         List<UseMachine> list = super.ZsPatientRecordMapper.getMonitorsInfo(departmentId);
         for (int i = 0; i < list.size(); i++) {
             list.get(i).setUseTimes(DateUtil.timeDifferent(list.get(i).getStartTime(), list.get(i).getEndTime()));

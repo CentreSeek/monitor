@@ -112,9 +112,9 @@ public class PatientController extends BaseController {
             returnResult(startTime, request, response, resultCode, message, "");
             return;
         }
+        boolean b = super.patientRecordService.changeMachine(patientRecord.getMachineId(), machineId);
         patientRecord.setMachineId(machineId);
         int i = super.patientRecordService.updateByPrimaryKey(patientRecord);
-        boolean b = super.patientRecordService.changeMachine(patientRecord.getMachineId(), machineId);
         if (i == 0 && b) {
             message = "绑定失败";
             returnResult(startTime, request, response, resultCode, message, i);
