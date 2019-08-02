@@ -20,6 +20,7 @@ import com.yjjk.monitor.entity.vo.RecordHistory;
 import com.yjjk.monitor.entity.vo.UseMachine;
 import com.yjjk.monitor.utility.DateUtil;
 import com.yjjk.monitor.utility.StringUtils;
+import netscape.security.ParameterizedTarget;
 import org.springframework.beans.AbstractPropertyAccessor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -293,6 +294,7 @@ public class PatientController extends BaseController {
             paraMap.put("endTime", endTime);
         }
         paraMap.put("patientId", patientRecord.getPatientId());
+        paraMap.put("times", DateUtil.timeDifferentLong(patientRecord.getStartTime(), (String) paraMap.get("endTime")));
 
         List<TemperatureHistory> list = super.patientRecordService.getCurrentTemperatureRecord(paraMap);
         if (StringUtils.isNullorEmpty(patientRecord.getTemperatureHistory())) {

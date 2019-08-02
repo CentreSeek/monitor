@@ -102,8 +102,15 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
         paraMap.put("patientId", patientId);
         List<TemperatureHistory> list = super.ZsPatientRecordMapper.selectTemperatureHistory(paraMap);
         List<TemperatureHistory> resultList = new ArrayList<>();
-        // 每隔十分钟取一条数据
-        for (int i = 0; i < list.size(); i += 30) {
+
+        //
+        Map<String, Object> tempMap = new HashMap<>();
+        tempMap.put("patientId", patientId);
+        tempMap.put("machineId", machineId);
+        ZsPatientRecord zsPatientRecord = super.ZsPatientRecordMapper.selectByPatientAndMachine(tempMap);
+        // 根据监测时常选择获取数据的数据间隔
+        Integer interval = DateUtil.getInterval(DateUtil.timeDifferentLong(zsPatientRecord.getStartTime(), (String) paraMap.get("endTime")));
+        for (int i = 0; i < list.size(); i += interval) {
             resultList.add(list.get(i));
         }
         // 将历史体温写回patient_record表
@@ -125,7 +132,9 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
     public List<TemperatureHistory> getCurrentTemperatureRecord(Map<String, Object> paraMap) {
         List<TemperatureHistory> list = super.ZsPatientRecordMapper.selectTemperatureHistory(paraMap);
         List<TemperatureHistory> temp = new ArrayList<>();
-        for (int i = 0; i < list.size(); i += 30) {
+
+        Integer interval = DateUtil.getInterval((Long) paraMap.get("times"));
+        for (int i = 0; i < list.size(); i += interval) {
             temp.add(list.get(i));
         }
         return temp;

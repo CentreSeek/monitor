@@ -100,6 +100,7 @@ public class DateUtil {
 
     /**
      * 返回时间差
+     *
      * @param startTime
      * @param endTime
      * @return 字符串
@@ -127,9 +128,10 @@ public class DateUtil {
 
     /**
      * 返回时间差
+     *
      * @param startTime
      * @param endTime
-     * @return 分数
+     * @return Long min
      */
     public static Long timeDifferentLong(String startTime, String endTime) {
         try {
@@ -143,5 +145,23 @@ public class DateUtil {
             e.printStackTrace();
         }
         return 0l;
+    }
+
+    /**
+     * 策略---根据时间差获取筛选体温记录的间隔
+     *
+     * @return 时间间隔：分钟
+     */
+    public static Integer getInterval(Long min) {
+        Long sixHour = 60 * 6l;
+        Long twelveHour = 60 * 12l;
+        if (min < sixHour) {
+            return 30;
+        } else if (min > sixHour && min < twelveHour) {
+            return 60;
+        } else if (min > twelveHour) {
+            return 120;
+        }
+        return null;
     }
 }

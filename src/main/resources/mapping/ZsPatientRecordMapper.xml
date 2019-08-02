@@ -153,6 +153,14 @@
         AND zpi.`bed_id` = #{bedId, jdbcType=INTEGER}
     </select>
 
+    <select id="selectByPatientAndMachine" resultMap="BaseResultMap" parameterType="java.util.Map">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM `zs_patient_record`
+        WHERE patient_id = #{patientId,jdbcType=INTEGER}
+        and machine_id = #{machineId,jdbcType=INTEGER}
+    </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from zs_patient_record
     where record_id = #{recordId,jdbcType=BIGINT}
