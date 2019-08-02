@@ -63,4 +63,11 @@ public interface MachineService {
      * @return
      */
     int updateByMachineId(ZsMachineInfo machineInfo);
+
+    /**
+     * 查找设备信息
+     * @param machineId
+     * @return
+     */
+    ZsMachineInfo selectByPrimaryKey(Integer machineId);
 }

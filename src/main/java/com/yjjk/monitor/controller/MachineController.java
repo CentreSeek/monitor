@@ -79,7 +79,13 @@ public class MachineController extends BaseController {
         long startTime = System.currentTimeMillis();
         boolean resultCode = false;
         String message = "";
-
+        ZsMachineInfo zsMachineInfo = super.machineService.selectByPrimaryKey(machineId);
+        // 使用中设备
+        if (zsMachineInfo.getUsageState() == 2){
+            message = "停用失败,设备正在使用中";
+            returnResult(startTime, request, response, resultCode, message, "");
+            return;
+        }
         int i = super.machineService.deleteMachine(machineId, remark);
         if (i == 0) {
             message = "设备停用失败";
