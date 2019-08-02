@@ -159,6 +159,7 @@
         FROM `zs_patient_record`
         WHERE patient_id = #{patientId,jdbcType=INTEGER}
         and machine_id = #{machineId,jdbcType=INTEGER}
+        order by create_time desc limit 0,1
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
