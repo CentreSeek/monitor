@@ -54,11 +54,14 @@
             <if test="departmentId != null">
                 and zmi.department_id = #{departmentId, jdbcType=INTEGER}
             </if>
-            <if test="normalStatus != null">
-                and (zmi.usage_state = 0 or zmi.usage_state = 2)
+            <if test="unUsedStatus != null">
+                and zmi.usage_state = 0
             </if>
             <if test="deleteStatus != null">
                 and zmi.usage_state = 1
+            </if>
+            <if test="normalStatus != null">
+                and (zmi.usage_state = 0 or zmi.usage_state = 2)
             </if>
             and zmi.status = 0
         </where>

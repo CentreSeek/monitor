@@ -115,10 +115,12 @@ public class MachineController extends BaseController {
         // 设备检索条件
         if (usageState != null) {
             if (usageState == 0) {
-                machineInfo.setNormalStatus("normal");
+                machineInfo.setUnUsedStatus("unUsed");
             } else if (usageState == 1) {
                 machineInfo.setDeleteStatus("delete");
-            } else if (usageState > 1) {
+            } else if (usageState == 2) {
+                machineInfo.setNormalStatus("normal");
+            } else if (usageState > 2) {
                 message = "参数错误";
                 returnResult(startTime, request, response, resultCode, message, map);
                 return;
