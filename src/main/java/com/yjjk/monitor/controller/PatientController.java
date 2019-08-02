@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -178,6 +179,12 @@ public class PatientController extends BaseController {
             departmentId = managerInfo.getDepartmentId();
         }
         List<UseMachine> monitorsInfo = super.patientRecordService.getMonitorsInfo(departmentId);
+        for (int i = 0; i < monitorsInfo.size(); i++) {
+            Long timeDifferent = DateUtil.timeDifferentLong(monitorsInfo.get(i).getStartTime(), DateUtil.getCurrentTime());
+            if (timeDifferent <= 10){
+                monitorsInfo.remove(i);
+            }
+        }
         message = "查询成功";
         resultCode = true;
         returnResult(startTime, request, response, resultCode, message, monitorsInfo == null ? "" : monitorsInfo);
@@ -279,8 +286,10 @@ public class PatientController extends BaseController {
         }
         String endTime = patientRecord.getEndTime();
         if (StringUtils.isNullorEmpty(endTime)){
+            // 实时查询体温记录
             paraMap.put("endTime", DateUtil.getCurrentTime());
         }else {
+            // 查询历史体温记录
             paraMap.put("endTime", endTime);
         }
         paraMap.put("patientId", patientRecord.getPatientId());

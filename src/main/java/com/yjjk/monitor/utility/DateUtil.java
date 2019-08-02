@@ -98,6 +98,12 @@ public class DateUtil {
         return ft.format(cal.getTime());
     }
 
+    /**
+     * 返回时间差
+     * @param startTime
+     * @param endTime
+     * @return 字符串
+     */
     public static String timeDifferent(String startTime, String endTime) {
         try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -117,5 +123,25 @@ public class DateUtil {
             e.printStackTrace();
         }
         return "";
+    }
+
+    /**
+     * 返回时间差
+     * @param startTime
+     * @param endTime
+     * @return 分数
+     */
+    public static Long timeDifferentLong(String startTime, String endTime) {
+        try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date start = format.parse(startTime);
+            Date end = format.parse(endTime);
+            long between = end.getTime() - start.getTime();
+            long min = between / (60 * 1000);
+            return min;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return 0l;
     }
 }
