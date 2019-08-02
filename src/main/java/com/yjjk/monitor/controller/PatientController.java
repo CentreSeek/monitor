@@ -207,15 +207,15 @@ public class PatientController extends BaseController {
         if (managerInfo.getRole() == 2) {
             departmentId = managerInfo.getDepartmentId();
         }
-        List<PatientTemperature> minitorsTemperature = super.patientRecordService.getMinitorsTemperature(departmentId);
-        if (StringUtils.isNullorEmpty(minitorsTemperature)) {
+        List<PatientTemperature> monitorsTemperature = super.patientRecordService.getMinitorsTemperature(departmentId);
+        if (StringUtils.isNullorEmpty(monitorsTemperature)) {
             message = "更新失败";
             returnResult(startTime, request, response, resultCode, message, "");
             return;
         }
         message = "更新成功";
         resultCode = true;
-        returnResult(startTime, request, response, resultCode, message, minitorsTemperature);
+        returnResult(startTime, request, response, resultCode, message, monitorsTemperature);
     }
 
     /**

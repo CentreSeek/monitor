@@ -71,4 +71,5 @@ public interface ZsPatientRecordMapper {
      * @return
      */
     int selectByBedId(Integer bedId);
+
 }
