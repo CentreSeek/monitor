@@ -37,7 +37,7 @@
         zdi.name AS departmentName,zri.name AS roomName, zbi.name AS bedName,
         zmi.machine_num AS machineNum,
         a.temperature as temperature, a.temperature_status as temperatureStatus, a.pattery as pattery,
-        a.create_time as endTime,  zpr.create_time as startTime,
+        now() as endTime,  zpr.create_time as startTime,
         a.timestamp, zbi.bed_id as bedId
         FROM
         (SELECT a.* FROM
@@ -60,7 +60,7 @@
             parameterType="java.lang.Integer">
         SELECT
         zmi.`machine_id` as machineId,a.temperature, a.temperature_status as temperatureStatus, a.pattery,
-        a.create_time as endTime, zpr.create_time as startTime,
+        now() as endTime, zpr.create_time as startTime,
         a.timestamp
         FROM
         (SELECT a.* FROM
