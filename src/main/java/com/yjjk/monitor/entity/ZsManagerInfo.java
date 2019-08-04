@@ -38,4 +38,5 @@ public class ZsManagerInfo{
     private Integer status;
 
     private String departmentName;
+    private String token;
 }

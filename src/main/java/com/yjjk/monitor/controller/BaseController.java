@@ -58,6 +58,8 @@ public class BaseController {
     protected PatientService patientService;
     @Resource
     protected PatientRecordService patientRecordService;
+    @Resource
+    protected LoginStateService loginStateService;
 
 
 

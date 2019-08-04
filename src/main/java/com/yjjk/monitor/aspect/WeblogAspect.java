@@ -16,7 +16,11 @@ package com.yjjk.monitor.aspect;
  * @create 2019/6/27
  */
 
+import com.yjjk.monitor.service.LoginStateService;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.Signature;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -26,6 +30,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 
@@ -35,23 +40,46 @@ public class WeblogAspect {
 
     final static Logger logger = LoggerFactory.getLogger(WeblogAspect.class);
 
-    public WeblogAspect(){
+    @Resource
+    LoginStateService loginStateService;
+
+    public WeblogAspect() {
 
     }
 
     @Pointcut("execution(public * com.yjjk.monitor.controller.*.*(..))")
-    private void controllerAspect(){
+    private void controllerAspect() {
 
     }
 
     @Before(value = "controllerAspect()")
-    public void doBefore(JoinPoint joinPoint){
+    public void doBefore(JoinPoint joinPoint) {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = requestAttributes.getRequest();
         logger.info("[ip:{}] [url:{}] [method:({}) {}]", request.getRemoteAddr(), request.getRequestURI(),
                 request.getMethod(), joinPoint.getSignature());
-        logger.info("args: "+Arrays.toString(joinPoint.getArgs()));
+        logger.info("args: " + Arrays.toString(joinPoint.getArgs()));
     }
 
+    @Around(value = "controllerAspect()")
+    public Object loginCheck(ProceedingJoinPoint joinPoint) throws Throwable {
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = requestAttributes.getRequest();
+        String token = request.getParameter("token");
+        Signature signature = joinPoint.getSignature();
+        if (!signature.getName().equals("managerLogin") && !signature.getName().equals("managerLoginOut")) {
+            if (token == null) {
+                logger.error("登录失败：  token为空");
+                return "登录失败：  token为空";
+            } else {
+                boolean check = loginStateService.checkLogin(token, request.getRemoteAddr());
+                if (!check) {
+                    logger.error("登录失败：  token = " + token);
+                    return "登录失败：  token = " + token;
+                }
+            }
+        }
+        return joinPoint.proceed();
+    }
 }
 

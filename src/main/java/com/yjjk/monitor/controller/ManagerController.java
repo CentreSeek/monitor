@@ -11,6 +11,7 @@
 package com.yjjk.monitor.controller;
 
 import com.yjjk.monitor.entity.*;
+import com.yjjk.monitor.service.LoginStateService;
 import com.yjjk.monitor.utility.DateUtil;
 import com.yjjk.monitor.utility.PasswordUtils;
 import com.yjjk.monitor.utility.StringUtils;
@@ -222,9 +223,39 @@ public class ManagerController extends BaseController {
             return;
         }
         super.managerService.updateManger(managerInfo.setLoginTime(DateUtil.getCurrentTime()));
+        String token = super.loginStateService.login(request, managerInfo.getManagerId());
+
+        managerInfo.setToken(token);
+
         message = "登录成功";
         resultCode = true;
         returnResult(startTime, request, response, resultCode, message, managerInfo.setPassword(null));
+    }
+
+    /**
+     * 用户登出
+     * @param token
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "/login", method = RequestMethod.DELETE)
+    public void managerLoginOut(@RequestParam(value = "token") String token,
+                             HttpServletRequest request, HttpServletResponse response) {
+        /********************** 参数初始化 **********************/
+        long startTime = System.currentTimeMillis();
+        boolean resultCode = false;
+        String message = "";
+        int i = super.loginStateService.loginOut(token);
+
+        if (i == 0) {
+            message = "登出失败";
+            returnResult(startTime, request, response, resultCode, message, "");
+            return;
+        }
+
+        message = "登出成功";
+        resultCode = true;
+        returnResult(startTime, request, response, resultCode, message, i);
     }
 
     /**

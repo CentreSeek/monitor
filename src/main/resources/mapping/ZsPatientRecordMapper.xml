@@ -32,22 +32,26 @@
 
     <select id="getMonitorsInfo" resultType="com.yjjk.monitor.entity.vo.UseMachine" parameterType="java.lang.Integer">
         SELECT a.*,b.*
-        FROM ( SELECT zbi.`bed_id` as bedId,zdi.`department_id`,zdi.name AS departmentName,zri.name AS roomName, zbi.name AS bedName
+        FROM ( SELECT zbi.`bed_id` as bedId,zdi.`department_id`,zdi.name AS departmentName,zri.name AS roomName,
+        zbi.name AS bedName
         FROM zs_bed_info zbi
         LEFT JOIN zs_room_info zri ON zbi.`room_id` = zri.room_id
-        LEFT JOIN `zs_department_info` zdi ON zri.`department_id` = zdi.`department_id`) a
+        LEFT JOIN `zs_department_info` zdi ON zri.`department_id` = zdi.`department_id`
+        <where>
+            <if test="departmentId != null">
+                zdi.department_id = #{departmentId, jdbcType=INTEGER}
+            </if>
+        </where>
+        ) a
         LEFT JOIN
         (SELECT zpr.`record_id` AS recordId, zpr.`machine_id` AS machineId,
         zpi.`name` AS patientName, zpi.`case_num` AS caseNum,
         zmi.machine_num AS machineNum,
-        NOW() AS endTime,  zpr.create_time AS startTime, zpi.`bed_id`
+        NOW() AS endTime, zpr.create_time AS startTime, zpi.`bed_id`
         FROM `zs_patient_record` zpr
-        LEFT JOIN  zs_patient_info zpi ON zpr.`patient_id` = zpi.`patient_id`
+        LEFT JOIN zs_patient_info zpi ON zpr.`patient_id` = zpi.`patient_id`
         LEFT JOIN `zs_machine_info` zmi ON zpr.`machine_id` = zmi.`machine_id`
         WHERE zpr.`usage_state` = 0) b ON b.bed_id = a.bedId
-        <if test="departmentId != null">
-            and a.department_id = #{departmentId, jdbcType=INTEGER}
-        </if>
         order by a.bedId
     </select>
 

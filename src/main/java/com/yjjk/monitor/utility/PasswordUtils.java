@@ -108,7 +108,7 @@ public class PasswordUtils {
 //    public static void main(String[] args) {
 //        String md5 = "73b5A661fb1b797d6b1C1b5e6A7cC686b95d43abE0479584";
 //        String password = "19924210";
-//        System.out.println(verify(password,md5));
+//        System.out.println(salt());
 //
 //    }
 }

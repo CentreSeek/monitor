@@ -13,6 +13,7 @@ package com.yjjk.monitor.service;
 
 
 import javax.annotation.Resource;
+import javax.rmi.PortableRemoteObject;
 
 import com.yjjk.monitor.entity.json.TemperatureHistory;
 import com.yjjk.monitor.mapper.*;
@@ -41,5 +42,7 @@ public class BaseService {
     protected ZsRoomInfoMapper ZsRoomInfoMapper;
     @Resource
     protected ZsTemperatureInfoMapper zsTemperatureInfoMapper;
+    @Resource
+    protected ZsLoginStateMapper zsLoginStateMapper;
 
 }
