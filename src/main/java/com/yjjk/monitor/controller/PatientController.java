@@ -177,51 +177,45 @@ public class PatientController extends BaseController {
             departmentId = managerInfo.getDepartmentId();
         }
         List<UseMachine> monitorsInfo = super.patientRecordService.getMonitorsInfo(departmentId);
-        for (int i = 0; i < monitorsInfo.size(); i++) {
-            Long timeDifferent = DateUtil.timeDifferentLong(monitorsInfo.get(i).getStartTime(), DateUtil.getCurrentTime());
-            if (timeDifferent <= 10){
-                monitorsInfo.remove(i);
-            }
-        }
         message = "查询成功";
         resultCode = true;
         returnResult(startTime, request, response, resultCode, message, monitorsInfo == null ? "" : monitorsInfo);
     }
 
-    /**
-     * 获取实时监控信息
-     *
-     * @param request
-     * @param response
-     */
-    @RequestMapping(value = "/current", method = RequestMethod.GET)
-    public void getCurrentInfo(@RequestParam(value = "managerId") Integer managerId,
-                               HttpServletRequest request, HttpServletResponse response) {
-        /********************** 参数初始化 **********************/
-        long startTime = System.currentTimeMillis();
-        boolean resultCode = false;
-        String message = "";
-
-        ZsManagerInfo managerInfo = super.managerService.getManagerInfo(managerId);
-        if (managerInfo == null){
-            message = "未查询到管理员个人信息";
-            returnResult(startTime, request, response, resultCode, message, "");
-            return;
-        }
-        Integer departmentId = null;
-        if (managerInfo.getRole() == 2) {
-            departmentId = managerInfo.getDepartmentId();
-        }
-        List<PatientTemperature> monitorsTemperature = super.patientRecordService.getMinitorsTemperature(departmentId);
-        if (StringUtils.isNullorEmpty(monitorsTemperature)) {
-            message = "更新失败";
-            returnResult(startTime, request, response, resultCode, message, "");
-            return;
-        }
-        message = "更新成功";
-        resultCode = true;
-        returnResult(startTime, request, response, resultCode, message, monitorsTemperature);
-    }
+//    /**
+//     * 获取实时监控信息
+//     *
+//     * @param request
+//     * @param response
+//     */
+//    @RequestMapping(value = "/current", method = RequestMethod.GET)
+//    public void getCurrentInfo(@RequestParam(value = "managerId") Integer managerId,
+//                               HttpServletRequest request, HttpServletResponse response) {
+//        /********************** 参数初始化 **********************/
+//        long startTime = System.currentTimeMillis();
+//        boolean resultCode = false;
+//        String message = "";
+//
+//        ZsManagerInfo managerInfo = super.managerService.getManagerInfo(managerId);
+//        if (managerInfo == null){
+//            message = "未查询到管理员个人信息";
+//            returnResult(startTime, request, response, resultCode, message, "");
+//            return;
+//        }
+//        Integer departmentId = null;
+//        if (managerInfo.getRole() == 2) {
+//            departmentId = managerInfo.getDepartmentId();
+//        }
+//        List<PatientTemperature> monitorsTemperature = super.patientRecordService.getMinitorsTemperature(departmentId);
+//        if (StringUtils.isNullorEmpty(monitorsTemperature)) {
+//            message = "更新失败";
+//            returnResult(startTime, request, response, resultCode, message, "");
+//            return;
+//        }
+//        message = "更新成功";
+//        resultCode = true;
+//        returnResult(startTime, request, response, resultCode, message, monitorsTemperature);
+//    }
 
     /**
      * 查询历史记录

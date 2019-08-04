@@ -11,6 +11,7 @@
 package com.yjjk.monitor.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.yjjk.monitor.constant.MonitorRecord;
 import com.yjjk.monitor.entity.ZsMachineInfo;
 import com.yjjk.monitor.entity.ZsPatientRecord;
 import com.yjjk.monitor.entity.json.TemperatureHistory;
@@ -38,7 +39,6 @@ import java.util.Map;
 @Service
 public class PatientRecordServiceImpl extends BaseService implements PatientRecordService {
 
-
     @Override
     public int addPatientRecord(ZsPatientRecord patientRecord) {
         ZsMachineInfo machineInfo = new ZsMachineInfo();
@@ -62,21 +62,49 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
 
     @Override
     public List<UseMachine> getMonitorsInfo(Integer departmentId) {
-        List<UseMachine> list = super.ZsPatientRecordMapper.getMonitorsInfo(departmentId);
-        for (int i = 0; i < list.size(); i++) {
-            list.get(i).setUseTimes(DateUtil.timeDifferent(list.get(i).getStartTime(), list.get(i).getEndTime()));
+        List<UseMachine> monitorList = super.ZsPatientRecordMapper.getMonitorsInfo(departmentId);
+        List<PatientTemperature> temperatureList = super.ZsPatientRecordMapper.getMinitorsTemperature(departmentId);
+        for (int i = 0; i < monitorList.size(); i++) {
+            // 初始化监控状态为：未使用
+            monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_UNUSED);
+            if (monitorList.get(i).getRecordId() == null){
+                continue;
+            }
+            for (int j = 0; j < temperatureList.size(); j++) {
+                if (monitorList.get(i).getMachineId() == temperatureList.get(j).getMachineId()) {
+                    Long recordTime = DateUtil.timeDifferentLong(monitorList.get(i).getStartTime(), DateUtil.getCurrentTime());
+                    // 监测时间小于10分钟为预热中
+                    if (recordTime <= 10) {
+                        monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_READY);
+                    } else {
+                        monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_USAGE);
+                        // 连接异常判断：最后一条体温数据为3分钟前的数据
+                        Long temperatureTimeDifferent = DateUtil.timeDifferentLong(temperatureList.get(j).getCreateTime(), DateUtil.getCurrentTime());
+                        if (temperatureTimeDifferent >= 3) {
+                            monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_ERR);
+                        }
+                    }
+                    // 填充体温数据
+                    monitorList.get(i).setUseTimes(DateUtil.timeDifferent(monitorList.get(i).getStartTime(), monitorList.get(i).getEndTime()));
+                    monitorList.get(i).setTemperature(temperatureList.get(j).getTemperature());
+                    monitorList.get(i).setTemperatureStatus(temperatureList.get(j).getTemperatureStatus());
+                    monitorList.get(i).setPattery(temperatureList.get(j).getPattery());
+                    break;
+                }
+            }
         }
-        return list;
+        return monitorList;
     }
 
-    @Override
-    public List<PatientTemperature> getMinitorsTemperature(Integer departmentId) {
-        List<PatientTemperature> list = super.ZsPatientRecordMapper.getMinitorsTemperature(departmentId);
-        for (int i = 0; i < list.size(); i++) {
-            list.get(i).setUseTimes(DateUtil.timeDifferent(list.get(i).getStartTime(), list.get(i).getEndTime()));
-        }
-        return list;
-    }
+//    @Override
+//    @Deprecated
+//    public List<PatientTemperature> getMinitorsTemperature(Integer departmentId) {
+//        List<PatientTemperature> list = super.ZsPatientRecordMapper.getMinitorsTemperature(departmentId);
+//        for (int i = 0; i < list.size(); i++) {
+//            list.get(i).setUseTimes(DateUtil.timeDifferent(list.get(i).getStartTime(), list.get(i).getEndTime()));
+//        }
+//        return list;
+//    }
 
     @Override
     public List<RecordHistory> getRecordHistory(RecordHistory recordHistory) {

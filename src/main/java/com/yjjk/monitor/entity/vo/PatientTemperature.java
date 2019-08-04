@@ -27,10 +27,8 @@ public class PatientTemperature {
     private String temperature;
     private Integer pattery;
     private String temperatureStatus;
-    private String useTimes;
     private Long timestamp;
+    private String createTime;
 
-    private String startTime;
-    private String endTime;
 
 }

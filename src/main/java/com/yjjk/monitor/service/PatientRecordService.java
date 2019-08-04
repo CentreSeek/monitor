@@ -53,11 +53,12 @@ public interface PatientRecordService {
      */
     List<UseMachine> getMonitorsInfo(Integer departmentId);
 
-    /**
-     * 获取实时监控信息
-     * @return
-     */
-    List<PatientTemperature> getMinitorsTemperature(Integer departmentId);
+//    /**
+//     * 获取实时监控信息
+//     * @return
+//     */
+//    @Deprecated
+//    List<PatientTemperature> getMinitorsTemperature(Integer departmentId);
 
     /**
      * 获取历史记录

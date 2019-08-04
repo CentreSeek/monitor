@@ -34,6 +34,8 @@ public class UseMachine {
     /** record */
     private Long recordId;
     private Integer machineId;
+    /** 0：预热中 1：使用中 2：连接异常 */
+    private Integer recordState;
 
     /** machine */
     private String machineNum;

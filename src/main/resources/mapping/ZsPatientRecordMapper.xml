@@ -31,37 +31,31 @@
     </select>
 
     <select id="getMonitorsInfo" resultType="com.yjjk.monitor.entity.vo.UseMachine" parameterType="java.lang.Integer">
-        SELECT
-        zpr.`record_id` AS recordId, zpr.`machine_id` AS machineId,
+        SELECT a.*,b.*
+        FROM ( SELECT zbi.`bed_id` as bedId,zdi.`department_id`,zdi.name AS departmentName,zri.name AS roomName, zbi.name AS bedName
+        FROM zs_bed_info zbi
+        LEFT JOIN zs_room_info zri ON zbi.`room_id` = zri.room_id
+        LEFT JOIN `zs_department_info` zdi ON zri.`department_id` = zdi.`department_id`) a
+        LEFT JOIN
+        (SELECT zpr.`record_id` AS recordId, zpr.`machine_id` AS machineId,
         zpi.`name` AS patientName, zpi.`case_num` AS caseNum,
-        zdi.name AS departmentName,zri.name AS roomName, zbi.name AS bedName,
         zmi.machine_num AS machineNum,
-        a.temperature as temperature, a.temperature_status as temperatureStatus, a.pattery as pattery,
-        now() as endTime,  zpr.create_time as startTime,
-        a.timestamp, zbi.bed_id as bedId
-        FROM
-        (SELECT a.* FROM
-        (SELECT a.* FROM `zs_temperature_info` a ORDER BY create_time DESC LIMIT 100000000)
-        a GROUP BY a.machine_num) a
-        LEFT JOIN `zs_machine_info` zmi ON a.machine_num = zmi.`machine_num`
-        LEFT JOIN `zs_patient_record` zpr ON zpr.`machine_id` = zmi.`machine_id`
-        LEFT JOIN `zs_patient_info` zpi ON zpr.`patient_id` = zpi.`patient_id`
-        LEFT JOIN `zs_bed_info` zbi ON zpi.`bed_id` = zbi.bed_id
-        LEFT JOIN `zs_room_info` zri ON zbi.room_id = zri.room_id
-        LEFT JOIN `zs_department_info` zdi ON zri.department_id = zdi.department_id
-        WHERE zpr.`usage_state` = 0
+        NOW() AS endTime,  zpr.create_time AS startTime, zpi.`bed_id`
+        FROM `zs_patient_record` zpr
+        LEFT JOIN  zs_patient_info zpi ON zpr.`patient_id` = zpi.`patient_id`
+        LEFT JOIN `zs_machine_info` zmi ON zpr.`machine_id` = zmi.`machine_id`
+        WHERE zpr.`usage_state` = 0) b ON b.bed_id = a.bedId
         <if test="departmentId != null">
-            and zdi.department_id = #{departmentId, jdbcType=INTEGER}
+            and a.department_id = #{departmentId, jdbcType=INTEGER}
         </if>
-        order by zbi.bed_id
+        order by a.bedId
     </select>
 
     <select id="getMinitorsTemperature" resultType="com.yjjk.monitor.entity.vo.PatientTemperature"
             parameterType="java.lang.Integer">
         SELECT
-        zmi.`machine_id` as machineId,a.temperature, a.temperature_status as temperatureStatus, a.pattery,
-        now() as endTime, zpr.create_time as startTime,
-        a.timestamp
+        zmi.`machine_id` AS machineId,
+        a.temperature, a.temperature_status AS temperatureStatus, a.pattery, a.create_time as createTime
         FROM
         (SELECT a.* FROM
         (SELECT a.* FROM `zs_temperature_info` a ORDER BY create_time DESC LIMIT 100000000)
