@@ -136,11 +136,12 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
         tempMap.put("patientId", patientId);
         tempMap.put("machineId", machineId);
         ZsPatientRecord zsPatientRecord = super.ZsPatientRecordMapper.selectByPatientAndMachine(tempMap);
-        // 根据监测时常选择获取数据的数据间隔
+        // 取头尾体温数据，后根据监测时常选择获取数据的数据间隔
         Integer interval = DateUtil.getInterval(DateUtil.timeDifferentLong(zsPatientRecord.getStartTime(), (String) paraMap.get("endTime")));
         for (int i = 0; i < list.size(); i += interval) {
             resultList.add(list.get(i));
         }
+        resultList.add(list.get(list.size()-1));
         // 将历史体温写回patient_record表
         patientRecord.setTemperatureHistory(JSON.toJSONString(resultList));
         int z = super.ZsPatientRecordMapper.updateSelectiveByPatientId(patientRecord);
@@ -165,6 +166,7 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
         for (int i = 0; i < list.size(); i += interval) {
             temp.add(list.get(i));
         }
+        temp.add(list.get(list.size()-1));
         return temp;
     }
 

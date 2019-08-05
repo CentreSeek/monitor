@@ -93,6 +93,10 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!-- 工程主入口-->
+                    <mainClass>com.yjjk.monitor.MonitorApplication</mainClass>
+                </configuration>
             </plugin>
 
             <!-- mybatis-generator -->
