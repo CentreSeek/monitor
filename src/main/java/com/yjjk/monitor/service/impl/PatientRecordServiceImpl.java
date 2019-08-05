@@ -65,31 +65,35 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
         List<UseMachine> monitorList = super.ZsPatientRecordMapper.getMonitorsInfo(departmentId);
         List<PatientTemperature> temperatureList = super.ZsPatientRecordMapper.getMinitorsTemperature(departmentId);
         for (int i = 0; i < monitorList.size(); i++) {
+            if (monitorList.get(i).getBedId() == 20 || monitorList.get(i).getBedId() == 24){
+                System.out.println("test");
+            }
             // 初始化监控状态为：未使用
             monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_UNUSED);
-            if (monitorList.get(i).getRecordId() == null){
+            if (monitorList.get(i).getRecordId() == null) {
                 continue;
-            }
-            for (int j = 0; j < temperatureList.size(); j++) {
-                if (monitorList.get(i).getMachineId() == temperatureList.get(j).getMachineId()) {
-                    Long recordTime = DateUtil.timeDifferentLong(monitorList.get(i).getStartTime(), DateUtil.getCurrentTime());
-                    // 监测时间小于2分钟为预热中
-                    if (recordTime <= 2) {
-                        monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_READY);
-                    } else {
-                        monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_USAGE);
-                        // 连接异常判断：最后一条体温数据为3分钟前的数据
-                        Long temperatureTimeDifferent = DateUtil.timeDifferentLong(temperatureList.get(j).getCreateTime(), DateUtil.getCurrentTime());
-                        if (temperatureTimeDifferent >= 3) {
-                            monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_ERR);
+            } else {
+                for (int j = 0; j < temperatureList.size(); j++) {
+                    if (monitorList.get(i).getMachineId() == temperatureList.get(j).getMachineId()) {
+                        Long recordTime = DateUtil.timeDifferentLong(monitorList.get(i).getStartTime(), DateUtil.getCurrentTime());
+                        // 监测时间小于2分钟为预热中
+                        if (recordTime <= 2) {
+                            monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_READY);
+                        } else {
+                            monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_USAGE);
+                            // 连接异常判断：最后一条体温数据为3分钟前的数据
+                            Long temperatureTimeDifferent = DateUtil.timeDifferentLong(temperatureList.get(j).getCreateTime(), DateUtil.getCurrentTime());
+                            if (temperatureTimeDifferent >= 3) {
+                                monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_ERR);
+                            }
                         }
+                        // 填充体温数据
+                        monitorList.get(i).setUseTimes(DateUtil.timeDifferent(monitorList.get(i).getStartTime(), monitorList.get(i).getEndTime()));
+                        monitorList.get(i).setTemperature(temperatureList.get(j).getTemperature());
+                        monitorList.get(i).setTemperatureStatus(temperatureList.get(j).getTemperatureStatus());
+                        monitorList.get(i).setPattery(temperatureList.get(j).getPattery());
+                        break;
                     }
-                    // 填充体温数据
-                    monitorList.get(i).setUseTimes(DateUtil.timeDifferent(monitorList.get(i).getStartTime(), monitorList.get(i).getEndTime()));
-                    monitorList.get(i).setTemperature(temperatureList.get(j).getTemperature());
-                    monitorList.get(i).setTemperatureStatus(temperatureList.get(j).getTemperatureStatus());
-                    monitorList.get(i).setPattery(temperatureList.get(j).getPattery());
-                    break;
                 }
             }
         }
@@ -141,7 +145,9 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
         for (int i = 0; i < list.size(); i += interval) {
             resultList.add(list.get(i));
         }
-        resultList.add(list.get(list.size()-1));
+        if (list.size() > 1) {
+            resultList.add(list.get(list.size() - 1));
+        }
         // 将历史体温写回patient_record表
         patientRecord.setTemperatureHistory(JSON.toJSONString(resultList));
         int z = super.ZsPatientRecordMapper.updateSelectiveByPatientId(patientRecord);
@@ -166,7 +172,9 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
         for (int i = 0; i < list.size(); i += interval) {
             temp.add(list.get(i));
         }
-        temp.add(list.get(list.size()-1));
+        if (temp.size() > 1){
+        temp.add(list.get(list.size() - 1));
+        }
         return temp;
     }
 

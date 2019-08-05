@@ -25,6 +25,8 @@ import java.util.regex.Pattern;
 public class StringUtils {
 
     private static final int PHONE_LENGTH = 11;
+    private static final int MACHINE_NUM_LENGTH = 12;
+
 
     private static Pattern pattern_replaceBlank = Pattern.compile("\\s*|\t|\r|\n");
 
@@ -116,11 +118,34 @@ public class StringUtils {
         }
     }
 
-    public static void main(String[] args) {
-//        System.out.println(isPhoneNumber("1307450d898"));
-        List list = new ArrayList();
-        list.add("fds");
-        System.out.println(isNullorEmpty(list));
+    /**
+     * 匹配设备编码
+     * @param machineNum
+     * @return
+     */
+    public static boolean checkMachineNum(String machineNum){
+        String regex = "\\w\\d{2}/\\d{8}";
+        if (machineNum.length() != MACHINE_NUM_LENGTH) {
+            return false;
+        } else {
+            Pattern p = Pattern.compile(regex);
+            Matcher m = p.matcher(machineNum);
+            boolean isMatch = m.matches();
+            if (isMatch) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
+
+//    public static void main(String[] args) {
+//        System.out.println(isPhoneNumber("1307450d898"));
+//        List list = new ArrayList();
+//        list.add("fds");
+//        System.out.println(isNullorEmpty(list));
+//        System.out.println(checkMachineNum("B33/00044267"));
+//    }
+
 
 }

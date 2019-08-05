@@ -69,6 +69,12 @@
             limit #{startLine},#{pageSize}
         </if>
     </select>
+    <select id="selectByMachineNum" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select
+        count(1)
+        from zs_machine_info
+        where machine_num = #{machineNum,jdbcType=VARCHAR}
+    </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from zs_machine_info

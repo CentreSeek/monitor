@@ -42,5 +42,12 @@ public interface ZsMachineInfoMapper {
      */
     List<ZsMachineInfo> selectByUsageState(ZsMachineInfo machineInfo);
 
+    /**
+     * 使用设备编号查询设备数量
+     * @param machineNum
+     * @return
+     */
+    int selectByMachineNum(String machineNum);
+
 
 }

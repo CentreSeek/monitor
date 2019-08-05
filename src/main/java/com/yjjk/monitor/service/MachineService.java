@@ -70,4 +70,11 @@ public interface MachineService {
      * @return
      */
     ZsMachineInfo selectByPrimaryKey(Integer machineId);
+
+    /**
+     * 使用设备编号查询设备数量
+     * @param machineNum
+     * @return
+     */
+    int selectByMachineNum(String machineNum);
 }

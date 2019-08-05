@@ -63,4 +63,9 @@ public class MachineServiceImpl extends BaseService implements MachineService {
     public ZsMachineInfo selectByPrimaryKey(Integer machineId) {
         return super.ZsMachineInfoMapper.selectByPrimaryKey(machineId);
     }
+
+    @Override
+    public int selectByMachineNum(String machineNum) {
+        return super.ZsMachineInfoMapper.selectByMachineNum(machineNum);
+    }
 }
