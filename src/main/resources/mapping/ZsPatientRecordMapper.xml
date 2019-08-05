@@ -135,14 +135,13 @@
         zti.temperature, zti.`create_time` AS dateTime
         FROM `zs_temperature_info` zti
         LEFT JOIN `zs_machine_info` zmi ON zmi.machine_num = zti.`machine_num`
-        LEFT JOIN `zs_patient_record` zpr ON zpr.`machine_id` = zmi.`machine_id`
+        LEFT JOIN (SELECT a.patient_id, a.start_time, a.machine_id FROM `zs_patient_record` a ORDER BY create_time DESC LIMIT 0,1) zpr ON zpr.`machine_id` = zmi.`machine_id`
         WHERE
         zti.`create_time` <![CDATA[>=]]> zpr.`start_time`
         AND zti.`create_time` <![CDATA[<=]]> #{endTime, jdbcType=VARCHAR}
         AND zpr.`patient_id` = #{patientId, jdbcType=INTEGER}
         ORDER BY zti.`temperature_id`;
     </select>
-
     <select id="selectByBedId" resultType="java.lang.Integer">
         SELECT COUNT(1)
         FROM `zs_patient_record` zpr
@@ -150,7 +149,6 @@
         WHERE zpr.`usage_state` = 0 AND zpi.`status` = 0
         AND zpi.`bed_id` = #{bedId, jdbcType=INTEGER}
     </select>
-
     <select id="selectByPatientAndMachine" resultMap="BaseResultMap" parameterType="java.util.Map">
         SELECT
         <include refid="Base_Column_List"/>

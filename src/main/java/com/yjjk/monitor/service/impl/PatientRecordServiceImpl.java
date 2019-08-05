@@ -65,7 +65,7 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
         List<UseMachine> monitorList = super.ZsPatientRecordMapper.getMonitorsInfo(departmentId);
         List<PatientTemperature> temperatureList = super.ZsPatientRecordMapper.getMinitorsTemperature(departmentId);
         for (int i = 0; i < monitorList.size(); i++) {
-            if (monitorList.get(i).getBedId() == 20 || monitorList.get(i).getBedId() == 24){
+            if (monitorList.get(i).getBedId() == 20 || monitorList.get(i).getBedId() == 24) {
                 System.out.println("test");
             }
             // 初始化监控状态为：未使用
@@ -172,8 +172,8 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
         for (int i = 0; i < list.size(); i += interval) {
             temp.add(list.get(i));
         }
-        if (temp.size() > 1){
-        temp.add(list.get(list.size() - 1));
+        if (list.size() > 1) {
+            temp.add(list.get(list.size() - 1));
         }
         return temp;
     }
