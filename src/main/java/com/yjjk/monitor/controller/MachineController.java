@@ -51,18 +51,21 @@ public class MachineController extends BaseController {
             returnResult(startTime, request, response, resultCode, message, "");
             return;
         }
-        if (!StringUtils.checkMachineNum(machineInfo.getMachineNum())){
-            message = "设备号格式错误    错误示例：710/B34.00066041    正确示例：B34/00066041";
-            returnResult(startTime, request, response, resultCode, message, "");
-            return;
+        List<String> list = machineInfo.getMachineNums();
+        for (int i = 0; i < list.size(); i++) {
+            if (!StringUtils.checkMachineNum(list.get(i))) {
+                message = "设备号格式错误    错误示例：710/B34.00066041    正确示例：B34/00066041";
+                returnResult(startTime, request, response, resultCode, message, "");
+                return;
+            }
+            int count = super.machineService.selectByMachineNum(list.get(i));
+            if (count > 0) {
+                message = "该设备信息已存在，请核实后录入";
+                returnResult(startTime, request, response, resultCode, message, "");
+                return;
+            }
         }
-        int count = super.machineService.selectByMachineNum(machineInfo.getMachineNum());
-        if (count > 0){
-            message = "该设备信息已存在，请核实后录入";
-            returnResult(startTime, request, response, resultCode, message, "");
-            return;
-        }
-            int i = super.machineService.insertByMachineNums(machineInfo);
+        int i = super.machineService.insertByMachineNums(machineInfo);
         if (i == 0) {
             message = "设备新增失败";
             returnResult(startTime, request, response, resultCode, message, i);
