@@ -51,7 +51,7 @@
         FROM `zs_patient_record` zpr
         LEFT JOIN zs_patient_info zpi ON zpr.`patient_id` = zpi.`patient_id`
         LEFT JOIN `zs_machine_info` zmi ON zpr.`machine_id` = zmi.`machine_id`
-        WHERE zpr.`usage_state` = 0) b ON b.bed_id = a.bedId
+        WHERE zpr.`usage_state` = 0 ORDER BY zpr.create_time LIMIT 0,1) b ON b.bed_id = a.bedId
         order by a.bedId
     </select>
 
