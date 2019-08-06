@@ -162,13 +162,6 @@ public class ManagerController extends BaseController {
         Map<String, Object> paramMap = new HashMap<>();
         Map<String, Object> reqMap = new HashMap<>();
         if (StringUtils.isNullorEmpty(managerId)) {
-            int totalCount = super.managerService.selectNormalListCount(paramMap);
-            int startLine = (currentPage - 1) * (pageSize);
-            int totalPage = (totalCount + pageSize - 1) / pageSize;
-            paramMap.put("startLine", startLine);
-            paramMap.put("pageSize", pageSize);
-            reqMap.put("totalPage", totalPage);
-            reqMap.put("currentPage", currentPage);
             // 超管查询管理员+科室管理员账号, 管理员查看科室管理员账号
             if (role == 0){
                 paramMap.put("roles", "get");
@@ -179,6 +172,13 @@ public class ManagerController extends BaseController {
                 returnResult(startTime, request, response, resultCode, message, "");
                 return;
             }
+            int totalCount = super.managerService.selectNormalListCount(paramMap);
+            int startLine = (currentPage - 1) * (pageSize);
+            int totalPage = (totalCount + pageSize - 1) / pageSize;
+            paramMap.put("startLine", startLine);
+            paramMap.put("pageSize", pageSize);
+            reqMap.put("totalPage", totalPage);
+            reqMap.put("currentPage", currentPage);
         }else {
             paramMap.put("managerId",managerId);
         }

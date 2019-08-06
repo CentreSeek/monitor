@@ -49,10 +49,17 @@
     <select id="selectNormalListCount" resultType="java.lang.Integer" parameterType="java.util.Map">
         select
         count(1)
-        from zs_manager_info
-        where status = 0
+        from zs_manager_info zmi
+        left join zs_department_info zdi on zmi.department_id = zdi.department_id
+        where zmi.status = 0
+        <if test="managerId != null">
+            and zmi.manager_id = #{managerId,jdbcType=INTEGER}
+        </if>
         <if test="role != null">
-            and ami.`role` = #{role,jdbcType=INTEGER}
+            and zmi.`role` = #{role,jdbcType=INTEGER}
+        </if>
+        <if test="roles != null">
+            and (zmi.`role` = 1 or zmi.`role` = 2)
         </if>
     </select>
     <select id="selectAll" resultMap="BaseResultMap">
