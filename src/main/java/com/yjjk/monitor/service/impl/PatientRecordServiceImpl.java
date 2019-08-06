@@ -65,9 +65,6 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
         List<UseMachine> monitorList = super.ZsPatientRecordMapper.getMonitorsInfo(departmentId);
         List<PatientTemperature> temperatureList = super.ZsPatientRecordMapper.getMinitorsTemperature(departmentId);
         for (int i = 0; i < monitorList.size(); i++) {
-            if (monitorList.get(i).getBedId() == 20 || monitorList.get(i).getBedId() == 24) {
-                System.out.println("test");
-            }
             // 初始化监控状态为：未使用
             monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_UNUSED);
             if (monitorList.get(i).getRecordId() == null) {
@@ -122,26 +119,17 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
 
     @Transactional(rollbackFor = RuntimeException.class)
     @Override
-    public int stopMonitoring(Integer patientId, Integer machineId) {
-        ZsPatientRecord patientRecord = new ZsPatientRecord();
-        patientRecord.setPatientId(patientId);
-        patientRecord.setUsageState(1);
-        patientRecord.setEndTime(DateUtil.getCurrentTime());
-        int x = super.ZsPatientRecordMapper.updateSelectiveByPatientId(patientRecord);
-
+    public int stopMonitoring(ZsPatientRecord patientRecord) {
+        // 查询病人的所有体温记录
         Map<String, Object> paraMap = new HashMap<>();
-        paraMap.put("endTime", patientRecord.getEndTime());
-        paraMap.put("patientId", patientId);
+        String endTime = DateUtil.getCurrentTime();
+        paraMap.put("endTime", endTime);
+        paraMap.put("patientId", patientRecord.getPatientId());
         List<TemperatureHistory> list = super.ZsPatientRecordMapper.selectTemperatureHistory(paraMap);
         List<TemperatureHistory> resultList = new ArrayList<>();
 
-        //
-        Map<String, Object> tempMap = new HashMap<>();
-        tempMap.put("patientId", patientId);
-        tempMap.put("machineId", machineId);
-        ZsPatientRecord zsPatientRecord = super.ZsPatientRecordMapper.selectByPatientAndMachine(tempMap);
         // 取头尾体温数据，后根据监测时常选择获取数据的数据间隔
-        Integer interval = DateUtil.getInterval(DateUtil.timeDifferentLong(zsPatientRecord.getStartTime(), (String) paraMap.get("endTime")));
+        Integer interval = DateUtil.getInterval(DateUtil.timeDifferentLong(patientRecord.getStartTime(), endTime));
         for (int i = 0; i < list.size(); i += interval) {
             resultList.add(list.get(i));
         }
@@ -149,15 +137,21 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
             resultList.add(list.get(list.size() - 1));
         }
         // 将历史体温写回patient_record表
-        patientRecord.setTemperatureHistory(JSON.toJSONString(resultList));
-        int z = super.ZsPatientRecordMapper.updateSelectiveByPatientId(patientRecord);
+        ZsPatientRecord paraPatientRecord = new ZsPatientRecord();
+        paraPatientRecord.setTemperatureHistory(JSON.toJSONString(resultList));
+        paraPatientRecord.setPatientId(patientRecord.getPatientId());
+        paraPatientRecord.setUsageState(1);
+        paraPatientRecord.setEndTime(endTime);
+
+        int z = super.ZsPatientRecordMapper.updateSelectiveByPatientId(paraPatientRecord);
 
         ZsMachineInfo machineInfo = new ZsMachineInfo();
+
         // 修改设备的使用状态
-        machineInfo.setMachineId(machineId).setUsageState(0);
+        machineInfo.setMachineId(patientRecord.getMachineId()).setUsageState(0);
         int j = super.ZsMachineInfoMapper.updateByPrimaryKeySelective(machineInfo);
 
-        if (z == 0 || j == 0 || x == 0) {
+        if (z == 0 || j == 0) {
             throw new RuntimeException("停止失败");
         }
         return z;

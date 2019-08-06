@@ -77,7 +77,7 @@ public interface PatientRecordService {
      * 停止监测
      * @return
      */
-    int stopMonitoring(Integer patientId, Integer machineId);
+    int stopMonitoring(ZsPatientRecord patientRecord);
 
     /**
      * 获取实时体温记录
