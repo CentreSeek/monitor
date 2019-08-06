@@ -173,7 +173,11 @@ public class ManagerController extends BaseController {
             if (role == 0){
                 paramMap.put("roles", "get");
             }else if (role == 1){
-                paramMap.put("role", role);
+                paramMap.put("role", 2);
+            }else{
+                message = "角色信息错误";
+                returnResult(startTime, request, response, resultCode, message, "");
+                return;
             }
         }else {
             paramMap.put("managerId",managerId);
