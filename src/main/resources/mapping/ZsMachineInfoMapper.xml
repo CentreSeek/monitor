@@ -27,7 +27,7 @@
     <select id="selectCount" parameterType="com.yjjk.monitor.entity.ZsMachineInfo" resultType="java.lang.Integer">
         select
         count(1)
-        from zs_machine_info
+        from zs_machine_info zmi
         <where>
             <if test="machineId != null">
                 and machine_id = #{machineId,jdbcType=INTEGER}
@@ -35,8 +35,14 @@
             <if test="departmentId != null">
                 and department_id = #{departmentId, jdbcType=INTEGER}
             </if>
-            <if test="usageState != null">
-                and usage_state = #{usageState,jdbcType=INTEGER}
+            <if test="unUsedStatus != null">
+                and zmi.usage_state = 0
+            </if>
+            <if test="deleteStatus != null">
+                and zmi.usage_state = 1
+            </if>
+            <if test="normalStatus != null">
+                and (zmi.usage_state = 0 or zmi.usage_state = 2)
             </if>
             and status = 0
         </where>
