@@ -54,11 +54,11 @@ public class DateUtil {
         SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return ft.format(date);
     }
-
+    @Deprecated
     public static String getDatePoor(String startTime) {
         return getDatePoor(startTime, getCurrentTime());
     }
-
+    @Deprecated
     public static String getDatePoor(String startTime, String endTime) {
         SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date startDate = null;
@@ -98,6 +98,9 @@ public class DateUtil {
         return ft.format(cal.getTime());
     }
 
+    public static String timeDifferent(String startTime) {
+        return timeDifferent(startTime, getCurrentTime());
+    }
     /**
      * 返回时间差
      *

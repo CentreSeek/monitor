@@ -20,6 +20,7 @@ import com.yjjk.monitor.entity.vo.RecordHistory;
 import com.yjjk.monitor.entity.vo.UseMachine;
 import com.yjjk.monitor.utility.DateUtil;
 import com.yjjk.monitor.utility.StringUtils;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -289,10 +290,10 @@ public class PatientController extends BaseController {
 
         List<TemperatureHistory> list = super.patientRecordService.getCurrentTemperatureRecord(paraMap);
         if (StringUtils.isNullorEmpty(patientRecord.getTemperatureHistory())) {
-            reqMap.put("useTimes", DateUtil.getDatePoor(patientRecord.getStartTime()));
+            reqMap.put("useTimes", DateUtil.timeDifferent(patientRecord.getStartTime()));
         } else {
             list = JSON.parseArray(patientRecord.getTemperatureHistory(), TemperatureHistory.class);
-            reqMap.put("useTimes", DateUtil.getDatePoor(patientRecord.getStartTime(), patientRecord.getEndTime()));
+            reqMap.put("useTimes", DateUtil.timeDifferent(patientRecord.getStartTime(), patientRecord.getEndTime()));
         }
         reqMap.put("list", list);
         message = "查询成功";
