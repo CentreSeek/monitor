@@ -17,10 +17,5 @@ public interface ZsLoginStateMapper {
 
     int updateByPrimaryKey(ZsLoginState record);
 
-    /**
-     * select---使用managerId查询
-     * @param managerId
-     * @return
-     */
     ZsLoginState selectByManagerId(Integer managerId);
 }
