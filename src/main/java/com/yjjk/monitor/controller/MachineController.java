@@ -54,7 +54,7 @@ public class MachineController extends BaseController {
         List<String> list = machineInfo.getMachineNums();
         for (int i = 0; i < list.size(); i++) {
             if (!StringUtils.checkMachineNum(list.get(i))) {
-                message = "设备号格式错误    错误示例：710/B34.00066041    正确示例：B34/00066041";
+                message = "设备号格式错误或“；”为中文符号  错误示例：710/B34.00066041 正确示例：B34/00066041";
                 returnResult(startTime, request, response, resultCode, message, "");
                 return;
             }

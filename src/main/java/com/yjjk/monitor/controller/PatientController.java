@@ -303,9 +303,9 @@ public class PatientController extends BaseController {
             list = JSON.parseArray(patientRecord.getTemperatureHistory(), TemperatureHistory.class);
             reqMap.put("useTimes", DateUtil.timeDifferent(patientRecord.getStartTime(), patientRecord.getEndTime()));
         }
-        reqMap.put("list", list);
-        reqMap.put("startTime", DateUtil.integerForward(list.get(0).getDateTime()));
-        reqMap.put("endTime", DateUtil.integerForward(list.get(list.size() - 1).getDateTime()));
+        reqMap.put("list", StringUtils.isNullorEmpty(list) ? "" : list);
+        reqMap.put("startTime", StringUtils.isNullorEmpty(list) ? "" : DateUtil.integerForward(list.get(0).getDateTime()));
+        reqMap.put("endTime", StringUtils.isNullorEmpty(list) ? "" : DateUtil.integerForward(list.get(list.size() - 1).getDateTime()));
         message = "查询成功";
         resultCode = true;
         returnResult(startTime, request, response, resultCode, message, reqMap);

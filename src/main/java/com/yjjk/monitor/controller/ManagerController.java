@@ -228,7 +228,12 @@ public class ManagerController extends BaseController {
         List<Integer> posts = new ArrayList<>();
         switch (managerInfo.getRole()) {
             case 0:
-                break;
+                posts.add(PLATEFORM);
+                posts.add(HISTORY_RECORD);
+                posts.add(BED_MANAGE);
+                posts.add(MACHINE_MANAGE);
+                posts.add(ACCOUNT_MANAGE);
+                managerInfo.setPosts(posts);
             case 1:
                 posts.add(PLATEFORM);
                 posts.add(HISTORY_RECORD);

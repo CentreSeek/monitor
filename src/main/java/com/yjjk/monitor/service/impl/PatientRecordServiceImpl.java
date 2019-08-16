@@ -164,17 +164,7 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
 
     @Override
     public List<TemperatureHistory> getCurrentTemperatureRecord(Map<String, Object> paraMap) {
-        List<TemperatureHistory> list = super.ZsPatientRecordMapper.selectTemperatureHistory(paraMap);
-        List<TemperatureHistory> temp = new ArrayList<>();
-
-        Integer interval = DateUtil.getInterval((Long) paraMap.get("times"));
-        for (int i = 0; i < list.size(); i += interval) {
-            temp.add(list.get(i));
-        }
-        if (list.size() > 1) {
-            temp.add(list.get(list.size() - 1));
-        }
-        return temp;
+        return  super.ZsPatientRecordMapper.selectTemperatureHistory(paraMap);
     }
 
     @Transactional(rollbackFor = RuntimeException.class)
