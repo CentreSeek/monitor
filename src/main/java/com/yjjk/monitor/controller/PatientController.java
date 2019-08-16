@@ -305,7 +305,7 @@ public class PatientController extends BaseController {
         }
         reqMap.put("list", list);
         reqMap.put("startTime", DateUtil.integerForward(list.get(0).getDateTime()));
-        reqMap.put("endTime", DateUtil.integerForward(list.get(list.size()).getDateTime()));
+        reqMap.put("endTime", DateUtil.integerForward(list.get(list.size() - 1).getDateTime()));
         message = "查询成功";
         resultCode = true;
         returnResult(startTime, request, response, resultCode, message, reqMap);
