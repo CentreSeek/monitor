@@ -52,7 +52,7 @@ public class PatientController extends BaseController {
      * @param response
      */
     @RequestMapping(value = "/patient", method = RequestMethod.POST)
-    public void addMachine(@RequestParam(value = "bedId") Integer bedId,
+    public synchronized void addMachine(@RequestParam(value = "bedId") Integer bedId,
                            @RequestParam(value = "machineId") Integer machineId,
                            @RequestParam(value = "name") String name,
                            @RequestParam(value = "caseNum") String caseNum,
@@ -62,8 +62,9 @@ public class PatientController extends BaseController {
         long startTime = System.currentTimeMillis();
         boolean resultCode = false;
         String message = "";
+
         int patientCount = patientRecordService.selectByBedId(bedId);
-        if (patientCount > 0) {
+        if (!StringUtils.isNullorEmpty(patientCount)) {
             message = "该病床已绑定病人";
             returnResult(startTime, request, response, resultCode, message, "");
             return;
