@@ -11,10 +11,14 @@
 package com.yjjk.monitor.service.impl;
 
 import com.yjjk.monitor.entity.ZsPatientInfo;
+import com.yjjk.monitor.entity.ZsPatientRecord;
 import com.yjjk.monitor.service.BaseService;
+import com.yjjk.monitor.service.PatientRecordService;
 import com.yjjk.monitor.service.PatientService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
 
 
 /**
@@ -24,6 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class PatientServiceImpl extends BaseService implements PatientService {
+
+    @Resource
+    PatientRecordService patientRecordService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -35,9 +42,15 @@ public class PatientServiceImpl extends BaseService implements PatientService {
             super.ZsPatientInfoMapper.insertSelective(zsPatientInfo);
             zsPatientInfo = super.ZsPatientInfoMapper.selectByCaseNum(caseNum);
         }else {
+            // 已存在病人将病人绑定新的病床
             zsPatientInfo.setBedId(bedId).setName(name).setDepartmentId(departmentId);
             super.ZsPatientInfoMapper.updateByPrimaryKeySelective(zsPatientInfo);
         }
         return zsPatientInfo;
+    }
+
+    @Override
+    public ZsPatientInfo selectByCaseNum(String caseNum) {
+        return super.ZsPatientInfoMapper.selectByCaseNum(caseNum);
     }
 }

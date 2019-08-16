@@ -13,8 +13,7 @@ package com.yjjk.monitor.utility;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.*;
 
 /**
  * @author CentreS
@@ -54,10 +53,12 @@ public class DateUtil {
         SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return ft.format(date);
     }
+
     @Deprecated
     public static String getDatePoor(String startTime) {
         return getDatePoor(startTime, getCurrentTime());
     }
+
     @Deprecated
     public static String getDatePoor(String startTime, String endTime) {
         SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -101,6 +102,7 @@ public class DateUtil {
     public static String timeDifferent(String startTime) {
         return timeDifferent(startTime, getCurrentTime());
     }
+
     /**
      * 返回时间差
      *
@@ -166,5 +168,59 @@ public class DateUtil {
             return 120;
         }
         return null;
+    }
+
+    /**
+     * 半个小时为间隔，将时间向前取整
+     * @param times
+     * @return
+     */
+    public static String integerForward(String times) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:00:00");
+        SimpleDateFormat halfFormatter = new SimpleDateFormat("yyyy-MM-dd HH:30:00");
+        SimpleDateFormat currentFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date time = currentFormat.parse(times);
+            long between = time.getTime() - currentFormat.parse(formatter.format(time)).getTime();
+            if (between >= 1000 * 60 * 30) {
+                return halfFormatter.format(time);
+            } else {
+                return formatter.format(time);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    /**
+     * 半个小时为间隔，时间向后取整
+     * @param times
+     * @return
+     */
+    public static String integerBack(String times) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:00:00");
+        SimpleDateFormat halfFormatter = new SimpleDateFormat("yyyy-MM-dd HH:30:00");
+        SimpleDateFormat currentFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date time = currentFormat.parse(times);
+            long between = time.getTime() - currentFormat.parse(formatter.format(time)).getTime();
+            if (between >= 1000 * 60 * 30) {
+                time.setTime(time.getTime() + 1000 * 60 * 60);
+                return formatter.format(time);
+            } else {
+                return halfFormatter.format(time);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public static void main(String[] args) {
+        System.out.println(integerForward("2019-08-16 14:01:00"));
+        System.out.println(integerForward("2019-08-16 14:31:00"));
+        System.out.println(integerBack("2019-08-16 14:01:00"));
+        System.out.println(integerBack("2019-08-16 14:31:00"));
     }
 }

@@ -101,4 +101,11 @@ public interface PatientRecordService {
      */
     int selectByBedId(Integer bedId);
 
+    /**
+     * 使用patientId查询record信息
+     * @param patientId
+     * @return
+     */
+    ZsPatientRecord selectByPatientId(Integer patientId);
+
 }

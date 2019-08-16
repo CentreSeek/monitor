@@ -25,6 +25,7 @@ import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.stream.events.StartDocument;
 import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,6 +71,7 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
             if (monitorList.get(i).getRecordId() == null) {
                 continue;
             } else {
+                monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_READY);
                 for (int j = 0; j < temperatureList.size(); j++) {
                     if (monitorList.get(i).getMachineId() == temperatureList.get(j).getMachineId()) {
                         Long recordTime = DateUtil.timeDifferentLong(monitorList.get(i).getStartTime(), DateUtil.getCurrentTime());
@@ -126,19 +128,22 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
         paraMap.put("endTime", endTime);
         paraMap.put("patientId", patientRecord.getPatientId());
         List<TemperatureHistory> list = super.ZsPatientRecordMapper.selectTemperatureHistory(paraMap);
-        List<TemperatureHistory> resultList = new ArrayList<>();
+//        List<TemperatureHistory> resultList = new ArrayList<>();
 
         // 取头尾体温数据，后根据监测时常选择获取数据的数据间隔
-        Integer interval = DateUtil.getInterval(DateUtil.timeDifferentLong(patientRecord.getStartTime(), endTime));
-        for (int i = 0; i < list.size(); i += interval) {
-            resultList.add(list.get(i));
-        }
-        if (list.size() > 1) {
-            resultList.add(list.get(list.size() - 1));
-        }
+//        Integer interval = DateUtil.getInterval(DateUtil.timeDifferentLong(patientRecord.getStartTime(), endTime));
+//        for (int i = 0; i < list.size(); i += interval) {
+//            resultList.add(list.get(i));
+//        }
+//        if (list.size() > 1) {
+//            resultList.add(list.get(list.size() - 1));
+//        }
         // 将历史体温写回patient_record表
         ZsPatientRecord paraPatientRecord = new ZsPatientRecord();
-        paraPatientRecord.setTemperatureHistory(JSON.toJSONString(resultList));
+//        paraPatientRecord.setTemperatureHistory(JSON.toJSONString(resultList));
+        if (list != null) {
+            paraPatientRecord.setTemperatureHistory(JSON.toJSONString(list));
+        }
         paraPatientRecord.setPatientId(patientRecord.getPatientId());
         paraPatientRecord.setUsageState(1);
         paraPatientRecord.setEndTime(endTime);
@@ -190,5 +195,10 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
     @Override
     public int selectByBedId(Integer bedId) {
         return super.ZsPatientRecordMapper.selectByBedId(bedId);
+    }
+
+    @Override
+    public ZsPatientRecord selectByPatientId(Integer patientId) {
+        return super.ZsPatientRecordMapper.selectByPatientId(patientId);
     }
 }

@@ -27,4 +27,11 @@ public interface PatientService {
      * @return
      */
     ZsPatientInfo addPatient(String name, String caseNum, Integer bedId, Integer departmentId);
+
+    /**
+     * 使用病历号查询病人
+     * @param caseNum
+     * @return
+     */
+    ZsPatientInfo selectByCaseNum(String caseNum);
 }

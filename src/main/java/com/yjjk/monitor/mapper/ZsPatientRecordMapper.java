@@ -79,4 +79,10 @@ public interface ZsPatientRecordMapper {
      */
     ZsPatientRecord selectByPatientAndMachine(Map<String, Object> paraMap);
 
+    /**
+     * select---使用patientId查询record信息
+     * @param patientId
+     * @return
+     */
+    ZsPatientRecord selectByPatientId(Integer patientId);
 }

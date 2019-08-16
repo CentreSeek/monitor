@@ -63,13 +63,21 @@ public class PatientController extends BaseController {
         boolean resultCode = false;
         String message = "";
         int patientCount = patientRecordService.selectByBedId(bedId);
-        if (patientCount > 0){
+        if (patientCount > 0) {
             message = "该病床已绑定病人";
             returnResult(startTime, request, response, resultCode, message, "");
             return;
         }
         ZsManagerInfo managerInfo = super.managerService.getManagerInfo(managerId);
-
+        ZsPatientInfo zsPatientInfo1 = super.patientService.selectByCaseNum(caseNum);
+        if (zsPatientInfo1 != null) {
+            ZsPatientRecord zsPatientRecord = super.patientRecordService.selectByPatientId(zsPatientInfo1.getPatientId());
+            if (zsPatientRecord != null) {
+                message = "该病例信息已存在";
+                returnResult(startTime, request, response, resultCode, message, "");
+                return;
+            }
+        }
         ZsPatientInfo zsPatientInfo = super.patientService.addPatient(name, caseNum, bedId, managerInfo.getDepartmentId());
         if (StringUtils.isNullorEmpty(zsPatientInfo)) {
             message = "新增病人信息失败";
@@ -278,10 +286,10 @@ public class PatientController extends BaseController {
             return;
         }
         String endTime = patientRecord.getEndTime();
-        if (StringUtils.isNullorEmpty(endTime)){
+        if (StringUtils.isNullorEmpty(endTime)) {
             // 实时查询体温记录
             paraMap.put("endTime", DateUtil.getCurrentTime());
-        }else {
+        } else {
             // 查询历史体温记录
             paraMap.put("endTime", endTime);
         }
@@ -296,6 +304,8 @@ public class PatientController extends BaseController {
             reqMap.put("useTimes", DateUtil.timeDifferent(patientRecord.getStartTime(), patientRecord.getEndTime()));
         }
         reqMap.put("list", list);
+        reqMap.put("startTime", DateUtil.integerForward(list.get(0).getDateTime()));
+        reqMap.put("endTime", DateUtil.integerForward(list.get(list.size()).getDateTime()));
         message = "查询成功";
         resultCode = true;
         returnResult(startTime, request, response, resultCode, message, reqMap);

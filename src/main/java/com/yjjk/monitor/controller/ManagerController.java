@@ -19,10 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author CentreS
@@ -228,7 +225,22 @@ public class ManagerController extends BaseController {
         }
         super.managerService.updateManger(managerInfo.setLoginTime(DateUtil.getCurrentTime()));
         String token = super.loginStateService.login(request, managerInfo.getManagerId());
-
+        List<Integer> posts = new ArrayList<>();
+        switch (managerInfo.getRole()) {
+            case 0:
+                break;
+            case 1:
+                posts.add(PLATEFORM);
+                posts.add(HISTORY_RECORD);
+                posts.add(BED_MANAGE);
+                posts.add(MACHINE_MANAGE);
+                posts.add(ACCOUNT_MANAGE);
+                managerInfo.setPosts(posts);
+            case 2:
+                posts.add(PLATEFORM);
+                posts.add(HISTORY_RECORD);
+        }
+        managerInfo.setPosts(posts);
         managerInfo.setToken(token);
 
         message = "登录成功";

@@ -15,6 +15,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Description: 管理员
@@ -39,4 +40,7 @@ public class ZsManagerInfo{
 
     private String departmentName;
     private String token;
+
+    // 模块权限
+    private List<Integer> posts;
 }

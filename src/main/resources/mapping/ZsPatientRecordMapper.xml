@@ -158,6 +158,14 @@
         order by create_time desc limit 0,1
     </select>
 
+    <select id="selectByPatientId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM `zs_patient_record`
+        WHERE patient_id = #{patientId,jdbcType=INTEGER} and usage_state = 0
+        order by create_time desc limit 0,1
+    </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from zs_patient_record
     where record_id = #{recordId,jdbcType=BIGINT}

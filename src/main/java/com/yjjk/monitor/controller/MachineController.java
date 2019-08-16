@@ -162,11 +162,6 @@ public class MachineController extends BaseController {
 
         List<ZsMachineInfo> list = super.machineService.selectByUsageState(machineInfo);
         map.put("list", list == null ? "" : list);
-        if (StringUtils.isNullorEmpty(list)) {
-            message = "查询失败";
-            returnResult(startTime, request, response, resultCode, message, map);
-            return;
-        }
         message = "查询成功";
         resultCode = true;
         returnResult(startTime, request, response, resultCode, message, map);
