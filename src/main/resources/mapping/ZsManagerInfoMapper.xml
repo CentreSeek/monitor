@@ -14,6 +14,7 @@
         <result column="role" jdbcType="INTEGER" property="role"/>
         <result column="login_time" jdbcType="VARCHAR" property="loginTime"/>
         <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
     </resultMap>
     <sql id="Base_Column_List">

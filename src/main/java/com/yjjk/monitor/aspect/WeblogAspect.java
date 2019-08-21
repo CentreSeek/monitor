@@ -62,7 +62,7 @@ public class WeblogAspect {
     }
 
     @Around(value = "controllerAspect()")
-    public Object loginCheck(ProceedingJoinPoint joinPoint) throws Throwable {
+    public synchronized Object loginCheck(ProceedingJoinPoint joinPoint) throws Throwable {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = requestAttributes.getRequest();
         String token = request.getParameter("token");
