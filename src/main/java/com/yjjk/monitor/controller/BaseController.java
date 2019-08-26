@@ -46,6 +46,7 @@ public class BaseController {
     protected static Integer BED_MANAGE = 2;
     protected static Integer MACHINE_MANAGE = 3;
     protected static Integer ACCOUNT_MANAGE = 4;
+    protected static Integer REPEATER_MANAGE = 5;
 
 
     @Resource
@@ -60,6 +61,9 @@ public class BaseController {
     protected PatientRecordService patientRecordService;
     @Resource
     protected LoginStateService loginStateService;
+    @Resource
+    protected RepeaterService repeaterService;
+
 
 
 

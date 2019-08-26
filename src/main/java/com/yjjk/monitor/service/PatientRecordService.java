@@ -11,6 +11,7 @@
 package com.yjjk.monitor.service;
 
 import com.yjjk.monitor.entity.ZsPatientRecord;
+import com.yjjk.monitor.entity.export.RecordHistory2Excel;
 import com.yjjk.monitor.entity.json.TemperatureHistory;
 import com.yjjk.monitor.entity.vo.PatientTemperature;
 import com.yjjk.monitor.entity.vo.RecordHistory;
@@ -107,5 +108,12 @@ public interface PatientRecordService {
      * @return
      */
     ZsPatientRecord selectByPatientId(Integer patientId);
+
+    /**
+     * 体温记录导出
+     * @param paraMap
+     * @return
+     */
+    List<RecordHistory2Excel> getExportList(Map<String, Object> paraMap);
 
 }

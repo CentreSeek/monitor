@@ -44,5 +44,10 @@ public class BaseService {
     protected ZsTemperatureInfoMapper zsTemperatureInfoMapper;
     @Resource
     protected ZsLoginStateMapper zsLoginStateMapper;
+    @Resource
+    protected ZsMachineTypeInfoMapper zsMachineTypeInfoMapper;
+    @Resource
+    protected ZsRepeaterInfoMapper zsRepeaterInfoMapper;
+
 
 }

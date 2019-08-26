@@ -30,5 +30,4 @@ public class PatientTemperature {
     private Long timestamp;
     private String createTime;
 
-
 }

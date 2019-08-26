@@ -99,6 +99,17 @@ public class DateUtil {
         return ft.format(cal.getTime());
     }
 
+    public static String getTwoMinutePast(String time) {
+        try {
+            SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Date date = ft.parse(time);
+            return ft.format(date.getTime() + 1000 * 60 * 2);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
     public static String timeDifferent(String startTime) {
         return timeDifferent(startTime, getCurrentTime());
     }
@@ -172,6 +183,7 @@ public class DateUtil {
 
     /**
      * 半个小时为间隔，将时间向前取整
+     *
      * @param times
      * @return
      */
@@ -195,6 +207,7 @@ public class DateUtil {
 
     /**
      * 半个小时为间隔，时间向后取整
+     *
      * @param times
      * @return
      */
@@ -217,10 +230,11 @@ public class DateUtil {
         return "";
     }
 
-    public static void main(String[] args) {
-        System.out.println(integerForward("2019-08-16 14:01:00"));
-        System.out.println(integerForward("2019-08-16 14:31:00"));
-        System.out.println(integerBack("2019-08-16 14:01:00"));
-        System.out.println(integerBack("2019-08-16 14:31:00"));
-    }
+//    public static void main(String[] args) {
+//        System.out.println(integerForward("2019-08-16 14:01:00"));
+//        System.out.println(integerForward("2019-08-16 14:31:00"));
+//        System.out.println(integerBack("2019-08-16 14:01:00"));
+//        System.out.println(integerBack("2019-08-16 14:31:00"));
+//        System.out.println(getTwoMinutePast("2019-08-16 14:35:00"));
+//    }
 }

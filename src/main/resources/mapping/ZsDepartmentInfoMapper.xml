@@ -49,6 +49,13 @@
         </where>
     </select>
 
+    <select id="selectDepartments" resultType="com.yjjk.monitor.entity.ZsDepartmentInfo">
+        select
+        department_id as departmentId, name
+        from zs_department_info
+        where status = 0
+    </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from zs_department_info
     where department_id = #{departmentId,jdbcType=INTEGER}

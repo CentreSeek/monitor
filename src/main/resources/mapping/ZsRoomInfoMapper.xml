@@ -17,6 +17,13 @@
     from zs_room_info
     where room_id = #{roomId,jdbcType=INTEGER}
   </select>
+
+  <select id="selectRooms" resultType="com.yjjk.monitor.entity.ZsRoomInfo">
+    select
+    room_id as roomId, name
+    from zs_room_info
+    where department_id = #{departmentId,jdbcType=INTEGER} and status = 0
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from zs_room_info
     where room_id = #{roomId,jdbcType=INTEGER}

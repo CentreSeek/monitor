@@ -12,6 +12,7 @@ package com.yjjk.monitor.controller;
 
 import com.yjjk.monitor.entity.ZsDepartmentInfo;
 import com.yjjk.monitor.entity.ZsMachineInfo;
+import com.yjjk.monitor.entity.ZsRoomInfo;
 import com.yjjk.monitor.utility.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,7 +40,7 @@ public class HospitalController extends BaseController {
      * @param response
      */
     @RequestMapping(value = "/department", method = RequestMethod.GET)
-    public void addMachine(@RequestParam(value = "departmentId", required = false) Integer departmentId,
+    public void selectDetail(@RequestParam(value = "departmentId", required = false) Integer departmentId,
                            HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
         long startTime = System.currentTimeMillis();
@@ -48,6 +49,46 @@ public class HospitalController extends BaseController {
 
 
         List<ZsDepartmentInfo> list = super.hospitalService.selectDetail(departmentId);
+        message = "信息查询成功";
+        resultCode = true;
+        returnResult(startTime, request, response, resultCode, message, list == null ? "":list);
+    }
+
+    /**
+     * 查询科室信息
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "/departments", method = RequestMethod.GET)
+    public void getDepartments(HttpServletRequest request, HttpServletResponse response) {
+        /********************** 参数初始化 **********************/
+        long startTime = System.currentTimeMillis();
+        boolean resultCode = false;
+        String message = "";
+
+
+        List<ZsDepartmentInfo> list = super.hospitalService.selectDepartments();
+        message = "信息查询成功";
+        resultCode = true;
+        returnResult(startTime, request, response, resultCode, message, list == null ? "":list);
+    }
+
+    /**
+     * 查询房间信息
+     * @param departmentId
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "/rooms", method = RequestMethod.GET)
+    public void getRooms(@RequestParam(value = "departmentId", required = true) Integer departmentId,
+                           HttpServletRequest request, HttpServletResponse response) {
+        /********************** 参数初始化 **********************/
+        long startTime = System.currentTimeMillis();
+        boolean resultCode = false;
+        String message = "";
+
+
+        List<ZsRoomInfo> list = super.hospitalService.selectRooms(departmentId);
         message = "信息查询成功";
         resultCode = true;
         returnResult(startTime, request, response, resultCode, message, list == null ? "":list);

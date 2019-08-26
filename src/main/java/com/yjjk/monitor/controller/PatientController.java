@@ -10,24 +10,30 @@
  */
 package com.yjjk.monitor.controller;
 
+import ch.qos.logback.classic.sift.SiftAction;
 import com.alibaba.fastjson.JSON;
 import com.yjjk.monitor.entity.ZsManagerInfo;
 import com.yjjk.monitor.entity.ZsPatientInfo;
 import com.yjjk.monitor.entity.ZsPatientRecord;
+import com.yjjk.monitor.entity.export.RecordHistory2Excel;
 import com.yjjk.monitor.entity.json.TemperatureHistory;
 import com.yjjk.monitor.entity.vo.PatientTemperature;
 import com.yjjk.monitor.entity.vo.RecordHistory;
 import com.yjjk.monitor.entity.vo.UseMachine;
 import com.yjjk.monitor.utility.DateUtil;
 import com.yjjk.monitor.utility.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.dao.support.DataAccessUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,11 +59,11 @@ public class PatientController extends BaseController {
      */
     @RequestMapping(value = "/patient", method = RequestMethod.POST)
     public synchronized void addMachine(@RequestParam(value = "bedId") Integer bedId,
-                           @RequestParam(value = "machineId") Integer machineId,
-                           @RequestParam(value = "name") String name,
-                           @RequestParam(value = "caseNum") String caseNum,
-                           @RequestParam(value = "managerId") Integer managerId,
-                           HttpServletRequest request, HttpServletResponse response) {
+                                        @RequestParam(value = "machineId") Integer machineId,
+                                        @RequestParam(value = "name") String name,
+                                        @RequestParam(value = "caseNum") String caseNum,
+                                        @RequestParam(value = "managerId") Integer managerId,
+                                        HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
         long startTime = System.currentTimeMillis();
         boolean resultCode = false;
@@ -243,6 +249,11 @@ public class PatientController extends BaseController {
         Map<String, Object> map = new HashMap<>();
 
         if (!StringUtils.isNullorEmpty(recordHistory.getCurrentPage()) && !StringUtils.isNullorEmpty(recordHistory.getPageSize())) {
+            if (recordHistory.getCurrentPage() <= 0){
+                message = "页码出错";
+                returnResult(startTime, request, response, resultCode, message, "");
+                return;
+            }
             int currentPage = recordHistory.getCurrentPage();
             int pageSize = recordHistory.getPageSize();
             // 查询总条数
@@ -310,5 +321,86 @@ public class PatientController extends BaseController {
         message = "查询成功";
         resultCode = true;
         returnResult(startTime, request, response, resultCode, message, reqMap);
+    }
+
+    @RequestMapping(value = "/export")
+    @ResponseBody
+    public void export(@RequestParam(value = "timeList") List<String> timeList,
+                       HttpServletResponse response) throws IOException {
+        if (timeList.size() == 0) {
+            return;
+        }
+
+        Map<String, Object> paraMap = new HashMap<>();
+        List<RecordHistory2Excel> list = new ArrayList<>();
+        for (int i = 0; i < timeList.size(); i++) {
+            paraMap.put("time", timeList.get(i));
+            paraMap.put("threshold", DateUtil.getTwoMinutePast(timeList.get(i)));
+            list.addAll(super.patientRecordService.getExportList(paraMap));
+            paraMap.clear();
+        }
+
+        HSSFWorkbook wb = new HSSFWorkbook();
+
+        HSSFSheet sheet = wb.createSheet("sheet1");
+
+        HSSFRow row = null;
+        // 创建第一个单元格
+        row = sheet.createRow(0);
+        row.setHeight((short) (26.25 * 20));
+        // 为第一行单元格设值
+        row.createCell(0).setCellValue("温度监测平台使用日志");
+
+        /*
+         * 为标题设计空间
+         * firstRow从第1行开始
+         * lastRow从第0行结束
+         *
+         * 从第1个单元格开始
+         * 从第3个单元格结束
+         */
+        CellRangeAddress rowRegion = new CellRangeAddress(0, 0, 0, 6);
+        sheet.addMergedRegion(rowRegion);
+
+        /*
+         * 动态获取数据库列 sql语句 select COLUMN_NAME from INFORMATION_SCHEMA.Columns where table_name='user' and table_schema='test'
+         * 第一个table_name 表名字
+         * 第二个table_name 数据库名称
+         * */
+        row = sheet.createRow(1);
+        //设置行高
+        row.setHeight((short) (22.50 * 20));
+        //为单元格设值
+        row.createCell(0).setCellValue("姓名");
+        row.createCell(1).setCellValue("住院号");
+        row.createCell(2).setCellValue("科室");
+        row.createCell(3).setCellValue("房号");
+        row.createCell(4).setCellValue("床位");
+        row.createCell(5).setCellValue("时间点");
+        row.createCell(6).setCellValue("体温");
+
+        for (int i = 0; i < list.size(); i++) {
+            row = sheet.createRow(i + 2);
+            RecordHistory2Excel record = list.get(i);
+            row.createCell(0).setCellValue(record.getPatientName());
+            row.createCell(1).setCellValue(record.getCaseNum());
+            row.createCell(2).setCellValue(record.getDepartmentName());
+            row.createCell(3).setCellValue(record.getRoom());
+            row.createCell(4).setCellValue(record.getBed());
+            row.createCell(5).setCellValue(record.getTime());
+            row.createCell(6).setCellValue(record.getTemperature());
+        }
+        sheet.setDefaultRowHeight((short) (16.5 * 20));
+        //列宽自适应
+        for (int i = 0; i <= 13; i++) {
+            sheet.autoSizeColumn(i);
+        }
+        response.setContentType("application/vnd.ms-excel;charset=utf-8");
+        OutputStream os = response.getOutputStream();
+        //默认Excel名称
+        response.setHeader("Content-disposition", "attachment;filename=TemperatureHistory.xls");
+        wb.write(os);
+        os.flush();
+        os.close();
     }
 }

@@ -11,6 +11,7 @@
 package com.yjjk.monitor.service.impl;
 
 import com.yjjk.monitor.entity.ZsDepartmentInfo;
+import com.yjjk.monitor.entity.ZsRoomInfo;
 import com.yjjk.monitor.service.BaseService;
 import com.yjjk.monitor.service.HospitalService;
 import org.springframework.stereotype.Service;
@@ -34,5 +35,15 @@ public class HospitalServiceImpl extends BaseService implements HospitalService 
     @Override
     public int temperatureInfoTask(String dateOfOneMonthAgo) {
         return super.zsTemperatureInfoMapper.temperatureInfoTask(dateOfOneMonthAgo);
+    }
+
+    @Override
+    public List<ZsDepartmentInfo> selectDepartments() {
+        return super.ZsDepartmentInfoMapper.selectDepartments();
+    }
+
+    @Override
+    public List<ZsRoomInfo> selectRooms(Integer departmentId) {
+        return super.ZsRoomInfoMapper.selectRooms(departmentId);
     }
 }

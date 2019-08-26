@@ -11,6 +11,7 @@
 package com.yjjk.monitor.service;
 
 import com.yjjk.monitor.entity.ZsDepartmentInfo;
+import com.yjjk.monitor.entity.ZsRoomInfo;
 
 import java.util.List;
 
@@ -34,4 +35,16 @@ public interface HospitalService {
      * @return
      */
     int temperatureInfoTask(String dateOfOneMonthAgo);
+
+    /**
+     * 查询科室信息
+     * @return
+     */
+    List<ZsDepartmentInfo> selectDepartments();
+
+    /**
+     * 查询房间信息
+     * @return
+     */
+    List<ZsRoomInfo> selectRooms(Integer departmentId);
 }

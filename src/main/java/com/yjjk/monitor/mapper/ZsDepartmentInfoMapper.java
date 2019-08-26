@@ -24,4 +24,10 @@ public interface ZsDepartmentInfoMapper {
      * @return
      */
     List<ZsDepartmentInfo> selectDetail(Integer departmentId);
+
+    /**
+     * 查询科室信息
+     * @return
+     */
+    List<ZsDepartmentInfo> selectDepartments();
 }

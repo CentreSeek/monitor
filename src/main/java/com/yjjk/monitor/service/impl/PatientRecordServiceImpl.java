@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSON;
 import com.yjjk.monitor.constant.MonitorRecord;
 import com.yjjk.monitor.entity.ZsMachineInfo;
 import com.yjjk.monitor.entity.ZsPatientRecord;
+import com.yjjk.monitor.entity.export.RecordHistory2Excel;
 import com.yjjk.monitor.entity.json.TemperatureHistory;
 import com.yjjk.monitor.entity.vo.PatientTemperature;
 import com.yjjk.monitor.entity.vo.RecordHistory;
@@ -190,5 +191,10 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
     @Override
     public ZsPatientRecord selectByPatientId(Integer patientId) {
         return super.ZsPatientRecordMapper.selectByPatientId(patientId);
+    }
+
+    @Override
+    public List<RecordHistory2Excel> getExportList(Map<String, Object> paraMap){
+        return super.ZsPatientRecordMapper.getExportList(paraMap);
     }
 }

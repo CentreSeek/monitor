@@ -233,6 +233,7 @@ public class ManagerController extends BaseController {
                 posts.add(BED_MANAGE);
                 posts.add(MACHINE_MANAGE);
                 posts.add(ACCOUNT_MANAGE);
+                posts.add(REPEATER_MANAGE);
                 managerInfo.setPosts(posts);
             case 1:
                 posts.add(PLATEFORM);
@@ -240,6 +241,7 @@ public class ManagerController extends BaseController {
                 posts.add(BED_MANAGE);
                 posts.add(MACHINE_MANAGE);
                 posts.add(ACCOUNT_MANAGE);
+                posts.add(REPEATER_MANAGE);
                 managerInfo.setPosts(posts);
             case 2:
                 posts.add(PLATEFORM);
