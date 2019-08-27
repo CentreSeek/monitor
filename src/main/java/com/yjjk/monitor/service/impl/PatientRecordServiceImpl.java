@@ -22,6 +22,7 @@ import com.yjjk.monitor.entity.vo.UseMachine;
 import com.yjjk.monitor.service.BaseService;
 import com.yjjk.monitor.service.PatientRecordService;
 import com.yjjk.monitor.utility.DateUtil;
+import com.yjjk.monitor.utility.StringUtils;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -195,6 +196,10 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
 
     @Override
     public List<RecordHistory2Excel> getExportList(Map<String, Object> paraMap){
+        Integer departmentId = super.zsLoginStateMapper.selectDepartmentIdByToken(String.valueOf(paraMap.get("token")));
+        if (!StringUtils.isNullorEmpty(departmentId)){
+            paraMap.put("departmentId",departmentId);
+        }
         return super.ZsPatientRecordMapper.getExportList(paraMap);
     }
 }

@@ -33,10 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author CentreS
@@ -326,16 +323,19 @@ public class PatientController extends BaseController {
     @RequestMapping(value = "/export")
     @ResponseBody
     public void export(@RequestParam(value = "timeList") List<String> timeList,
+                       @RequestParam(value = "token") String token,
                        HttpServletResponse response) throws IOException {
         if (timeList.size() == 0) {
             return;
         }
+
 
         Map<String, Object> paraMap = new HashMap<>();
         List<RecordHistory2Excel> list = new ArrayList<>();
         for (int i = 0; i < timeList.size(); i++) {
             paraMap.put("time", timeList.get(i));
             paraMap.put("threshold", DateUtil.getTwoMinutePast(timeList.get(i)));
+            paraMap.put("token", token);
             list.addAll(super.patientRecordService.getExportList(paraMap));
             paraMap.clear();
         }
@@ -395,7 +395,8 @@ public class PatientController extends BaseController {
         for (int i = 0; i <= 13; i++) {
             sheet.autoSizeColumn(i);
         }
-        response.setContentType("application/vnd.ms-excel;charset=utf-8");
+//        response.setContentType("application/vnd.ms-excel;charset=utf-8");
+        response.setContentType("application/octet-stream;charset=utf-8");
         OutputStream os = response.getOutputStream();
         //默认Excel名称
         response.setHeader("Content-disposition", "attachment;filename=TemperatureHistory.xls");

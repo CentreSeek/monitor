@@ -43,12 +43,12 @@ public class RepeaterServiceImpl extends BaseService implements RepeaterService 
 
     @Override
     public int startRepeater(ZsRepeaterInfo repeaterInfo) {
-        return super.zsRepeaterInfoMapper.updateByPrimaryKeySelective(repeaterInfo.setLinkstatus(1));
+        return super.zsRepeaterInfoMapper.updateByPrimaryKeySelective(repeaterInfo.setLinkstatus(1).setRemark("").setFailCount(0));
     }
 
     @Override
     public int stopRepeater(Integer id,String remark) {
-        return super.zsRepeaterInfoMapper.updateByPrimaryKeySelective(new ZsRepeaterInfo().setLinkstatus(2).setId(id).setRemark(remark));
+        return super.zsRepeaterInfoMapper.updateByPrimaryKeySelective(new ZsRepeaterInfo().setLinkstatus(2).setId(id).setRemark(remark).setFailCount(0));
     }
 
     @Override

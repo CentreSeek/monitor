@@ -18,4 +18,11 @@ public interface ZsLoginStateMapper {
     int updateByPrimaryKey(ZsLoginState record);
 
     ZsLoginState selectByManagerId(Integer managerId);
+
+    /**
+     * 使用token查找departmentId
+     * @param token
+     * @return
+     */
+    Integer selectDepartmentIdByToken(String token);
 }

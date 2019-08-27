@@ -81,12 +81,8 @@
         #{createTime,jdbcType=TIMESTAMP}, #{failCount,jdbcType=INTEGER})
     </insert>
     <insert id="insertSelective" parameterType="com.yjjk.monitor.entity.ZsRepeaterInfo">
-        <selectKey keyProperty="id" order="BEFORE" resultType="java.lang.Integer">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
         insert into zs_repeater_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            id,
             <if test="mac != null">
                 MAC,
             </if>
@@ -119,7 +115,6 @@
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            #{id,jdbcType=INTEGER},
             <if test="mac != null">
                 #{mac,jdbcType=VARCHAR},
             </if>

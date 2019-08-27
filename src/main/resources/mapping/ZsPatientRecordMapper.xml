@@ -188,12 +188,15 @@
         ON zri.`department_id` = zdi.`department_id`
         LEFT JOIN zs_machine_info zmi
         ON zmi.`machine_id` = zpr.`machine_id`
-            LEFT JOIN (SELECT * FROM zs_temperature_info a WHERE a.create_time <![CDATA[>=]]> #{time, jdbcType=VARCHAR} AND
-            a.create_time <![CDATA[<=]]> #{threshold, jdbcType=VARCHAR} GROUP BY a.machine_num ORDER BY a.create_time DESC) b
-            ON b.`machine_num` = zmi.`machine_num`
-            WHERE zpr.status = 0
-            AND zpr.`start_time`<![CDATA[<=]]> #{time, jdbcType=VARCHAR}
-            AND (zpr.`end_time` = NULL OR zpr.`end_time` <![CDATA[>=]]> #{time, jdbcType=VARCHAR})
+        LEFT JOIN (SELECT * FROM zs_temperature_info a WHERE a.create_time <![CDATA[>=]]> #{time, jdbcType=VARCHAR} AND
+        a.create_time <![CDATA[<=]]> #{threshold, jdbcType=VARCHAR} GROUP BY a.machine_num ORDER BY a.create_time DESC) b
+        ON b.`machine_num` = zmi.`machine_num`
+        WHERE zpr.status = 0
+        AND zpr.`start_time`<![CDATA[<=]]> #{time, jdbcType=VARCHAR}
+        AND (zpr.`end_time` is NULL OR zpr.`end_time` <![CDATA[>=]]> #{time, jdbcType=VARCHAR})
+        <if test="departmentId != null">
+            and zpi.department_id = #{departmentId,jdbcType=INTEGER}
+        </if>
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
