@@ -75,7 +75,7 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
             } else {
                 monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_ERR);
                 for (int j = 0; j < temperatureList.size(); j++) {
-                    if (monitorList.get(i).getMachineId().equals(temperatureList.get(j).getMachineId())) {
+                    if (monitorList.get(i).getMachineId() == temperatureList.get(j).getMachineId()){
                         Long recordTime = DateUtil.timeDifferentLong(monitorList.get(i).getStartTime(), DateUtil.getCurrentTime());
                         // 监测时间小于2分钟为预热中
                         if (recordTime <= 2) {
@@ -166,7 +166,7 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
 
     @Override
     public List<TemperatureHistory> getCurrentTemperatureRecord(Map<String, Object> paraMap) {
-        return  super.ZsPatientRecordMapper.selectTemperatureHistory(paraMap);
+        return super.ZsPatientRecordMapper.selectTemperatureHistory(paraMap);
     }
 
     @Transactional(rollbackFor = RuntimeException.class)
@@ -195,10 +195,10 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
     }
 
     @Override
-    public List<RecordHistory2Excel> getExportList(Map<String, Object> paraMap){
+    public List<RecordHistory2Excel> getExportList(Map<String, Object> paraMap) {
         Integer departmentId = super.zsLoginStateMapper.selectDepartmentIdByToken(String.valueOf(paraMap.get("token")));
-        if (!StringUtils.isNullorEmpty(departmentId)){
-            paraMap.put("departmentId",departmentId);
+        if (!StringUtils.isNullorEmpty(departmentId)) {
+            paraMap.put("departmentId", departmentId);
         }
         return super.ZsPatientRecordMapper.getExportList(paraMap);
     }
