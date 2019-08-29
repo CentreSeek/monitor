@@ -11,6 +11,7 @@
 package com.yjjk.monitor.service;
 
 import com.yjjk.monitor.entity.ZsPatientInfo;
+import org.apache.ibatis.annotations.Update;
 
 /**
  * @Description: 病人模块
@@ -34,4 +35,11 @@ public interface PatientService {
      * @return
      */
     ZsPatientInfo selectByCaseNum(String caseNum);
+
+    /**
+     * 更新病人姓名
+     * @param record
+     * @return
+     */
+    int updateName(ZsPatientInfo record);
 }

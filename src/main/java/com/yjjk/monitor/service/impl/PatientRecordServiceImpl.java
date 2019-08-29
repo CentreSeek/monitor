@@ -60,7 +60,7 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
 
     @Override
     public ZsPatientRecord selectByPrimaryKey(Long recordId) {
-        return super.ZsPatientRecordMapper.selectByPrimaryKey(recordId);
+        return super.ZsPatientRecordMapper.selectByRecordId(recordId);
     }
 
     @Override
@@ -73,9 +73,9 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
             if (monitorList.get(i).getRecordId() == null) {
                 continue;
             } else {
-                monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_READY);
+                monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_ERR);
                 for (int j = 0; j < temperatureList.size(); j++) {
-                    if (monitorList.get(i).getMachineId() == temperatureList.get(j).getMachineId()) {
+                    if (monitorList.get(i).getMachineId().equals(temperatureList.get(j).getMachineId())) {
                         Long recordTime = DateUtil.timeDifferentLong(monitorList.get(i).getStartTime(), DateUtil.getCurrentTime());
                         // 监测时间小于2分钟为预热中
                         if (recordTime <= 2) {

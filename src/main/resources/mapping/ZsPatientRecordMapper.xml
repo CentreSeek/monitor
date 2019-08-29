@@ -30,6 +30,15 @@
         where record_id = #{recordId,jdbcType=BIGINT}
     </select>
 
+    <select id="selectByRecordId" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from zs_patient_record
+        where record_id = #{recordId,jdbcType=BIGINT} and status = 0
+    </select>
+
     <select id="getMonitorsInfo" resultType="com.yjjk.monitor.entity.vo.UseMachine" parameterType="java.lang.Integer">
         SELECT a.*,b.*
         FROM ( SELECT zbi.`bed_id` as bedId,zdi.`department_id`,zdi.name AS departmentName,zri.name AS roomName,
@@ -47,7 +56,7 @@
         (SELECT zpr.`record_id` AS recordId, zpr.`machine_id` AS machineId,
         zpi.`name` AS patientName, zpi.`case_num` AS caseNum,
         zmi.machine_num AS machineNum,
-        NOW() AS endTime, zpr.create_time AS startTime, zpi.`bed_id`
+        NOW() AS endTime, zpr.start_time AS startTime, zpi.`bed_id`
         FROM `zs_patient_record` zpr
         LEFT JOIN zs_patient_info zpi ON zpr.`patient_id` = zpi.`patient_id`
         LEFT JOIN `zs_machine_info` zmi ON zpr.`machine_id` = zmi.`machine_id`
@@ -98,6 +107,7 @@
                 and zpi.name = #{patientName, jdbcType=VARCHAR}
             </if>
         </where>
+        order by zpr.usage_state, zpr.create_time desc
         <if test="startLine != null and pageSize != null">
             limit #{startLine},#{pageSize}
         </if>
@@ -189,7 +199,8 @@
         LEFT JOIN zs_machine_info zmi
         ON zmi.`machine_id` = zpr.`machine_id`
         LEFT JOIN (SELECT * FROM zs_temperature_info a WHERE a.create_time <![CDATA[>=]]> #{time, jdbcType=VARCHAR} AND
-        a.create_time <![CDATA[<=]]> #{threshold, jdbcType=VARCHAR} GROUP BY a.machine_num ORDER BY a.create_time DESC) b
+        a.create_time <![CDATA[<=]]> #{threshold, jdbcType=VARCHAR} GROUP BY a.machine_num ORDER BY a.create_time DESC)
+        b
         ON b.`machine_num` = zmi.`machine_num`
         WHERE zpr.status = 0
         AND zpr.`start_time`<![CDATA[<=]]> #{time, jdbcType=VARCHAR}
@@ -352,6 +363,6 @@
                 temperature_history = #{temperatureHistory,jdbcType=LONGVARCHAR},
             </if>
         </set>
-        where patient_id = #{patientId,jdbcType=INTEGER}
+        where patient_id = #{patientId,jdbcType=INTEGER} and status = 0 and usage_state = 0
     </update>
 </mapper>

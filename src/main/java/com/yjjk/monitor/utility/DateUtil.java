@@ -160,7 +160,7 @@ public class DateUtil {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return 0l;
+        return 0L;
     }
 
     /**
@@ -169,8 +169,8 @@ public class DateUtil {
      * @return 时间间隔：分钟
      */
     public static Integer getInterval(Long min) {
-        Long sixHour = 60 * 6l;
-        Long twelveHour = 60 * 12l;
+        Long sixHour = 60 * 6L;
+        Long twelveHour = 60 * 12L;
         if (min < sixHour) {
             return 30;
         } else if (min > sixHour && min < twelveHour) {

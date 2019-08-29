@@ -77,9 +77,13 @@ public class PatientController extends BaseController {
         if (zsPatientInfo1 != null) {
             ZsPatientRecord zsPatientRecord = super.patientRecordService.selectByPatientId(zsPatientInfo1.getPatientId());
             if (zsPatientRecord != null) {
-                message = "该病例信息已存在";
+                message = "该病人已在其他病床启用设备";
                 returnResult(startTime, request, response, resultCode, message, "");
                 return;
+            }else{
+                zsPatientInfo1.setName(name);
+                // 更新病人信息
+                super.patientService.updateName(zsPatientInfo1);
             }
         }
         ZsPatientInfo zsPatientInfo = super.patientService.addPatient(name, caseNum, bedId, managerInfo.getDepartmentId());
@@ -100,6 +104,35 @@ public class PatientController extends BaseController {
         resultCode = true;
         returnResult(startTime, request, response, resultCode, message, "");
     }
+
+    /**
+     * 检索病人信息
+     *
+     * @param name
+     * @param caseNum
+     * @param request
+     * @param response
+     */
+    @RequestMapping(value = "/check", method = RequestMethod.GET)
+    public synchronized void checkPatient(@RequestParam(value = "name") String name,
+                                          @RequestParam(value = "caseNum") String caseNum,
+                                          HttpServletRequest request, HttpServletResponse response) {
+        /********************** 参数初始化 **********************/
+        long startTime = System.currentTimeMillis();
+        boolean resultCode = false;
+        String message = "";
+
+        ZsPatientInfo zsPatientInfo1 = super.patientService.selectByCaseNum(caseNum);
+        if (zsPatientInfo1 != null && zsPatientInfo1.getName() != name) {
+            message = "该病例已存在";
+            returnResult(startTime, request, response, resultCode, message, zsPatientInfo1);
+            return;
+        }
+        message = "成功";
+        resultCode = true;
+        returnResult(startTime, request, response, resultCode, message, "");
+    }
+
 
     /**
      * 更换设备
@@ -246,7 +279,7 @@ public class PatientController extends BaseController {
         Map<String, Object> map = new HashMap<>();
 
         if (!StringUtils.isNullorEmpty(recordHistory.getCurrentPage()) && !StringUtils.isNullorEmpty(recordHistory.getPageSize())) {
-            if (recordHistory.getCurrentPage() <= 0){
+            if (recordHistory.getCurrentPage() <= 0) {
                 message = "页码出错";
                 returnResult(startTime, request, response, resultCode, message, "");
                 return;

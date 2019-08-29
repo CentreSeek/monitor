@@ -53,4 +53,9 @@ public class PatientServiceImpl extends BaseService implements PatientService {
     public ZsPatientInfo selectByCaseNum(String caseNum) {
         return super.ZsPatientInfoMapper.selectByCaseNum(caseNum);
     }
+
+    @Override
+    public int updateName(ZsPatientInfo record) {
+        return super.ZsPatientInfoMapper.updateName(record);
+    }
 }
