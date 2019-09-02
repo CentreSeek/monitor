@@ -64,6 +64,10 @@ public class LoginStateServiceImpl extends BaseService implements LoginStateServ
     @Override
     public boolean checkLogin(String token, String ip) {
         ZsLoginState loginState = super.zsLoginStateMapper.selectByPrimaryKey(token);
-        return ip.equals(loginState.getIp());
+        if (loginState == null) {
+            return false;
+        } else {
+            return ip.equals(loginState.getIp());
+        }
     }
 }

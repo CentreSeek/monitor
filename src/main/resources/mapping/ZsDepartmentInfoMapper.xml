@@ -42,7 +42,6 @@
         left join zs_bed_info zbi on zri.room_id = zbi.room_id
         join zs_hospital_info zhi
         <where>
-            zdi.status = 0 and zri.status = 0 and zbi.status = 0
             <if test="departmentId != null">
                 and zdi.department_id = #{departmentId,jdbcType=INTEGER}
             </if>

@@ -180,11 +180,11 @@ public class ManagerController extends BaseController {
             paramMap.put("managerId",managerId);
         }
         zsManagerInfos = super.managerService.selectNormalList(paramMap);
-        if (StringUtils.isNullorEmpty(zsManagerInfos)) {
-            message = "获取失败";
-            returnResult(startTime, request, response, resultCode, message, "");
-            return;
-        }
+//        if (StringUtils.isNullorEmpty(zsManagerInfos)) {
+//            message = "获取失败";
+//            returnResult(startTime, request, response, resultCode, message, "");
+//            return;
+//        }
         reqMap.put("list", zsManagerInfos);
         message = "获取成功";
         resultCode = true;
