@@ -19,10 +19,17 @@ import org.springframework.stereotype.Component;
  */
 public class MonitorRecord {
 
+    /** 预热 */
     public static final int RECORD_STATE_READY = 0;
+    /** 使用中 */
     public static final int RECORD_STATE_USAGE = 1;
+    /** 连接异常 */
     public static final int RECORD_STATE_ERR = 2;
+    /** 未使用 */
     public static final int RECORD_STATE_UNUSED = 3;
-
+    /** 未佩戴 */
+    public static final int RECORD_STATE_ERR_WEAR = 4;
+    /** 未按规范黏贴 */
+    public static final int RECORD_STATE_ERR_USED = 5;
 
 }

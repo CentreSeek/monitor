@@ -39,6 +39,7 @@ public class UseMachine {
 
     /** machine */
     private String machineNum;
+    private String machineNo;
 
 
     /** temperature */

@@ -12,6 +12,8 @@ package com.yjjk.monitor.controller;
 
 import com.yjjk.monitor.entity.ZsMachineInfo;
 import com.yjjk.monitor.utility.StringUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +33,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/machine")
+@Api(tags = {"设备管理"})
 public class MachineController extends BaseController {
 
     /**
@@ -39,6 +43,7 @@ public class MachineController extends BaseController {
      * @param request
      * @param response
      */
+    @ApiOperation(value = "新增设备")
     @RequestMapping(value = "/machine", method = RequestMethod.POST)
     public void addMachine(ZsMachineInfo machineInfo, HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
@@ -46,12 +51,15 @@ public class MachineController extends BaseController {
         boolean resultCode = false;
         String message = "";
         if (StringUtils.isNullorEmpty(machineInfo.getName()) || StringUtils.isNullorEmpty(machineInfo.getMachineModel()) ||
-                StringUtils.isNullorEmpty(machineInfo.getMachineNums()) || StringUtils.isNullorEmpty(machineInfo.getDepartmentId())) {
+                StringUtils.isNullorEmpty(machineInfo.getMachineNum()) || StringUtils.isNullorEmpty(machineInfo.getDepartmentId()) ||
+                StringUtils.isNullorEmpty(machineInfo.getMachineNo())) {
             message = "参数错误";
             returnResult(startTime, request, response, resultCode, message, "");
             return;
         }
-        List<String> list = machineInfo.getMachineNums();
+        List<String> list = new ArrayList<>();
+        list.add(machineInfo.getMachineNum());
+        machineInfo.setMachineNums(list);
         for (int i = 0; i < list.size(); i++) {
             if (!StringUtils.checkMachineNum(list.get(i))) {
                 message = "设备号格式错误或“；”为中文符号  错误示例：710/B34.00066041 正确示例：B34/00066041";
@@ -64,6 +72,12 @@ public class MachineController extends BaseController {
                 returnResult(startTime, request, response, resultCode, message, "");
                 return;
             }
+        }
+        int count2 = super.machineService.selectByMachineNo(machineInfo.getMachineNo());
+        if (count2 > 0) {
+            message = "该设备信息已存在，请核实后录入";
+            returnResult(startTime, request, response, resultCode, message, "");
+            return;
         }
         int i = super.machineService.insertByMachineNums(machineInfo);
         if (i == 0) {
@@ -119,6 +133,7 @@ public class MachineController extends BaseController {
      * @param request
      * @param response
      */
+    @ApiOperation(value = "获取设备信息")
     @RequestMapping(value = "/machine", method = RequestMethod.GET)
     public void updateMachine(@RequestParam(value = "usageState", required = false) Integer usageState,
                               @RequestParam(value = "departmentId", required = false) Integer departmentId,

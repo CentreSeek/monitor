@@ -22,6 +22,7 @@ import com.yjjk.monitor.entity.vo.RecordHistory;
 import com.yjjk.monitor.entity.vo.UseMachine;
 import com.yjjk.monitor.utility.DateUtil;
 import com.yjjk.monitor.utility.StringUtils;
+import io.swagger.annotations.ApiOperation;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -80,7 +81,7 @@ public class PatientController extends BaseController {
                 message = "该病人已在其他病床启用设备";
                 returnResult(startTime, request, response, resultCode, message, "");
                 return;
-            }else{
+            } else {
                 zsPatientInfo1.setName(name);
                 // 更新病人信息
                 super.patientService.updateName(zsPatientInfo1);
@@ -209,8 +210,11 @@ public class PatientController extends BaseController {
      * @param request
      * @param response
      */
+    @ApiOperation("获取监控信息")
     @RequestMapping(value = "/monitor", method = RequestMethod.GET)
     public void getMinitors(@RequestParam(value = "managerId") Integer managerId,
+                            @RequestParam(value = "start", required = false) Integer start,
+                            @RequestParam(value = "end", required = false) Integer end,
                             HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
         long startTime = System.currentTimeMillis();
@@ -223,6 +227,10 @@ public class PatientController extends BaseController {
             departmentId = managerInfo.getDepartmentId();
         }
         List<UseMachine> monitorsInfo = super.patientRecordService.getMonitorsInfo(departmentId);
+        monitorsInfo = super.patientRecordService.selectiveByBedId(monitorsInfo, start == null ? 0 : start, end == null ? Integer.MAX_VALUE : end);
+        for (int i = 0; i < monitorsInfo.size(); i++) {
+            monitorsInfo.get(i).setPatientName(StringUtils.replaceNameX(monitorsInfo.get(i).getPatientName()));
+        }
         message = "查询成功";
         resultCode = true;
         returnResult(startTime, request, response, resultCode, message, monitorsInfo == null ? "" : monitorsInfo);

@@ -55,7 +55,7 @@
         LEFT JOIN
         (SELECT zpr.`record_id` AS recordId, zpr.`machine_id` AS machineId,
         zpi.`name` AS patientName, zpi.`case_num` AS caseNum,
-        zmi.machine_num AS machineNum,
+        zmi.machine_num AS machineNum, zmi.machine_no as machineNo,
         NOW() AS endTime, zpr.start_time AS startTime, zpi.`bed_id`
         FROM `zs_patient_record` zpr
         LEFT JOIN zs_patient_info zpi ON zpr.`patient_id` = zpi.`patient_id`

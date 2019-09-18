@@ -11,7 +11,6 @@
 package com.yjjk.monitor.utility;
 
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -119,11 +118,12 @@ public class StringUtils {
     }
 
     /**
-     * 匹配设备编码
+     * 匹配设备SN序列号
+     *
      * @param machineNum
      * @return
      */
-    public static boolean checkMachineNum(String machineNum){
+    public static boolean checkMachineNum(String machineNum) {
         String regex = "\\w\\d{2}/\\d{8}";
         if (machineNum.length() != MACHINE_NUM_LENGTH) {
             return false;
@@ -139,13 +139,60 @@ public class StringUtils {
         }
     }
 
-//    public static void main(String[] args) {
+    /**
+     * 设备编号匹配规则
+     * @param machineNo
+     * @return
+     */
+    public static boolean checkMachineNo(String machineNo) {
+        if (machineNo.length() > 6) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 姓名加密
+     * eg:
+     * 名字: 海
+     * 名字: 贼*
+     * 名字: 海*王
+     * 名字: 大**王
+     * 名字: 大*******王
+     *
+     * @param name
+     * @return
+     */
+    public static String replaceNameX(String name) {
+        if (name == null || name.length() <= 0) {
+            return "";
+        }
+        StringBuilder builder = new StringBuilder();
+        name = name.trim();
+        builder.append(name.charAt(0));
+        if (name.length() > 2) {
+            for (int i = 0; i < name.length() - 2; i++) {
+                builder.append("☆");
+            }
+            builder.append(name.charAt(name.length() - 1));
+        } else if (name.length() == 2) {
+            builder.append("☆");
+        }
+        return builder.toString();
+    }
+
+    //    public static void main(String[] args) {
 //        System.out.println(isPhoneNumber("1307450d898"));
 //        List list = new ArrayList();
 //        list.add("fds");
 //        System.out.println(isNullorEmpty(list));
 //        System.out.println(checkMachineNum("B33/00044267"));
 //    }
-
-
+    public static void main(String[] args) {
+        System.out.println("名字: " + replaceNameX("海"));
+        System.out.println("名字: " + replaceNameX("贼王"));
+        System.out.println("名字: " + replaceNameX("海贼王"));
+        System.out.println("名字: " + replaceNameX("大海贼王"));
+        System.out.println("名字: " + replaceNameX("大海发生大发大贼王"));
+    }
 }

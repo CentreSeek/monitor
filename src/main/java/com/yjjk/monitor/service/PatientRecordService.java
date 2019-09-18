@@ -21,14 +21,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @Description: 历史记录
  * @author CentreS
+ * @Description: 历史记录
  * @create 2019/7/22
  */
 public interface PatientRecordService {
 
     /**
      * 新增历史记录
+     *
      * @param patientRecord
      * @return
      */
@@ -36,6 +37,7 @@ public interface PatientRecordService {
 
     /**
      * 更新历史记录信息
+     *
      * @param patientRecord
      * @return
      */
@@ -43,6 +45,7 @@ public interface PatientRecordService {
 
     /**
      * 查询历史记录
+     *
      * @param recordId
      * @return
      */
@@ -50,9 +53,21 @@ public interface PatientRecordService {
 
     /**
      * 获取监控列表
+     *
+     * @param departmentId
      * @return
      */
     List<UseMachine> getMonitorsInfo(Integer departmentId);
+
+    /**
+     * 通过病床信息筛选
+     *
+     * @param list
+     * @param start
+     * @param end
+     * @return
+     */
+    List<UseMachine> selectiveByBedId(List<UseMachine> list, Integer start, Integer end);
 
 //    /**
 //     * 获取实时监控信息
@@ -63,12 +78,14 @@ public interface PatientRecordService {
 
     /**
      * 获取历史记录
+     *
      * @return
      */
     List<RecordHistory> getRecordHistory(RecordHistory recordHistory);
 
     /**
      * 获取历史记录总数
+     *
      * @param recordHistory
      * @return
      */
@@ -76,19 +93,22 @@ public interface PatientRecordService {
 
     /**
      * 停止监测
+     *
      * @return
      */
     int stopMonitoring(ZsPatientRecord patientRecord);
 
     /**
      * 获取实时体温记录
+     *
      * @param paraMap
      * @return
      */
-    List<TemperatureHistory> getCurrentTemperatureRecord(Map<String,Object> paraMap);
+    List<TemperatureHistory> getCurrentTemperatureRecord(Map<String, Object> paraMap);
 
     /**
      * 更换设备
+     *
      * @param machineId1 停用的设备
      * @param machineId2 启用的设备
      * @return
@@ -97,6 +117,7 @@ public interface PatientRecordService {
 
     /**
      * 查询当前病床已绑定病人的数量
+     *
      * @param bedId
      * @return
      */
@@ -104,6 +125,7 @@ public interface PatientRecordService {
 
     /**
      * 使用patientId查询record信息
+     *
      * @param patientId
      * @return
      */
@@ -111,6 +133,7 @@ public interface PatientRecordService {
 
     /**
      * 体温记录导出
+     *
      * @param paraMap
      * @return
      */

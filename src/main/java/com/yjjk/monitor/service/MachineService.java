@@ -72,9 +72,16 @@ public interface MachineService {
     ZsMachineInfo selectByPrimaryKey(Integer machineId);
 
     /**
-     * 使用设备编号查询设备数量
+     * 使用SN编号查询设备数量
      * @param machineNum
      * @return
      */
     int selectByMachineNum(String machineNum);
+
+    /**
+     * 使用设备编号查询设备数量
+     * @param machineNo
+     * @return
+     */
+    int selectByMachineNo(String machineNo);
 }

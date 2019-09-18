@@ -6,6 +6,7 @@
         <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="machine_model" jdbcType="VARCHAR" property="machineModel"/>
         <result column="machine_num" jdbcType="VARCHAR" property="machineNum"/>
+        <result column="machine_no" jdbcType="VARCHAR" property="machineNo"/>
         <result column="department_id" jdbcType="INTEGER" property="departmentId"/>
         <result column="usage_state" jdbcType="INTEGER" property="usageState"/>
         <result column="remark" jdbcType="VARCHAR" property="remark"/>
@@ -15,7 +16,7 @@
         <result column="department_name" jdbcType="VARCHAR" property="departmentName"/>
     </resultMap>
     <sql id="Base_Column_List">
-    machine_id, `name`, machine_model, machine_num, department_id, usage_state, remark, 
+    machine_id, `name`, machine_model, machine_num, machine_no, department_id, usage_state, remark,
     create_time, `status`
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
@@ -49,7 +50,7 @@
     </select>
     <select id="selectByUsageState" parameterType="com.yjjk.monitor.entity.ZsMachineInfo" resultMap="BaseResultMap">
         select
-        zmi.machine_id, zmi.`name`, zmi.machine_model, zmi.machine_num, zmi.department_id,  zmi.usage_state, zmi.remark,
+        zmi.machine_id, zmi.`name`, zmi.machine_model, zmi.machine_num, zmi.machine_no, zmi.department_id,  zmi.usage_state, zmi.remark,
         zmi.create_time, zmi.`status`, zdi.name as department_name
         from zs_machine_info zmi
         left join zs_department_info zdi on zmi.department_id = zdi.department_id
@@ -81,6 +82,12 @@
         from zs_machine_info
         where machine_num = #{machineNum,jdbcType=VARCHAR}
     </select>
+    <select id="selectCountByMachineNo" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select
+        count(1)
+        from zs_machine_info
+        where machine_no = #{machineNo,jdbcType=VARCHAR}
+    </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from zs_machine_info
@@ -88,11 +95,11 @@
     </delete>
     <insert id="insert" parameterType="com.yjjk.monitor.entity.ZsMachineInfo">
     insert into zs_machine_info (machine_id, `name`, machine_model, 
-      machine_num, department_id, usage_state, 
+      machine_num, machine_no, department_id, usage_state,
       remark, create_time, `status`
       )
     values (#{machineId,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{machineModel,jdbcType=VARCHAR}, 
-      #{machineNum,jdbcType=VARCHAR}, #{departmentId,jdbcType=INTEGER}, #{usageState,jdbcType=INTEGER}, 
+      #{machineNum,jdbcType=VARCHAR}, #{machineNo,jdbcType=VARCHAR}, #{departmentId,jdbcType=INTEGER}, #{usageState,jdbcType=INTEGER},
       #{remark,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}
       )
     </insert>
@@ -110,6 +117,9 @@
             </if>
             <if test="machineNum != null">
                 machine_num,
+            </if>
+            <if test="machineNo != null">
+                machine_no,
             </if>
             <if test="departmentId != null">
                 department_id,
@@ -139,6 +149,9 @@
             </if>
             <if test="machineNum != null">
                 #{machineNum,jdbcType=VARCHAR},
+            </if>
+            <if test="machineNo != null">
+                #{machineNo,jdbcType=VARCHAR},
             </if>
             <if test="departmentId != null">
                 #{departmentId,jdbcType=INTEGER},
@@ -185,6 +198,9 @@
             <if test="status != null">
                 `status`,
             </if>
+            <if test="machineNo != null">
+                machine_no,
+            </if>
             <if test="machineNums != null">
                 machine_num,
             </if>
@@ -216,6 +232,9 @@
             <if test="status != null">
                 #{status,jdbcType=INTEGER},
             </if>
+            <if test="machineNo != null">
+                #{machineNo,jdbcType=VARCHAR},
+            </if>
             #{item, jdbcType=VARCHAR})
         </foreach>
     </insert>
@@ -230,6 +249,9 @@
             </if>
             <if test="machineNum != null">
                 machine_num = #{machineNum,jdbcType=VARCHAR},
+            </if>
+            <if test="machineNo != null">
+                machine_no = #{machineNo,jdbcType=VARCHAR},
             </if>
             <if test="departmentId != null">
                 department_id = #{departmentId,jdbcType=INTEGER},

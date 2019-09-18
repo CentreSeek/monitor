@@ -10,6 +10,7 @@
  */
 package com.yjjk.monitor.entity;
 
+import io.swagger.annotations.ApiParam;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -26,14 +27,20 @@ import java.util.List;
 @Accessors(chain = true)
 public class ZsMachineInfo  {
     private Integer machineId;
+    @ApiParam(value = "设备名称", required = true)
     private String name;
+    @ApiParam(value = "设备型号", required = true)
     private String machineModel;
+    @ApiParam(value = "SN序列号", required = true)
     private String machineNum;
+    @ApiParam(value = "科室id", required = true)
     private Integer departmentId;
     private Integer usageState;
     private String remark;
     private String createTime;
     private Integer status;
+    @ApiParam(value = "设备编号", required = true)
+    private String machineNo;
 
     /** 批量导入：设备编号 */
     private List<String> machineNums;

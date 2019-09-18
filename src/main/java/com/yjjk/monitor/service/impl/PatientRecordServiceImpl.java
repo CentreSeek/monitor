@@ -11,6 +11,7 @@
 package com.yjjk.monitor.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.sun.xml.internal.ws.policy.spi.PolicyAssertionValidator;
 import com.yjjk.monitor.constant.MonitorRecord;
 import com.yjjk.monitor.entity.ZsMachineInfo;
 import com.yjjk.monitor.entity.ZsPatientRecord;
@@ -29,10 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.stream.events.StartDocument;
 import java.beans.Transient;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author CentreS
@@ -73,23 +71,31 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
             if (monitorList.get(i).getRecordId() == null) {
                 continue;
             } else {
-                monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_ERR);
+//                monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_ERR);
+                monitorList.get(i).setUseTimes(DateUtil.timeDifferent(monitorList.get(i).getStartTime(), monitorList.get(i).getEndTime()));
                 for (int j = 0; j < temperatureList.size(); j++) {
-                    if (monitorList.get(i).getMachineId() == temperatureList.get(j).getMachineId()){
+                    if (monitorList.get(i).getMachineId() == temperatureList.get(j).getMachineId()) {
                         Long recordTime = DateUtil.timeDifferentLong(monitorList.get(i).getStartTime(), DateUtil.getCurrentTime());
                         // 监测时间小于2分钟为预热中
                         if (recordTime <= 2) {
                             monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_READY);
                         } else {
                             monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_USAGE);
-                            // 连接异常判断：最后一条体温数据为3分钟前的数据
+                            // 温度小于30℃提示未按规范粘贴
+                            if (Double.parseDouble(temperatureList.get(j).getTemperature()) < 30.0) {
+                                monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_ERR_USED);
+                            }
                             Long temperatureTimeDifferent = DateUtil.timeDifferentLong(temperatureList.get(j).getCreateTime(), DateUtil.getCurrentTime());
+                            // 连接异常判断：最后一条体温数据为3分钟前的数据
                             if (temperatureTimeDifferent >= 3) {
                                 monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_ERR);
                             }
+                            // 是否佩戴判断：最后一条体温数据为60分钟前的数据
+                            if (temperatureTimeDifferent >= 60) {
+                                monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_ERR_WEAR);
+                            }
                         }
                         // 填充体温数据
-                        monitorList.get(i).setUseTimes(DateUtil.timeDifferent(monitorList.get(i).getStartTime(), monitorList.get(i).getEndTime()));
                         monitorList.get(i).setTemperature(temperatureList.get(j).getTemperature());
                         monitorList.get(i).setTemperatureStatus(temperatureList.get(j).getTemperatureStatus());
                         monitorList.get(i).setPattery(temperatureList.get(j).getPattery());
@@ -99,6 +105,23 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
             }
         }
         return monitorList;
+    }
+
+    @Override
+    public List<UseMachine> selectiveByBedId(List<UseMachine> list, Integer start, Integer end) {
+        if (end < start) {
+            return null;
+        }
+        int bedId;
+        Iterator<UseMachine> iter = list.iterator();
+        while (iter.hasNext()) {
+            UseMachine item = iter.next();
+            bedId = item.getBedId();
+            if (bedId < start || bedId > end) {
+                iter.remove();
+            }
+        }
+        return list;
     }
 
 //    @Override
