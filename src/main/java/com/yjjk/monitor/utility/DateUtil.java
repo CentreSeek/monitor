@@ -13,7 +13,8 @@ package com.yjjk.monitor.utility;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @author CentreS
@@ -52,6 +53,22 @@ public class DateUtil {
         Date date = new Date();
         SimpleDateFormat ft = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return ft.format(date);
+    }
+
+    /**
+     * 历史记录导出文件名
+     * @return
+     */
+    public static String getHistoryFileName() {
+        Date date = new Date();
+        SimpleDateFormat ft = new SimpleDateFormat("yyyyMMddHHmm");
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("th").append(ft.format(date));
+        return buffer.toString();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(getHistoryFileName());
     }
 
     @Deprecated

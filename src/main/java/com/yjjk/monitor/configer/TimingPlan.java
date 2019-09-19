@@ -13,17 +13,13 @@ package com.yjjk.monitor.configer;
 import com.yjjk.monitor.controller.BaseController;
 import com.yjjk.monitor.service.HospitalService;
 import com.yjjk.monitor.utility.DateUtil;
+import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Resource;
-import javax.xml.transform.Source;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @Component
 @Configuration      // 1.主要用于标记配置类，兼备Component的效果。
@@ -35,7 +31,7 @@ import java.util.Date;
  */
 public class TimingPlan{
 
-
+    protected static Logger logger = Logger.getLogger(BaseController.class);
     @Resource
     private HospitalService hospitalService;
     /**
@@ -45,7 +41,11 @@ public class TimingPlan{
     private void configureTasks() {
         String date = DateUtil.getOneMonthAgo();
         int i = hospitalService.temperatureInfoTask(date);
-        System.err.println("执行预约过期定时计划     时间: " + date + "   执行条数:" + i);
+        logger.info("执行预约过期定时计划     时间: " + date + "   执行条数:" + i);
+    }
+    @Scheduled(cron = "0 0 0 * * ?")
+    private void configureTimerCountTasks() {
+        TimerCount.resetHistoryExportCount();
     }
 
 }

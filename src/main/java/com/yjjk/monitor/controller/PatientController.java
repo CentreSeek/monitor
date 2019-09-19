@@ -10,14 +10,12 @@
  */
 package com.yjjk.monitor.controller;
 
-import ch.qos.logback.classic.sift.SiftAction;
 import com.alibaba.fastjson.JSON;
 import com.yjjk.monitor.entity.ZsManagerInfo;
 import com.yjjk.monitor.entity.ZsPatientInfo;
 import com.yjjk.monitor.entity.ZsPatientRecord;
 import com.yjjk.monitor.entity.export.RecordHistory2Excel;
 import com.yjjk.monitor.entity.json.TemperatureHistory;
-import com.yjjk.monitor.entity.vo.PatientTemperature;
 import com.yjjk.monitor.entity.vo.RecordHistory;
 import com.yjjk.monitor.entity.vo.UseMachine;
 import com.yjjk.monitor.utility.DateUtil;
@@ -27,14 +25,16 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author CentreS
@@ -362,15 +362,12 @@ public class PatientController extends BaseController {
     }
 
     @RequestMapping(value = "/export")
-    @ResponseBody
     public void export(@RequestParam(value = "timeList") List<String> timeList,
                        @RequestParam(value = "token") String token,
                        HttpServletResponse response) throws IOException {
         if (timeList.size() == 0) {
             return;
         }
-
-
         Map<String, Object> paraMap = new HashMap<>();
         List<RecordHistory2Excel> list = new ArrayList<>();
         for (int i = 0; i < timeList.size(); i++) {
@@ -440,9 +437,10 @@ public class PatientController extends BaseController {
         response.setContentType("application/octet-stream;charset=utf-8");
         OutputStream os = response.getOutputStream();
         //默认Excel名称
-        response.setHeader("Content-disposition", "attachment;filename=TemperatureHistory.xls");
+        response.setHeader("Content-disposition", "attachment;filename=" + DateUtil.getHistoryFileName() + ".xls");
         wb.write(os);
-        os.flush();
-        os.close();
+        wb.close();
+//        os.flush();
+//        os.close();
     }
 }

@@ -11,7 +11,6 @@
 package com.yjjk.monitor.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.sun.xml.internal.ws.policy.spi.PolicyAssertionValidator;
 import com.yjjk.monitor.constant.MonitorRecord;
 import com.yjjk.monitor.entity.ZsMachineInfo;
 import com.yjjk.monitor.entity.ZsPatientRecord;
@@ -24,12 +23,9 @@ import com.yjjk.monitor.service.BaseService;
 import com.yjjk.monitor.service.PatientRecordService;
 import com.yjjk.monitor.utility.DateUtil;
 import com.yjjk.monitor.utility.StringUtils;
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.stream.events.StartDocument;
-import java.beans.Transient;
 import java.util.*;
 
 /**
