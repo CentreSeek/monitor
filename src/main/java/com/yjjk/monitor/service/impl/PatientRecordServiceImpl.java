@@ -12,12 +12,14 @@ package com.yjjk.monitor.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.yjjk.monitor.constant.MonitorRecord;
+import com.yjjk.monitor.constant.TemperatureConstant;
 import com.yjjk.monitor.entity.ZsMachineInfo;
 import com.yjjk.monitor.entity.ZsPatientRecord;
-import com.yjjk.monitor.entity.export.RecordHistory2Excel;
+import com.yjjk.monitor.entity.ZsTemperatureBound;
 import com.yjjk.monitor.entity.json.TemperatureHistory;
 import com.yjjk.monitor.entity.vo.PatientTemperature;
 import com.yjjk.monitor.entity.vo.RecordHistory;
+import com.yjjk.monitor.entity.vo.RecordHistory2Excel;
 import com.yjjk.monitor.entity.vo.UseMachine;
 import com.yjjk.monitor.service.BaseService;
 import com.yjjk.monitor.service.PatientRecordService;
@@ -26,7 +28,10 @@ import com.yjjk.monitor.utility.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author CentreS
@@ -81,7 +86,8 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
                             if (Double.parseDouble(temperatureList.get(j).getTemperature()) < 30.0) {
                                 monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_ERR_USED);
                             }
-                            Long temperatureTimeDifferent = DateUtil.timeDifferentLong(temperatureList.get(j).getCreateTime(), DateUtil.getCurrentTime());
+                            Long temperatureTimeDifferent = DateUtil.timeDifferentLong(temperatureList.get(j).getCreateTime(),
+                                    DateUtil.getCurrentTime());
                             // 连接异常判断：最后一条体温数据为3分钟前的数据
                             if (temperatureTimeDifferent >= 3) {
                                 monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_ERR);
@@ -221,4 +227,44 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
         }
         return super.ZsPatientRecordMapper.getExportList(paraMap);
     }
+
+    @Override
+    public Map<String, Object> parseTemperature(List<TemperatureHistory> list, Map<String, Object> paraMap, Integer machineId) {
+        if (list == null) {
+            return null;
+        }
+        ZsMachineInfo zsMachineInfo = super.ZsMachineInfoMapper.selectByPrimaryKey(machineId);
+        if (zsMachineInfo == null) {
+            return null;
+        }
+        ZsTemperatureBound zsTemperatureBound = super.zsTemperatureBoundMapper.selectByPrimaryKey(zsMachineInfo.getDepartmentId());
+        if (zsTemperatureBound == null) {
+            zsTemperatureBound = super.zsTemperatureBoundMapper.selectByPrimaryKey(TemperatureConstant.DEFAULT_DEPARTMENT_ID);
+        }
+        // 统计高温数据
+        int count = 0;
+        boolean flag = false;
+        double highestTemperature = 0.0;
+        for (int i = 0; i < list.size(); i++) {
+
+            if (Double.parseDouble(list.get(i).getTemperature()) >= zsTemperatureBound.getHighAlert()) {
+                flag = true;
+                if (highestTemperature < Double.parseDouble(list.get(i).getTemperature())) {
+                    highestTemperature = Double.parseDouble(list.get(i).getTemperature());
+                }
+            } else {
+                if (flag == true) {
+                    flag = false;
+                    count++;
+                }
+            }
+            if (flag == true && i == list.size() - 1) {
+                count++;
+            }
+        }
+        paraMap.put("highestTemperatureCount", count);
+        paraMap.put("highestTemperature", highestTemperature);
+        return paraMap;
+    }
+
 }

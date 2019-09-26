@@ -11,24 +11,38 @@
 package com.yjjk.monitor.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.yjjk.monitor.configer.CommonResult;
+import com.yjjk.monitor.configer.ErrorCodeEnum;
+import com.yjjk.monitor.constant.TemperatureConstant;
 import com.yjjk.monitor.entity.ZsManagerInfo;
 import com.yjjk.monitor.entity.ZsPatientInfo;
 import com.yjjk.monitor.entity.ZsPatientRecord;
-import com.yjjk.monitor.entity.export.RecordHistory2Excel;
 import com.yjjk.monitor.entity.json.TemperatureHistory;
+import com.yjjk.monitor.entity.param.TemperatureBound;
 import com.yjjk.monitor.entity.vo.RecordHistory;
+import com.yjjk.monitor.entity.vo.RecordHistory2Excel;
+import com.yjjk.monitor.entity.vo.TemperatureBoundVO;
 import com.yjjk.monitor.entity.vo.UseMachine;
 import com.yjjk.monitor.utility.DateUtil;
+import com.yjjk.monitor.utility.ResultUtil;
 import com.yjjk.monitor.utility.StringUtils;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -41,9 +55,12 @@ import java.util.Map;
  * @Description: 病人管理模块
  * @create 2019/7/19
  */
+@Api(tags = {"监控管理模块"})
 @RestController
 @RequestMapping("patient")
 public class PatientController extends BaseController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PatientController.class);
 
     /**
      * 启用设备
@@ -205,16 +222,16 @@ public class PatientController extends BaseController {
     }
 
     /**
-     * 获取监控基础信息
+     * 获取监控信息
      *
      * @param request
      * @param response
      */
     @ApiOperation("获取监控信息")
     @RequestMapping(value = "/monitor", method = RequestMethod.GET)
-    public void getMinitors(@RequestParam(value = "managerId") Integer managerId,
-                            @RequestParam(value = "start", required = false) Integer start,
-                            @RequestParam(value = "end", required = false) Integer end,
+    public void getMinitors(@ApiParam(value = "管理员id",required = true) @RequestParam(value = "managerId") Integer managerId,
+                            @ApiParam(value = "起始床位id") @RequestParam(value = "start", required = false) Integer start,
+                            @ApiParam(value = "结束床位id") @RequestParam(value = "end", required = false) Integer end,
                             HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
         long startTime = System.currentTimeMillis();
@@ -231,6 +248,7 @@ public class PatientController extends BaseController {
         for (int i = 0; i < monitorsInfo.size(); i++) {
             monitorsInfo.get(i).setPatientName(StringUtils.replaceNameX(monitorsInfo.get(i).getPatientName()));
         }
+        monitorsInfo = super.temperatureBoundService.updateUseMachine(monitorsInfo, departmentId);
         message = "查询成功";
         resultCode = true;
         returnResult(startTime, request, response, resultCode, message, monitorsInfo == null ? "" : monitorsInfo);
@@ -353,6 +371,7 @@ public class PatientController extends BaseController {
             list = JSON.parseArray(patientRecord.getTemperatureHistory(), TemperatureHistory.class);
             reqMap.put("useTimes", DateUtil.timeDifferent(patientRecord.getStartTime(), patientRecord.getEndTime()));
         }
+        reqMap = super.patientRecordService.parseTemperature(list, reqMap, patientRecord.getMachineId());
         reqMap.put("list", StringUtils.isNullorEmpty(list) ? "" : list);
         reqMap.put("startTime", StringUtils.isNullorEmpty(list) ? "" : DateUtil.integerForward(list.get(0).getDateTime()));
         reqMap.put("endTime", StringUtils.isNullorEmpty(list) ? "" : DateUtil.integerForward(list.get(list.size() - 1).getDateTime()));
@@ -361,7 +380,7 @@ public class PatientController extends BaseController {
         returnResult(startTime, request, response, resultCode, message, reqMap);
     }
 
-    @RequestMapping(value = "/export")
+    @RequestMapping(value = "/export", method = RequestMethod.GET)
     public void export(@RequestParam(value = "timeList") List<String> timeList,
                        @RequestParam(value = "token") String token,
                        HttpServletResponse response) throws IOException {
@@ -443,4 +462,35 @@ public class PatientController extends BaseController {
 //        os.flush();
 //        os.close();
     }
+
+    @ApiOperation("设置体温监测规则")
+    @RequestMapping(value = "/bound", method = RequestMethod.PUT)
+    public CommonResult setTemperatureAlert(@Valid TemperatureBound param) {
+        try {
+
+            /********************** 参数初始化 **********************/
+            if (param.getDepartmentId().equals(TemperatureConstant.DEFAULT_DEPARTMENT_ID)){
+                return ResultUtil.returnError(ErrorCodeEnum.TEMPERATURE_BOUND_DEPARTMENT_ERROR);
+            }
+            Integer i = super.temperatureBoundService.setTemperatureBound(param);
+            return ResultUtil.returnSuccess(i);
+        } catch (Exception e) {
+            LOGGER.error("业务异常信息：[{}]", e.getMessage(), e);
+            return ResultUtil.returnError(ErrorCodeEnum.UNKNOWN_ERROR);
+        }
+    }
+
+    @ApiOperation("获取默认体温监测规则")
+    @RequestMapping(value = "/bound", method = RequestMethod.GET)
+    public CommonResult<List<TemperatureBoundVO>> getDefaultAlert(@RequestParam(value = "token") String token) {
+        try {
+            /********************** 参数初始化 **********************/
+            List<TemperatureBoundVO> defaultAlert = super.temperatureBoundService.getDefaultAlert(token);
+            return ResultUtil.returnSuccess(defaultAlert);
+        } catch (Exception e) {
+            LOGGER.error("业务异常信息：[{}]", e.getMessage(), e);
+            return ResultUtil.returnError(ErrorCodeEnum.UNKNOWN_ERROR);
+        }
+    }
+
 }

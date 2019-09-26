@@ -2,7 +2,7 @@ package com.yjjk.monitor.mapper;
 
 
 import com.yjjk.monitor.entity.ZsMachineInfo;
-import com.yjjk.monitor.entity.ZsManagerInfo;
+import com.yjjk.monitor.entity.export.MachineExport;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -41,6 +41,13 @@ public interface ZsMachineInfoMapper {
      * @return
      */
     List<ZsMachineInfo> selectByUsageState(ZsMachineInfo machineInfo);
+
+    /**
+     * 设备导出
+     * @param machineInfo
+     * @return
+     */
+    List<MachineExport> export(ZsMachineInfo machineInfo);
 
     /**
      * 使用SN编号查询设备数量

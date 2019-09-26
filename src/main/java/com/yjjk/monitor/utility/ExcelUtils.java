@@ -14,6 +14,7 @@ import org.apache.poi.hssf.usermodel.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.List;
 
 /**
@@ -24,6 +25,7 @@ import java.util.List;
 public class ExcelUtils {
     /**
      * 是否是2003的excel，返回true是2003
+     *
      * @param filePath
      * @return
      */
@@ -33,6 +35,7 @@ public class ExcelUtils {
 
     /**
      * 是否是2007的excel，返回true是2007
+     *
      * @param filePath
      * @return
      */
@@ -42,6 +45,7 @@ public class ExcelUtils {
 
     /**
      * 验证EXCEL文件
+     *
      * @param filePath
      * @return
      */
@@ -52,20 +56,27 @@ public class ExcelUtils {
         return true;
     }
 
+    public static <T> void exportExcel(HttpServletResponse response, List<T> excelData, String fileName, String[] cellsName) throws IOException {
+        exportExcel(response, excelData, "sheet1", fileName, cellsName, 15);
+    }
+
     /**
      * Excel表格导出
-     * @param response HttpServletResponse对象
-     * @param excelData Excel表格的数据，封装为List<List<String>>
-     * @param sheetName sheet的名字
-     * @param fileName 导出Excel的文件名
+     *
+     * @param response    HttpServletResponse对象
+     * @param excelData   Excel表格的数据
+     * @param sheetName   sheet的名字
+     * @param fileName    导出Excel的文件名
      * @param columnWidth Excel表格的宽度，建议为15
+     * @param cellsName   Excel首行名称
      * @throws IOException 抛IO异常
      */
-    public static void exportExcel(HttpServletResponse response,
-                                   List<List<String>> excelData,
-                                   String sheetName,
-                                   String fileName,
-                                   int columnWidth) throws IOException {
+    public static <T> void exportExcel(HttpServletResponse response,
+                                       List<T> excelData,
+                                       String sheetName,
+                                       String fileName,
+                                       String[] cellsName,
+                                       int columnWidth) throws IOException {
 
         //声明一个工作簿
         HSSFWorkbook workbook = new HSSFWorkbook();
@@ -76,39 +87,61 @@ public class ExcelUtils {
         //设置表格列宽度
         sheet.setDefaultColumnWidth(columnWidth);
 
-        //写入List<List<String>>中的数据
         int rowIndex = 0;
-        for(List<String> data : excelData){
-            //创建一个row行，然后自增1
-            HSSFRow row = sheet.createRow(rowIndex++);
-
-            //遍历添加本行数据
-            for (int i = 0; i < data.size(); i++) {
-                //创建一个单元格
+        T object = excelData.get(0);
+        Field[] fields = object.getClass().getDeclaredFields();
+        // 创建标题行
+        HSSFRow row = sheet.createRow(rowIndex++);
+        if (cellsName != null) {
+            for (int i = 0; i < cellsName.length; i++) {
                 HSSFCell cell = row.createCell(i);
-
-                //创建一个内容对象
-                HSSFRichTextString text = new HSSFRichTextString(data.get(i));
-
-                //将内容对象的文字内容写入到单元格中
+                HSSFRichTextString text = new HSSFRichTextString(cellsName[i]);
+                cell.setCellValue(text);
+            }
+        } else {
+            for (int i = 0; i < fields.length; i++) {
+                HSSFCell cell = row.createCell(i);
+                fields[i].setAccessible(true);
+                HSSFRichTextString text = new HSSFRichTextString(fields[i].getName());
+                cell.setCellValue(text);
+            }
+        }
+        // 填充数据
+        for (T data : excelData) {
+            //创建一个row行，然后自增1
+            row = sheet.createRow(rowIndex++);
+            Field[] fieldsList = data.getClass().getDeclaredFields();
+            //遍历添加本行数据
+            for (int i = 0; i < fieldsList.length; i++) {
+                HSSFCell cell = row.createCell(i);
+                HSSFRichTextString text = null;
+                fieldsList[i].setAccessible(true);
+                try {
+                    Object o = fieldsList[i].get(data);
+                    String s = "";
+                    if (o != null) {
+                        s = o.toString();
+                    }
+                    text = new HSSFRichTextString(s == null ? "" : s);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
                 cell.setCellValue(text);
             }
         }
 
         //准备将Excel的输出流通过response输出到页面下载
         //八进制输出流
-        response.setContentType("application/octet-stream");
-
+        response.setContentType("application/octet-stream;charset=utf-8");
         //设置导出Excel的名称
-        response.setHeader("Content-disposition", "attachment;filename=" + fileName);
-
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xls");
         //刷新缓冲
         response.flushBuffer();
-
         //workbook将Excel写入到response的输出流中，供页面下载该Excel文件
         workbook.write(response.getOutputStream());
-
         //关闭workbook
         workbook.close();
     }
+
+
 }

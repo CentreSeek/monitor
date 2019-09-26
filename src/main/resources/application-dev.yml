@@ -44,6 +44,7 @@ mybatis:
   type-aliases-package: com.yjjk.monitor.entity
   configuration:
     map-underscore-to-camel-case: true
+    cache-enabled: true
 
 #showSql
 logging:

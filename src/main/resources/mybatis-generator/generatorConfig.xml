@@ -62,41 +62,11 @@
             <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
         <!-- table可以有多个,每个数据库中的表都可以写一个table，tableName表示要匹配的数据库表,也可以在tableName属性中通过使用%通配符来匹配所有数据库表,只有匹配的表才会自动生成文件 -->
-        <table tableName="zs_repeater_info" enableCountByExample="false" enableUpdateByExample="false"
+        <table tableName="zs_temperature_bound" enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
-            <property name="useActualColumnNames" value="false"/>
+            <!--            <property name="useActualColumnNames" value="false"/>-->
             <!-- 数据库表主键 -->
-            <generatedKey column="id" sqlStatement="Mysql"/>
+<!--                        <generatedKey column="department_id" sqlStatement="Mysql"/>-->
         </table>
-<!--        <table tableName="zs_login_state" enableCountByExample="false" enableUpdateByExample="false"-->
-<!--               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">-->
-<!--            &lt;!&ndash;<property name="useActualColumnNames" value="false"/>-->
-<!--             数据库表主键 -->
-<!--            <generatedKey column="manager_id" sqlStatement="Mysql"/>-->
-<!--        </table>&ndash;&gt;-->
-<!--        <table tableName="zs_machine_info" enableCountByExample="false" enableUpdateByExample="false"-->
-<!--               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">-->
-<!--            <property name="useActualColumnNames" value="false"/>-->
-<!--        </table>-->
-<!--        <table tableName="zs_patient_info" enableCountByExample="false" enableUpdateByExample="false"-->
-<!--               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">-->
-<!--            <property name="useActualColumnNames" value="false"/>-->
-<!--        </table>-->
-<!--        <table tableName="zs_department_info" enableCountByExample="false" enableUpdateByExample="false"-->
-<!--               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">-->
-<!--            <property name="useActualColumnNames" value="false"/>-->
-<!--        </table>-->
-<!--        <table tableName="zs_room_info" enableCountByExample="false" enableUpdateByExample="false"-->
-<!--               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">-->
-<!--            <property name="useActualColumnNames" value="false"/>-->
-<!--        </table>-->
-<!--        <table tableName="zs_bed_info" enableCountByExample="false" enableUpdateByExample="false"-->
-<!--               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">-->
-<!--            <property name="useActualColumnNames" value="false"/>-->
-<!--        </table>-->
-<!--        <table tableName="zs_patient_record" enableCountByExample="false" enableUpdateByExample="false"-->
-<!--               enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">-->
-<!--            <property name="useActualColumnNames" value="false"/>-->
-<!--        </table>-->
     </context>
 </generatorConfiguration>

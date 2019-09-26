@@ -11,13 +11,11 @@
 package com.yjjk.monitor.service;
 
 
+import com.yjjk.monitor.mapper.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
-import javax.rmi.PortableRemoteObject;
-
-import com.yjjk.monitor.entity.json.TemperatureHistory;
-import com.yjjk.monitor.mapper.*;
-import org.apache.log4j.Logger;
 
 /**
  * @author CentreS
@@ -25,7 +23,7 @@ import org.apache.log4j.Logger;
  * @create 2019-06-20
  */
 public class BaseService {
-    protected static Logger logger = Logger.getLogger(BaseService.class);
+    protected static Logger logger = LoggerFactory.getLogger(BaseService.class);
     @Resource
     protected ZsBedInfoMapper ZsBedInfoMapper;
     @Resource
@@ -48,6 +46,8 @@ public class BaseService {
     protected ZsMachineTypeInfoMapper zsMachineTypeInfoMapper;
     @Resource
     protected ZsRepeaterInfoMapper zsRepeaterInfoMapper;
+    @Resource
+    protected ZsTemperatureBoundMapper zsTemperatureBoundMapper;
 
 
 }

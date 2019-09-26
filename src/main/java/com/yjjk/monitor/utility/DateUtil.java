@@ -67,9 +67,6 @@ public class DateUtil {
         return buffer.toString();
     }
 
-    public static void main(String[] args) {
-        System.out.println(getHistoryFileName());
-    }
 
     @Deprecated
     public static String getDatePoor(String startTime) {
@@ -247,11 +244,4 @@ public class DateUtil {
         return "";
     }
 
-//    public static void main(String[] args) {
-//        System.out.println(integerForward("2019-08-16 14:01:00"));
-//        System.out.println(integerForward("2019-08-16 14:31:00"));
-//        System.out.println(integerBack("2019-08-16 14:01:00"));
-//        System.out.println(integerBack("2019-08-16 14:31:00"));
-//        System.out.println(getTwoMinutePast("2019-08-16 14:35:00"));
-//    }
 }

@@ -39,7 +39,7 @@
         where record_id = #{recordId,jdbcType=BIGINT} and status = 0
     </select>
 
-    <select id="getMonitorsInfo" resultType="com.yjjk.monitor.entity.vo.UseMachine" parameterType="java.lang.Integer">
+    <select id="getMonitorsInfo" resultType="com.yjjk.monitor.entity.vo.UseMachine" parameterType="java.lang.Integer" useCache="true">
         SELECT a.*,b.*
         FROM ( SELECT zbi.`bed_id` as bedId,zdi.`department_id`,zdi.name AS departmentName,zri.name AS roomName,
         zbi.name AS bedName
@@ -176,7 +176,7 @@
         order by create_time desc limit 0,1
     </select>
 
-    <select id="getExportList" resultType="com.yjjk.monitor.entity.export.RecordHistory2Excel"
+    <select id="getExportList" resultType="com.yjjk.monitor.entity.vo.RecordHistory2Excel"
             parameterType="java.util.Map">
         SELECT
         zpi.`name` AS patientName,

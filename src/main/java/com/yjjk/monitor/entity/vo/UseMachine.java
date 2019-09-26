@@ -46,6 +46,8 @@ public class UseMachine {
     private String temperature;
     private Integer pattery;
     private String temperatureStatus;
+    /** 高低温预警 0：正常 1：低温 2：高温 */
+    private Integer temperatureAlert;
     private Long timestamp;
     private String useTimes;
 

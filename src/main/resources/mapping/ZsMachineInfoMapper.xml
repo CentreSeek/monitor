@@ -50,7 +50,7 @@
     </select>
     <select id="selectByUsageState" parameterType="com.yjjk.monitor.entity.ZsMachineInfo" resultMap="BaseResultMap">
         select
-        zmi.machine_id, zmi.`name`, zmi.machine_model, zmi.machine_num, zmi.machine_no, zmi.department_id,  zmi.usage_state, zmi.remark,
+        zmi.machine_id, zmi.`name`, zmi.machine_model, zmi.machine_num, zmi.machine_no, zmi.department_id, zmi.usage_state, zmi.remark,
         zmi.create_time, zmi.`status`, zdi.name as department_name
         from zs_machine_info zmi
         left join zs_department_info zdi on zmi.department_id = zdi.department_id
@@ -75,6 +75,28 @@
         <if test="startLine != null and pageSize != null">
             limit #{startLine},#{pageSize}
         </if>
+    </select>
+    <select id="export" parameterType="com.yjjk.monitor.entity.ZsMachineInfo" resultType="com.yjjk.monitor.entity.export.MachineExport">
+        select
+        zmi.machine_no, zmi.`name`, zmi.machine_model, zmi.machine_num, zdi.name as department_name, zmi.usage_state,
+        zmi.create_time, zmi.remark
+        from zs_machine_info zmi
+        left join zs_department_info zdi on zmi.department_id = zdi.department_id
+        <where>
+            <if test="departmentId != null">
+                and zmi.department_id = #{departmentId, jdbcType=INTEGER}
+            </if>
+            <if test="unUsedStatus != null">
+                and zmi.usage_state = 0
+            </if>
+            <if test="deleteStatus != null">
+                and zmi.usage_state = 1
+            </if>
+            <if test="normalStatus != null">
+                and (zmi.usage_state = 0 or zmi.usage_state = 2)
+            </if>
+            and zmi.status = 0
+        </where>
     </select>
     <select id="selectByMachineNum" parameterType="java.lang.String" resultType="java.lang.Integer">
         select

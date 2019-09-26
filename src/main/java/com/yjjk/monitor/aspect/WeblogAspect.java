@@ -16,7 +16,9 @@ package com.yjjk.monitor.aspect;
  * @create 2019/6/27
  */
 
+import com.yjjk.monitor.configer.ErrorCodeEnum;
 import com.yjjk.monitor.service.LoginStateService;
+import com.yjjk.monitor.utility.ResultUtil;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -70,12 +72,12 @@ public class WeblogAspect {
         if (!signature.getName().equals("managerLogin") && !signature.getName().equals("managerLoginOut")) {
             if (token == null) {
                 logger.error("登录失败：  token为空");
-                return "登录失败：  token为空";
+                return ResultUtil.returnError(ErrorCodeEnum.TOKEN_ERROR);
             } else {
                 boolean check = loginStateService.checkLogin(token, request.getRemoteAddr());
                 if (!check) {
                     logger.error("登录失败：  token = " + token);
-                    return "登录失败：  token = " + token;
+                    return ResultUtil.returnError(ErrorCodeEnum.TOKEN_ERROR);
                 }
             }
         }

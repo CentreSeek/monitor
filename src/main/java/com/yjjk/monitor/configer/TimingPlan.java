@@ -37,7 +37,7 @@ public class TimingPlan{
     /**
      * 定时清理过期预约
      */
-    @Scheduled(cron = "0 0 0 1 * ?")
+    @Scheduled(cron = "0 0 0 1/15 * ?")
     private void configureTasks() {
         String date = DateUtil.getOneMonthAgo();
         int i = hospitalService.temperatureInfoTask(date);

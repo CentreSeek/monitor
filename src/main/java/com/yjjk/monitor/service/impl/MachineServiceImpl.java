@@ -11,10 +11,13 @@
 package com.yjjk.monitor.service.impl;
 
 import com.yjjk.monitor.entity.ZsMachineInfo;
+import com.yjjk.monitor.entity.export.MachineExport;
+import com.yjjk.monitor.entity.export.MachineExportVO;
 import com.yjjk.monitor.service.BaseService;
 import com.yjjk.monitor.service.MachineService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -52,6 +55,15 @@ public class MachineServiceImpl extends BaseService implements MachineService {
     @Override
     public List<ZsMachineInfo> selectByUsageState(ZsMachineInfo machineInfo) {
         return super.ZsMachineInfoMapper.selectByUsageState(machineInfo);
+    }
+    @Override
+    public List<MachineExportVO> export(ZsMachineInfo machineInfo) {
+        List<MachineExport> list = super.ZsMachineInfoMapper.export(machineInfo);
+        List<MachineExportVO> reqList = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            reqList.add(list.get(i).transBean(list.get(i)));
+        }
+        return reqList;
     }
 
     @Override

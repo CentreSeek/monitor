@@ -10,7 +10,12 @@
  */
 package com.yjjk.monitor.controller;
 
+import com.yjjk.monitor.configer.ErrorCodeEnum;
+import com.yjjk.monitor.constant.MachineConstant;
 import com.yjjk.monitor.entity.ZsMachineInfo;
+import com.yjjk.monitor.entity.export.MachineExportVO;
+import com.yjjk.monitor.utility.ExcelUtils;
+import com.yjjk.monitor.utility.ResultUtil;
 import com.yjjk.monitor.utility.StringUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -21,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -180,5 +186,41 @@ public class MachineController extends BaseController {
         message = "查询成功";
         resultCode = true;
         returnResult(startTime, request, response, resultCode, message, map);
+    }
+
+    /**
+     * 设备导出
+     * @param usageState
+     * @param departmentId
+     * @param request
+     * @param response
+     */
+    @ApiOperation(value = "设备信息导出")
+    @RequestMapping(value = "/export", method = RequestMethod.GET)
+    public void export(@RequestParam(value = "usageState", required = false) Integer usageState,
+                       @RequestParam(value = "departmentId", required = false) Integer departmentId,
+                       HttpServletRequest request, HttpServletResponse response) {
+        /********************** 参数初始化 **********************/
+        ZsMachineInfo machineInfo = new ZsMachineInfo();
+        // 设备检索条件
+        if (usageState != null) {
+            if (usageState == 0) {
+                machineInfo.setUnUsedStatus("unUsed");
+            } else if (usageState == 1) {
+                machineInfo.setDeleteStatus("delete");
+            } else if (usageState == 2) {
+                machineInfo.setNormalStatus("normal");
+            } else if (usageState > 2) {
+                ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR);
+            }
+        }
+        machineInfo.setDepartmentId(departmentId);
+        List<MachineExportVO> list = super.machineService.export(machineInfo);
+        try {
+            ExcelUtils.exportExcel(response, list, "MachineList", MachineConstant.EXPORT);
+        } catch (IOException e) {
+            e.printStackTrace();
+            ResultUtil.returnError(ErrorCodeEnum.UNKNOWN_ERROR);
+        }
     }
 }

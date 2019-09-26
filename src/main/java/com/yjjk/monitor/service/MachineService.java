@@ -11,6 +11,7 @@
 package com.yjjk.monitor.service;
 
 import com.yjjk.monitor.entity.ZsMachineInfo;
+import com.yjjk.monitor.entity.export.MachineExportVO;
 
 import java.util.List;
 
@@ -56,6 +57,13 @@ public interface MachineService {
      * @return
      */
     List<ZsMachineInfo> selectByUsageState(ZsMachineInfo machineInfo);
+
+    /**
+     * 设备导出
+     * @param machineInfo
+     * @return
+     */
+    List<MachineExportVO> export(ZsMachineInfo machineInfo);
 
     /**
      * 更新设备信息
