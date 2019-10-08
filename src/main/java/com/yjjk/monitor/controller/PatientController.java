@@ -482,10 +482,10 @@ public class PatientController extends BaseController {
 
     @ApiOperation("获取默认体温监测规则")
     @RequestMapping(value = "/bound", method = RequestMethod.GET)
-    public CommonResult<List<TemperatureBoundVO>> getDefaultAlert(@RequestParam(value = "token") String token) {
+    public CommonResult<List<TemperatureBoundVO>> getDefaultAlert(@RequestParam(value = "departmentId") Integer departmentId) {
         try {
             /********************** 参数初始化 **********************/
-            List<TemperatureBoundVO> defaultAlert = super.temperatureBoundService.getDefaultAlert(token);
+            List<TemperatureBoundVO> defaultAlert = super.temperatureBoundService.getDefaultAlert(departmentId);
             return ResultUtil.returnSuccess(defaultAlert);
         } catch (Exception e) {
             LOGGER.error("业务异常信息：[{}]", e.getMessage(), e);

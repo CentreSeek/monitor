@@ -24,10 +24,10 @@ import java.util.List;
 public interface TemperatureBoundService {
     /**
      * 获取默认规则
-     * @param token
+     * @param departmentId
      * @return
      */
-    List<TemperatureBoundVO> getDefaultAlert(String token);
+    List<TemperatureBoundVO> getDefaultAlert(Integer departmentId);
 
     /**
      * 设置体温规则

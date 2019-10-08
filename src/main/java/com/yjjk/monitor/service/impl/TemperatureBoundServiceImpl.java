@@ -33,8 +33,7 @@ import java.util.List;
 public class TemperatureBoundServiceImpl extends BaseService implements TemperatureBoundService {
 
     @Override
-    public List<TemperatureBoundVO> getDefaultAlert(String token) {
-        Integer departmentId = super.zsLoginStateMapper.selectDepartmentIdByToken(token);
+    public List<TemperatureBoundVO> getDefaultAlert(Integer departmentId) {
         List<TemperatureBoundVO> list = new ArrayList<>();
         ZsTemperatureBound defaultTemperature = super.zsTemperatureBoundMapper.selectByPrimaryKey(TemperatureConstant.DEFAULT_DEPARTMENT_ID);
         list.add(ReflectUtils.transformToBean(defaultTemperature,

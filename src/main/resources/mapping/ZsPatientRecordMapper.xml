@@ -85,7 +85,7 @@
             parameterType="com.yjjk.monitor.entity.vo.RecordHistory">
         SELECT
         zpr.`record_id` AS recordId, zpi.`name` AS patientName, zpi.`case_num` AS caseNum,
-        zdi.`name` AS departmentName, zri.`name` AS roomName, zbi.`name` AS bedName,
+        zdi.`name` AS departmentName,zdi.department_id, zri.`name` AS roomName, zbi.`name` AS bedName,
         zpr.`start_time` AS startTime, zpr.`end_time` AS endTime, zpr.usage_state as usageState
         FROM`zs_patient_record` zpr
         LEFT JOIN `zs_patient_info` zpi ON zpr.`patient_id` = zpi.`patient_id`
