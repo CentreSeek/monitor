@@ -16,6 +16,6 @@ package com.yjjk.monitor.constant;
  * @create 2019/10/12
  */
 public class ExportConstant {
-    public static final String TEMPERATURE_EXPORT_PATH = "src/temperatureExport";
+    public static final String TEMPERATURE_EXPORT_PATH = "temperatureExport";
 
 }
