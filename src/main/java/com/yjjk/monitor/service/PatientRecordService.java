@@ -14,7 +14,7 @@ import com.yjjk.monitor.entity.ZsPatientRecord;
 import com.yjjk.monitor.entity.json.TemperatureHistory;
 import com.yjjk.monitor.entity.vo.RecordHistory;
 import com.yjjk.monitor.entity.vo.RecordHistory2Excel;
-import com.yjjk.monitor.entity.vo.UseMachine;
+import com.yjjk.monitor.entity.vo.UseMachineVO;
 
 import java.util.List;
 import java.util.Map;
@@ -56,7 +56,7 @@ public interface PatientRecordService {
      * @param departmentId
      * @return
      */
-    List<UseMachine> getMonitorsInfo(Integer departmentId);
+    List<UseMachineVO> getMonitorsInfo(Integer departmentId);
 
     /**
      * 通过病床信息筛选
@@ -66,7 +66,7 @@ public interface PatientRecordService {
      * @param end
      * @return
      */
-    List<UseMachine> selectiveByBedId(List<UseMachine> list, Integer start, Integer end);
+    List<UseMachineVO> selectiveByBedId(List<UseMachineVO> list, Integer start, Integer end);
 
 //    /**
 //     * 获取实时监控信息

@@ -12,7 +12,7 @@ package com.yjjk.monitor.service;
 
 import com.yjjk.monitor.entity.param.TemperatureBound;
 import com.yjjk.monitor.entity.vo.TemperatureBoundVO;
-import com.yjjk.monitor.entity.vo.UseMachine;
+import com.yjjk.monitor.entity.vo.UseMachineVO;
 
 import java.util.List;
 
@@ -41,6 +41,6 @@ public interface TemperatureBoundService {
      * @param monitorsInfo
      * @return
      */
-    List<UseMachine> updateUseMachine(List<UseMachine> monitorsInfo,Integer departmentId);
+    List<UseMachineVO> updateUseMachine(List<UseMachineVO> monitorsInfo, Integer departmentId);
 
 }

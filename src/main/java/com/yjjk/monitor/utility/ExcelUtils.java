@@ -13,8 +13,12 @@ package com.yjjk.monitor.utility;
 import org.apache.poi.hssf.usermodel.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -143,5 +147,42 @@ public class ExcelUtils {
         workbook.close();
     }
 
-
+    /**
+     * 将数据写入文本文件
+     *
+     * @param list
+     * @param path
+     */
+    public static void writeToTxt(List list, String path) {
+        File parent = new File(path);
+        if (parent != null && !parent.exists()) {
+            parent.mkdirs();
+        }
+        FileOutputStream outSTr = null;
+        BufferedOutputStream Buff = null;
+        String enter = "\r\n";
+        StringBuffer write;
+        try {
+            Date date = new Date();
+            outSTr = new FileOutputStream(new File(path+"/"+date.getTime()+".txt"));
+            Buff = new BufferedOutputStream(outSTr);
+            for (int i = 0; i < list.size(); i++) {
+                write = new StringBuffer();
+                write.append(list.get(i));
+                write.append(enter);
+                Buff.write(write.toString().getBytes("UTF-8"));
+            }
+            Buff.flush();
+            Buff.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                Buff.close();
+                outSTr.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

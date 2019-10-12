@@ -118,4 +118,10 @@
     <delete id="temperatureInfoTask" parameterType="java.lang.String">
       DELETE FROM `zs_temperature_info` WHERE create_time <![CDATA[<]]> #{dateOfOneMonthAgo,jdbcType=VARCHAR};
     </delete>
+    <select id="getExportTemperatures" parameterType="java.lang.String" resultType="java.lang.String">
+        select
+        CONCAT ('{',machine_num,',',raw_temperature,'(raw)',',',temperature,',',create_time,'}',',')
+        from zs_temperature_info
+         WHERE create_time <![CDATA[<]]> #{dateOfOneMonthAgo,jdbcType=VARCHAR};
+    </select>
 </mapper>

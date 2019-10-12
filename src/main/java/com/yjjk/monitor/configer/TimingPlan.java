@@ -41,11 +41,11 @@ public class TimingPlan{
     private void configureTasks() {
         String date = DateUtil.getOneMonthAgo();
         int i = hospitalService.temperatureInfoTask(date);
-        logger.info("执行预约过期定时计划     时间: " + date + "   执行条数:" + i);
+        logger.info("执行体温定时计划     时间: " + date + "   执行条数:" + i);
     }
-    @Scheduled(cron = "0 0 0 * * ?")
-    private void configureTimerCountTasks() {
-        TimerCount.resetHistoryExportCount();
-    }
+//    @Scheduled(cron = "0 0 0 * * ?")
+//    private void configureTimerCountTasks() {
+//        TimerCount.resetHistoryExportCount();
+//    }
 
 }

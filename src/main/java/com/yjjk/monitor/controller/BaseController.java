@@ -70,6 +70,8 @@ public class BaseController {
     protected RepeaterService repeaterService;
     @Resource
     protected TemperatureBoundService temperatureBoundService;
+    @Resource
+    protected BoxService boxService;
 
 
 

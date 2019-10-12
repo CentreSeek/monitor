@@ -3,6 +3,8 @@ package com.yjjk.monitor.mapper;
 import com.yjjk.monitor.entity.ZsTemperatureInfo;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface ZsTemperatureInfoMapper {
     int deleteByPrimaryKey(Integer temperatureId);
@@ -23,4 +25,11 @@ public interface ZsTemperatureInfoMapper {
      * @return
      */
     int temperatureInfoTask(String dateOfOneMonthAgo);
+
+    /**
+     * 导出体温数据
+     * @param dateOfOneMonthAgo
+     * @return
+     */
+    List<String> getExportTemperatures(String dateOfOneMonthAgo);
 }

@@ -48,6 +48,8 @@ public class BaseService {
     protected ZsRepeaterInfoMapper zsRepeaterInfoMapper;
     @Resource
     protected ZsTemperatureBoundMapper zsTemperatureBoundMapper;
+    @Resource
+    protected ZsBoxInfoMapper zsBoxInfoMapper;
 
 
 }

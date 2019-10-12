@@ -10,10 +10,12 @@
  */
 package com.yjjk.monitor.service.impl;
 
+import com.yjjk.monitor.constant.ExportConstant;
 import com.yjjk.monitor.entity.ZsDepartmentInfo;
 import com.yjjk.monitor.entity.ZsRoomInfo;
 import com.yjjk.monitor.service.BaseService;
 import com.yjjk.monitor.service.HospitalService;
+import com.yjjk.monitor.utility.ExcelUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,7 +36,15 @@ public class HospitalServiceImpl extends BaseService implements HospitalService 
 
     @Override
     public int temperatureInfoTask(String dateOfOneMonthAgo) {
+        temperatureInfoPersistent(dateOfOneMonthAgo);
         return super.zsTemperatureInfoMapper.temperatureInfoTask(dateOfOneMonthAgo);
+    }
+
+    @Override
+    public int temperatureInfoPersistent(String dateOfOneMonthAgo) {
+        List<String> exportTemperatures = super.zsTemperatureInfoMapper.getExportTemperatures(dateOfOneMonthAgo);
+        ExcelUtils.writeToTxt(exportTemperatures,ExportConstant.TEMPERATURE_EXPORT_PATH);
+        return exportTemperatures.size();
     }
 
     @Override

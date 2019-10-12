@@ -22,7 +22,7 @@ import com.yjjk.monitor.entity.param.TemperatureBound;
 import com.yjjk.monitor.entity.vo.RecordHistory;
 import com.yjjk.monitor.entity.vo.RecordHistory2Excel;
 import com.yjjk.monitor.entity.vo.TemperatureBoundVO;
-import com.yjjk.monitor.entity.vo.UseMachine;
+import com.yjjk.monitor.entity.vo.UseMachineVO;
 import com.yjjk.monitor.utility.DateUtil;
 import com.yjjk.monitor.utility.ResultUtil;
 import com.yjjk.monitor.utility.StringUtils;
@@ -223,35 +223,31 @@ public class PatientController extends BaseController {
 
     /**
      * 获取监控信息
-     *
-     * @param request
-     * @param response
      */
     @ApiOperation("获取监控信息")
     @RequestMapping(value = "/monitor", method = RequestMethod.GET)
-    public void getMinitors(@ApiParam(value = "管理员id",required = true) @RequestParam(value = "managerId") Integer managerId,
-                            @ApiParam(value = "起始床位id") @RequestParam(value = "start", required = false) Integer start,
-                            @ApiParam(value = "结束床位id") @RequestParam(value = "end", required = false) Integer end,
-                            HttpServletRequest request, HttpServletResponse response) {
+    public CommonResult<List<UseMachineVO>> getMinitors(@ApiParam(value = "管理员id",required = true) @RequestParam(value = "managerId") Integer managerId,
+                                                        @ApiParam(value = "起始床位id") @RequestParam(value = "start", required = false) Integer start,
+                                                        @ApiParam(value = "结束床位id") @RequestParam(value = "end", required = false) Integer end) {
         /********************** 参数初始化 **********************/
-        long startTime = System.currentTimeMillis();
-        boolean resultCode = false;
-        String message = "";
-
         ZsManagerInfo managerInfo = super.managerService.getManagerInfo(managerId);
         Integer departmentId = null;
         if (managerInfo.getRole() == 2) {
             departmentId = managerInfo.getDepartmentId();
         }
-        List<UseMachine> monitorsInfo = super.patientRecordService.getMonitorsInfo(departmentId);
+        // 监控信息
+        List<UseMachineVO> monitorsInfo = super.patientRecordService.getMonitorsInfo(departmentId);
+        // 根据病床id筛选监控信息
         monitorsInfo = super.patientRecordService.selectiveByBedId(monitorsInfo, start == null ? 0 : start, end == null ? Integer.MAX_VALUE : end);
+        // 姓名隐私
         for (int i = 0; i < monitorsInfo.size(); i++) {
             monitorsInfo.get(i).setPatientName(StringUtils.replaceNameX(monitorsInfo.get(i).getPatientName()));
         }
+        // 设置温度帖盒子信息
+        monitorsInfo = super.boxService.setBoxesInfo(monitorsInfo);
+        // 设置体温规则
         monitorsInfo = super.temperatureBoundService.updateUseMachine(monitorsInfo, departmentId);
-        message = "查询成功";
-        resultCode = true;
-        returnResult(startTime, request, response, resultCode, message, monitorsInfo == null ? "" : monitorsInfo);
+        return ResultUtil.returnSuccess(monitorsInfo);
     }
 
 //    /**
@@ -490,6 +486,17 @@ public class PatientController extends BaseController {
         } catch (Exception e) {
             LOGGER.error("业务异常信息：[{}]", e.getMessage(), e);
             return ResultUtil.returnError(ErrorCodeEnum.UNKNOWN_ERROR);
+        }
+    }
+
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public void test() {
+        try {
+            /********************** 参数初始化 **********************/
+            String date = DateUtil.getOneMonthAgo();
+            super.hospitalService.temperatureInfoPersistent(date);
+        } catch (Exception e) {
+            LOGGER.error("业务异常信息：[{}]", e.getMessage(), e);
         }
     }
 

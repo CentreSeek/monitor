@@ -20,7 +20,7 @@ import com.yjjk.monitor.entity.json.TemperatureHistory;
 import com.yjjk.monitor.entity.vo.PatientTemperature;
 import com.yjjk.monitor.entity.vo.RecordHistory;
 import com.yjjk.monitor.entity.vo.RecordHistory2Excel;
-import com.yjjk.monitor.entity.vo.UseMachine;
+import com.yjjk.monitor.entity.vo.UseMachineVO;
 import com.yjjk.monitor.service.BaseService;
 import com.yjjk.monitor.service.PatientRecordService;
 import com.yjjk.monitor.utility.DateUtil;
@@ -63,8 +63,8 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
     }
 
     @Override
-    public List<UseMachine> getMonitorsInfo(Integer departmentId) {
-        List<UseMachine> monitorList = super.ZsPatientRecordMapper.getMonitorsInfo(departmentId);
+    public List<UseMachineVO> getMonitorsInfo(Integer departmentId) {
+        List<UseMachineVO> monitorList = super.ZsPatientRecordMapper.getMonitorsInfo(departmentId);
         List<PatientTemperature> temperatureList = super.ZsPatientRecordMapper.getMinitorsTemperature(departmentId);
         for (int i = 0; i < monitorList.size(); i++) {
             // 初始化监控状态为：未使用
@@ -110,14 +110,14 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
     }
 
     @Override
-    public List<UseMachine> selectiveByBedId(List<UseMachine> list, Integer start, Integer end) {
+    public List<UseMachineVO> selectiveByBedId(List<UseMachineVO> list, Integer start, Integer end) {
         if (end < start) {
             return null;
         }
         int bedId;
-        Iterator<UseMachine> iter = list.iterator();
+        Iterator<UseMachineVO> iter = list.iterator();
         while (iter.hasNext()) {
-            UseMachine item = iter.next();
+            UseMachineVO item = iter.next();
             bedId = item.getBedId();
             if (bedId < start || bedId > end) {
                 iter.remove();

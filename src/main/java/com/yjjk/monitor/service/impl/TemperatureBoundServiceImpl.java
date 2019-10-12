@@ -14,7 +14,7 @@ import com.yjjk.monitor.constant.TemperatureConstant;
 import com.yjjk.monitor.entity.ZsTemperatureBound;
 import com.yjjk.monitor.entity.param.TemperatureBound;
 import com.yjjk.monitor.entity.vo.TemperatureBoundVO;
-import com.yjjk.monitor.entity.vo.UseMachine;
+import com.yjjk.monitor.entity.vo.UseMachineVO;
 import com.yjjk.monitor.service.BaseService;
 import com.yjjk.monitor.service.TemperatureBoundService;
 import com.yjjk.monitor.utility.DateUtil;
@@ -62,7 +62,7 @@ public class TemperatureBoundServiceImpl extends BaseService implements Temperat
     }
 
     @Override
-    public List<UseMachine> updateUseMachine(List<UseMachine> monitorsInfo, Integer departmentId) {
+    public List<UseMachineVO> updateUseMachine(List<UseMachineVO> monitorsInfo, Integer departmentId) {
         ZsTemperatureBound temperatureBound = super.zsTemperatureBoundMapper.selectByPrimaryKey(departmentId);
         if (temperatureBound == null) {
             // 获取默认规则
