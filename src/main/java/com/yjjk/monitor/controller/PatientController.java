@@ -489,15 +489,15 @@ public class PatientController extends BaseController {
         }
     }
 
-    @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public void test() {
-        try {
-            /********************** 参数初始化 **********************/
-            String date = DateUtil.getOneMonthAgo();
-            super.hospitalService.temperatureInfoPersistent(date);
-        } catch (Exception e) {
-            LOGGER.error("业务异常信息：[{}]", e.getMessage(), e);
-        }
-    }
+//    @RequestMapping(value = "/test", method = RequestMethod.GET)
+//    public void test() {
+//        try {
+//            /********************** 参数初始化 **********************/
+//            String date = DateUtil.getOneMonthAgo();
+//            super.hospitalService.temperatureInfoPersistent(date);
+//        } catch (Exception e) {
+//            LOGGER.error("业务异常信息：[{}]", e.getMessage(), e);
+//        }
+//    }
 
 }
