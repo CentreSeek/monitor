@@ -35,7 +35,7 @@ public class TimingPlan{
     @Resource
     private HospitalService hospitalService;
     /**
-     * 定时清理过期预约
+     * 定时计划：1.清理过期预约
      */
     @Scheduled(cron = "0 0 0 1/15 * ?")
     private void configureTasks() {

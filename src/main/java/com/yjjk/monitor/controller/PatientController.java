@@ -243,7 +243,7 @@ public class PatientController extends BaseController {
         for (int i = 0; i < monitorsInfo.size(); i++) {
             monitorsInfo.get(i).setPatientName(StringUtils.replaceNameX(monitorsInfo.get(i).getPatientName()));
         }
-        // 设置温度帖盒子信息
+        // 设置温度帖盒子信息，默认为NORMAL，低电量赋值为LOW
         monitorsInfo = super.boxService.setBoxesInfo(monitorsInfo);
         // 设置体温规则
         monitorsInfo = super.temperatureBoundService.updateUseMachine(monitorsInfo, departmentId);

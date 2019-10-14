@@ -69,7 +69,7 @@ public class TemperatureBoundServiceImpl extends BaseService implements Temperat
             temperatureBound = super.zsTemperatureBoundMapper.selectByPrimaryKey(TemperatureConstant.DEFAULT_DEPARTMENT_ID);
         }
         for (int i = 0; i < monitorsInfo.size(); i++) {
-            if (monitorsInfo.get(i).getRecordId() != null) {
+            if (monitorsInfo.get(i).getTemperature() != null) {
                 Double temperature = Double.parseDouble(monitorsInfo.get(i).getTemperature());
                 /** 设置体温状态 */
                 if (temperature <= temperatureBound.getLowTemperature()) {
