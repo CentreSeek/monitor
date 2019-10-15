@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.yjjk</groupId>
     <artifactId>monitor</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
     <name>monitor</name>
     <description>义金健康体温监控系统</description>
 
