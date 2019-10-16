@@ -17,7 +17,6 @@ import com.yjjk.monitor.service.BaseService;
 import com.yjjk.monitor.service.BoxService;
 import org.springframework.stereotype.Service;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -31,16 +30,13 @@ public class BoxServiceImpl extends BaseService implements BoxService {
     @Override
     public List<UseMachineVO> setBoxesInfo(List<UseMachineVO> monitorsInfo) {
         List<ZsBoxInfo> zsBoxesInfo = super.zsBoxInfoMapper.selectAll();
-        Iterator<ZsBoxInfo> iter = zsBoxesInfo.iterator();
         for (int i = 0; i < monitorsInfo.size(); i++) {
             String machineNum = monitorsInfo.get(i).getMachineNum();
             if (monitorsInfo.get(i).getRecordId() != null) {
                 monitorsInfo.get(i).setBoxBatteryStatus(BoxConstant.BOX_STATUS_NORMAL);
-                while (iter.hasNext()) {
-                    ZsBoxInfo next = iter.next();
-                    if (machineNum == next.getMachineNum()) {
-                        monitorsInfo.get(i).setBoxBatteryStatus(next.getBoxBatteryStatus());
-                        iter.remove();
+                for (ZsBoxInfo iter : zsBoxesInfo) {
+                    if (machineNum.equals(iter.getMachineNum())) {
+                        monitorsInfo.get(i).setBoxBatteryStatus(iter.getBoxBatteryStatus());
                         break;
                     }
                 }
