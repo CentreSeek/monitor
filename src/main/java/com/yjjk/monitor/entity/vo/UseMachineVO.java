@@ -45,7 +45,7 @@ public class UseMachineVO {
     private Long recordId;
     @ApiModelProperty(value = "record:设备ID")
     private Integer machineId;
-    @ApiModelProperty(value = "record:使用状态 0：预热中 1：使用中 2：连接异常")
+    @ApiModelProperty(value = "record:使用状态 0：预热中 1：使用中 2：连接异常 3：未使用 4：未佩戴 5：未按规范佩戴")
     private Integer recordState;
     @ApiModelProperty(value = "record:启用时间")
     private String startTime;
