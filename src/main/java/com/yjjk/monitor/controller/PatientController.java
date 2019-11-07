@@ -226,7 +226,8 @@ public class PatientController extends BaseController {
      */
     @ApiOperation("获取监控信息")
     @RequestMapping(value = "/monitor", method = RequestMethod.GET)
-    public CommonResult<List<UseMachineVO>> getMinitors(@ApiParam(value = "管理员id",required = true) @RequestParam(value = "managerId") Integer managerId,
+    public CommonResult<List<UseMachineVO>> getMinitors(@ApiParam(value = "管理员id", required = true) @RequestParam(value = "managerId") Integer managerId,
+                                                        @ApiParam(value = "使用中设备0：使用中 1：未使用") @RequestParam(value = "used", required = false) Integer used,
                                                         @ApiParam(value = "起始床位id") @RequestParam(value = "start", required = false) Integer start,
                                                         @ApiParam(value = "结束床位id") @RequestParam(value = "end", required = false) Integer end) {
         /********************** 参数初始化 **********************/
@@ -239,6 +240,10 @@ public class PatientController extends BaseController {
         List<UseMachineVO> monitorsInfo = super.patientRecordService.getMonitorsInfo(departmentId);
         // 根据病床id筛选监控信息
         monitorsInfo = super.patientRecordService.selectiveByBedId(monitorsInfo, start == null ? 0 : start, end == null ? Integer.MAX_VALUE : end);
+        // 设备是否为使用中设备
+        if (used != null && used == 0) {
+            monitorsInfo = super.patientRecordService.isUsed(monitorsInfo);
+        }
         // 姓名隐私
         for (int i = 0; i < monitorsInfo.size(); i++) {
             monitorsInfo.get(i).setPatientName(StringUtils.replaceNameX(monitorsInfo.get(i).getPatientName()));
@@ -465,7 +470,7 @@ public class PatientController extends BaseController {
         try {
 
             /********************** 参数初始化 **********************/
-            if (param.getDepartmentId().equals(TemperatureConstant.DEFAULT_DEPARTMENT_ID)){
+            if (param.getDepartmentId().equals(TemperatureConstant.DEFAULT_DEPARTMENT_ID)) {
                 return ResultUtil.returnError(ErrorCodeEnum.TEMPERATURE_BOUND_DEPARTMENT_ERROR);
             }
             Integer i = super.temperatureBoundService.setTemperatureBound(param);

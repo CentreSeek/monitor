@@ -68,6 +68,14 @@ public interface PatientRecordService {
      */
     List<UseMachineVO> selectiveByBedId(List<UseMachineVO> list, Integer start, Integer end);
 
+    /**
+     * 筛选使用中的设备
+     *
+     * @param list
+     * @return
+     */
+    List<UseMachineVO> isUsed(List<UseMachineVO> list);
+
 //    /**
 //     * 获取实时监控信息
 //     * @return

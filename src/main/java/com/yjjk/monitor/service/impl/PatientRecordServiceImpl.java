@@ -128,6 +128,19 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
         return list;
     }
 
+    @Override
+    public List<UseMachineVO> isUsed(List<UseMachineVO> list) {
+        Iterator<UseMachineVO> iter = list.iterator();
+        while (iter.hasNext()) {
+            UseMachineVO item = iter.next();
+
+            if (item.getRecordId() == null) {
+                iter.remove();
+            }
+        }
+        return list;
+    }
+
 //    @Override
 //    @Deprecated
 //    public List<PatientTemperature> getMinitorsTemperature(Integer departmentId) {
