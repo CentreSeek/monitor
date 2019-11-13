@@ -11,6 +11,7 @@
 package com.yjjk.monitor.service.impl;
 
 import com.yjjk.monitor.entity.ZsMachineInfo;
+import com.yjjk.monitor.entity.ZsMachineTypeInfo;
 import com.yjjk.monitor.entity.export.MachineExport;
 import com.yjjk.monitor.entity.export.MachineExportVO;
 import com.yjjk.monitor.service.BaseService;
@@ -43,8 +44,8 @@ public class MachineServiceImpl extends BaseService implements MachineService {
     }
 
     @Override
-    public int insertByMachineNums(ZsMachineInfo machineInfo) {
-        return super.ZsMachineInfoMapper.insertByMachineNums(machineInfo);
+    public int insertByMachineNum(ZsMachineInfo machineInfo) {
+        return super.ZsMachineInfoMapper.insertByMachineNum(machineInfo);
     }
 
     @Override
@@ -84,5 +85,15 @@ public class MachineServiceImpl extends BaseService implements MachineService {
     @Override
     public int selectByMachineNo(String machineNo) {
         return super.ZsMachineInfoMapper.selectCountByMachineNo(machineNo);
+    }
+
+    @Override
+    public List<ZsMachineTypeInfo> selectMachineTypes() {
+        return super.zsMachineTypeInfoMapper.selectMachineTypes();
+    }
+
+    @Override
+    public List<ZsMachineTypeInfo> selectMachineNums(Integer id) {
+        return super.zsMachineTypeInfoMapper.selectMachineNums(id);
     }
 }

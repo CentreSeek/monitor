@@ -40,7 +40,12 @@
     </select>
 
     <select id="getMonitorsInfo" resultType="com.yjjk.monitor.entity.vo.UseMachineVO" parameterType="java.lang.Integer" useCache="true">
-        SELECT a.*,b.*
+        SELECT a.bedId,a.`department_id`,a.departmentName,a.roomName,
+        a.bedName,
+        b.recordId, b.machineId,
+        b.patientName,b.caseNum,
+        b.machineNum, b.machineNo,
+        b.endTime, b.startTime, b.`bed_id`
         FROM ( SELECT zbi.`bed_id` as bedId,zdi.`department_id`,zdi.name AS departmentName,zri.name AS roomName,
         zbi.name AS bedName
         FROM zs_bed_info zbi
@@ -147,7 +152,8 @@
         zti.temperature, zti.`create_time` AS dateTime
         FROM `zs_temperature_info` zti
         LEFT JOIN `zs_machine_info` zmi ON zmi.machine_num = zti.`machine_num`
-        LEFT JOIN (SELECT a.patient_id, a.start_time, a.machine_id FROM `zs_patient_record` a where a.`usage_state` = 0) zpr ON zpr.`machine_id` = zmi.`machine_id`
+        LEFT JOIN (SELECT a.patient_id, a.start_time, a.machine_id FROM `zs_patient_record` a where a.`usage_state` = 0) zpr
+        ON zpr.`machine_id` = zmi.`machine_id`
         WHERE
         zti.`create_time` <![CDATA[>=]]> zpr.`start_time`
         AND zti.`create_time` <![CDATA[<=]]> #{endTime, jdbcType=VARCHAR}

@@ -28,12 +28,12 @@ public class RepeaterServiceImpl extends BaseService implements RepeaterService 
 
     @Override
     public List<ZsMachineTypeInfo> selectMachineTypes() {
-        return super.zsMachineTypeInfoMapper.selectMachineTypes();
+        return super.zsMachineTypeInfoMapper.selectRepeaterTypes();
     }
 
     @Override
     public List<ZsMachineTypeInfo> selectMachineNums(Integer id) {
-        return super.zsMachineTypeInfoMapper.selectMachineNums(id);
+        return super.zsMachineTypeInfoMapper.selectRepeaterNums(id);
     }
 
     @Override

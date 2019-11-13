@@ -11,6 +11,7 @@
 package com.yjjk.monitor.service;
 
 import com.yjjk.monitor.entity.ZsMachineInfo;
+import com.yjjk.monitor.entity.ZsMachineTypeInfo;
 import com.yjjk.monitor.entity.export.MachineExportVO;
 
 import java.util.List;
@@ -42,7 +43,7 @@ public interface MachineService {
      * @param machineInfo
      * @return
      */
-    int insertByMachineNums(ZsMachineInfo machineInfo);
+    int insertByMachineNum(ZsMachineInfo machineInfo);
 
     /**
      * 查询设备总数(machineId, usageState)
@@ -92,4 +93,17 @@ public interface MachineService {
      * @return
      */
     int selectByMachineNo(String machineNo);
+
+    /**
+     * 查询设备名称
+     * @return
+     */
+    List<ZsMachineTypeInfo> selectMachineTypes();
+
+    /**
+     * 查询设备型号
+     * @param id
+     * @return
+     */
+    List<ZsMachineTypeInfo> selectMachineNums(Integer id);
 }

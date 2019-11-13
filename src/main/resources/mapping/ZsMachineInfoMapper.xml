@@ -54,6 +54,7 @@
         zmi.create_time, zmi.`status`, zdi.name as department_name
         from zs_machine_info zmi
         left join zs_department_info zdi on zmi.department_id = zdi.department_id
+        LEFT JOIN zs_machine_type_info zmti ON zmi.`machine_type_id` = zmti.`id`
         <where>
             <if test="machineId != null">
                 and zmi.machine_id = #{machineId,jdbcType=INTEGER}
@@ -72,6 +73,7 @@
             </if>
             and zmi.status = 0
         </where>
+        ORDER BY zmti.`parent_id`, FIELD(zmi.usage_state,2,0,1), zmi.create_time
         <if test="startLine != null and pageSize != null">
             limit #{startLine},#{pageSize}
         </if>
@@ -193,7 +195,7 @@
         </trim>
     </insert>
 
-    <insert id="insertByMachineNums" parameterType="com.yjjk.monitor.entity.ZsMachineInfo">
+    <insert id="insertByMachineNum" parameterType="com.yjjk.monitor.entity.ZsMachineInfo">
         insert into zs_machine_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="machineId != null">
@@ -223,13 +225,14 @@
             <if test="machineNo != null">
                 machine_no,
             </if>
-            <if test="machineNums != null">
+            <if test="machineNum != null">
                 machine_num,
             </if>
+            <if test="machineTypeId != null">
+                machine_type_id,
+            </if>
         </trim>
-        values
-        <foreach item="item" collection="machineNums" separator="," index="">
-            (
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="machineId != null">
                 #{machineId,jdbcType=INTEGER},
             </if>
@@ -257,8 +260,13 @@
             <if test="machineNo != null">
                 #{machineNo,jdbcType=VARCHAR},
             </if>
-            #{item, jdbcType=VARCHAR})
-        </foreach>
+            <if test="machineNum != null">
+                #{machineNum,jdbcType=VARCHAR},
+            </if>
+            <if test="machineTypeId != null">
+                #{machineTypeId,jdbcType=VARCHAR},
+            </if>
+        </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.yjjk.monitor.entity.ZsMachineInfo">
         update zs_machine_info

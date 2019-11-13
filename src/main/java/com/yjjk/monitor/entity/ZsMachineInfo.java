@@ -14,9 +14,7 @@ import io.swagger.annotations.ApiParam;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
+import javax.validation.constraints.NotNull;
 
 /**
  * @Description: 智能温度贴
@@ -31,19 +29,23 @@ public class ZsMachineInfo  {
     private String name;
     @ApiParam(value = "设备型号", required = true)
     private String machineModel;
+    @NotNull
     @ApiParam(value = "SN序列号", required = true)
     private String machineNum;
+    @NotNull
     @ApiParam(value = "科室id", required = true)
     private Integer departmentId;
     private Integer usageState;
     private String remark;
     private String createTime;
     private Integer status;
+    @NotNull
     @ApiParam(value = "设备编号", required = true)
     private String machineNo;
+    @NotNull
+    @ApiParam(value = "设备类型id", required = true)
+    private Integer machineTypeId;
 
-    /** 批量导入：设备编号 */
-    private List<String> machineNums;
     /** 分页信息 */
     private Integer startLine;
     private Integer pageSize;

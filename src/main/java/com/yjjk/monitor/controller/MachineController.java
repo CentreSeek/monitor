@@ -10,9 +10,11 @@
  */
 package com.yjjk.monitor.controller;
 
+import com.yjjk.monitor.configer.CommonResult;
 import com.yjjk.monitor.configer.ErrorCodeEnum;
 import com.yjjk.monitor.constant.MachineConstant;
 import com.yjjk.monitor.entity.ZsMachineInfo;
+import com.yjjk.monitor.entity.ZsMachineTypeInfo;
 import com.yjjk.monitor.entity.export.MachineExportVO;
 import com.yjjk.monitor.utility.ExcelUtils;
 import com.yjjk.monitor.utility.ResultUtil;
@@ -26,8 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,41 +53,19 @@ public class MachineController extends BaseController {
      */
     @ApiOperation(value = "新增设备")
     @RequestMapping(value = "/machine", method = RequestMethod.POST)
-    public void addMachine(ZsMachineInfo machineInfo, HttpServletRequest request, HttpServletResponse response) {
+    public void addMachine(@Valid ZsMachineInfo machineInfo, HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
         long startTime = System.currentTimeMillis();
         boolean resultCode = false;
         String message = "";
-        if (StringUtils.isNullorEmpty(machineInfo.getName()) || StringUtils.isNullorEmpty(machineInfo.getMachineModel()) ||
-                StringUtils.isNullorEmpty(machineInfo.getMachineNum()) || StringUtils.isNullorEmpty(machineInfo.getDepartmentId()) ||
-                StringUtils.isNullorEmpty(machineInfo.getMachineNo())) {
-            message = "参数错误";
-            returnResult(startTime, request, response, resultCode, message, "");
-            return;
-        }
-        List<String> list = new ArrayList<>();
-        list.add(machineInfo.getMachineNum());
-        machineInfo.setMachineNums(list);
-        for (int i = 0; i < list.size(); i++) {
-            if (!StringUtils.checkMachineNum(list.get(i))) {
-                message = "设备号格式错误或“；”为中文符号  错误示例：710/B34.00066041 正确示例：B34/00066041";
-                returnResult(startTime, request, response, resultCode, message, "");
-                return;
-            }
-            int count = super.machineService.selectByMachineNum(list.get(i));
-            if (count > 0) {
-                message = "该设备信息已存在，请核实后录入";
-                returnResult(startTime, request, response, resultCode, message, "");
-                return;
-            }
-        }
+        int count = super.machineService.selectByMachineNum(machineInfo.getMachineNum());
         int count2 = super.machineService.selectByMachineNo(machineInfo.getMachineNo());
-        if (count2 > 0) {
+        if (count > 0 || count2 > 0) {
             message = "该设备信息已存在，请核实后录入";
             returnResult(startTime, request, response, resultCode, message, "");
             return;
         }
-        int i = super.machineService.insertByMachineNums(machineInfo);
+        int i = super.machineService.insertByMachineNum(machineInfo);
         if (i == 0) {
             message = "设备新增失败";
             returnResult(startTime, request, response, resultCode, message, i);
@@ -105,7 +85,7 @@ public class MachineController extends BaseController {
      * @param response
      */
     @RequestMapping(value = "/machine", method = RequestMethod.DELETE)
-    public void updateMachine(@RequestParam(value = "machineId") Integer machineId,
+    public void stopMachine(@RequestParam(value = "machineId") Integer machineId,
                               @RequestParam(value = "remark", required = false) String remark,
                               HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
@@ -131,7 +111,7 @@ public class MachineController extends BaseController {
     }
 
     /**
-     * 获取设备信息
+     * 获取体温设备信息
      *
      * @param usageState
      * @param currentPage
@@ -190,6 +170,7 @@ public class MachineController extends BaseController {
 
     /**
      * 设备导出
+     *
      * @param usageState
      * @param departmentId
      * @param request
@@ -197,7 +178,7 @@ public class MachineController extends BaseController {
      */
     @ApiOperation(value = "设备信息导出")
     @RequestMapping(value = "/export", method = RequestMethod.GET)
-    public void export(@RequestParam(value = "usageState", required = false) Integer usageState,
+    public void exportMachinesInfo(@RequestParam(value = "usageState", required = false) Integer usageState,
                        @RequestParam(value = "departmentId", required = false) Integer departmentId,
                        HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
@@ -222,5 +203,40 @@ public class MachineController extends BaseController {
             e.printStackTrace();
             ResultUtil.returnError(ErrorCodeEnum.UNKNOWN_ERROR);
         }
+    }
+
+    /**
+     * 获取设备名称
+     * @return
+     */
+    @ApiOperation(value = "获取设备名称")
+    @RequestMapping(value = "/machineName", method = RequestMethod.GET)
+    public CommonResult getMachineName() {
+        try {
+            /********************** 参数初始化 **********************/
+            List<ZsMachineTypeInfo> list = super.machineService.selectMachineTypes();
+            return ResultUtil.returnSuccess(list);
+        } catch (Exception e) {
+            return ResultUtil.returnError(ErrorCodeEnum.UNKNOWN_ERROR);
+        }
+
+    }
+
+    /**
+     * 获取设备型号
+     * @param id
+     * @return
+     */
+    @ApiOperation(value = "获取设备型号")
+    @RequestMapping(value = "/machineNum", method = RequestMethod.GET)
+    public CommonResult getMachineNum(@RequestParam(value = "machineTypeId") Integer id) {
+        try {
+            /********************** 参数初始化 **********************/
+            List<ZsMachineTypeInfo> list = super.machineService.selectMachineNums(id);
+            return ResultUtil.returnSuccess(list);
+        } catch (Exception e) {
+            return ResultUtil.returnError(ErrorCodeEnum.UNKNOWN_ERROR);
+        }
+
     }
 }

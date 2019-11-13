@@ -12,10 +12,8 @@ package com.yjjk.monitor.controller;
 
 import com.yjjk.monitor.entity.ZsMachineTypeInfo;
 import com.yjjk.monitor.entity.ZsRepeaterInfo;
-import com.yjjk.monitor.entity.ZsRoomInfo;
 import com.yjjk.monitor.utility.DateUtil;
 import com.yjjk.monitor.utility.StringUtils;
-import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -63,7 +61,7 @@ public class RepeaterController extends BaseController {
      * @param response
      */
     @RequestMapping(value = "/machineNum", method = RequestMethod.GET)
-    public void getMachineNum(@RequestParam(value = "id") Integer id,
+    public void getRepeaterNum(@RequestParam(value = "id") Integer id,
                               HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
         long startTime = System.currentTimeMillis();

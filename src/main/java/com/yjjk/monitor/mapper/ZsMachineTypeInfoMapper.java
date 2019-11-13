@@ -2,7 +2,6 @@ package com.yjjk.monitor.mapper;
 
 import com.yjjk.monitor.entity.ZsMachineTypeInfo;
 import org.apache.ibatis.annotations.Mapper;
-import org.mybatis.spring.annotation.MapperScan;
 
 import java.util.List;
 
@@ -21,7 +20,20 @@ public interface ZsMachineTypeInfoMapper {
     int updateByPrimaryKey(ZsMachineTypeInfo record);
 
     /**
-     * 查询设备名称
+     * 查询设备名称（路由器）
+     * @return
+     */
+    List<ZsMachineTypeInfo> selectRepeaterTypes();
+
+    /**
+     * 查询设备型号（路由器）
+     * @param id
+     * @return
+     */
+    List<ZsMachineTypeInfo> selectRepeaterNums(Integer id);
+
+    /**
+     * 查询设备名称（体温贴、心电贴）
      * @return
      */
     List<ZsMachineTypeInfo> selectMachineTypes();
@@ -32,4 +44,5 @@ public interface ZsMachineTypeInfoMapper {
      * @return
      */
     List<ZsMachineTypeInfo> selectMachineNums(Integer id);
+
 }

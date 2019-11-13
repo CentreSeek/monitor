@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjjk.monitor.mapper.ZsHealthInfoMapper">
+  <resultMap id="BaseResultMap" type="com.yjjk.monitor.entity.ZsHealthInfo">
+    <id column="temperature_id" jdbcType="INTEGER" property="temperatureId" />
+    <result column="machine_id" jdbcType="VARCHAR" property="machineId" />
+    <result column="heart_rate" jdbcType="DECIMAL" property="heartRate" />
+    <result column="respiratory_rate" jdbcType="DECIMAL" property="respiratoryRate" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="timestamp" jdbcType="BIGINT" property="timestamp" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    temperature_id, machine_id, heart_rate, respiratory_rate, create_time, `timestamp`
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from zs_health_info
+    where temperature_id = #{temperatureId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from zs_health_info
+    where temperature_id = #{temperatureId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.yjjk.monitor.entity.ZsHealthInfo">
+    insert into zs_health_info (temperature_id, machine_id, heart_rate, 
+      respiratory_rate, create_time, `timestamp`
+      )
+    values (#{temperatureId,jdbcType=INTEGER}, #{machineId,jdbcType=VARCHAR}, #{heartRate,jdbcType=DECIMAL}, 
+      #{respiratoryRate,jdbcType=DECIMAL}, #{createTime,jdbcType=TIMESTAMP}, #{timestamp,jdbcType=BIGINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.yjjk.monitor.entity.ZsHealthInfo">
+    insert into zs_health_info
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="temperatureId != null">
+        temperature_id,
+      </if>
+      <if test="machineId != null">
+        machine_id,
+      </if>
+      <if test="heartRate != null">
+        heart_rate,
+      </if>
+      <if test="respiratoryRate != null">
+        respiratory_rate,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="timestamp != null">
+        `timestamp`,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="temperatureId != null">
+        #{temperatureId,jdbcType=INTEGER},
+      </if>
+      <if test="machineId != null">
+        #{machineId,jdbcType=VARCHAR},
+      </if>
+      <if test="heartRate != null">
+        #{heartRate,jdbcType=DECIMAL},
+      </if>
+      <if test="respiratoryRate != null">
+        #{respiratoryRate,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="timestamp != null">
+        #{timestamp,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.yjjk.monitor.entity.ZsHealthInfo">
+    update zs_health_info
+    <set>
+      <if test="machineId != null">
+        machine_id = #{machineId,jdbcType=VARCHAR},
+      </if>
+      <if test="heartRate != null">
+        heart_rate = #{heartRate,jdbcType=DECIMAL},
+      </if>
+      <if test="respiratoryRate != null">
+        respiratory_rate = #{respiratoryRate,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="timestamp != null">
+        `timestamp` = #{timestamp,jdbcType=BIGINT},
+      </if>
+    </set>
+    where temperature_id = #{temperatureId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.yjjk.monitor.entity.ZsHealthInfo">
+    update zs_health_info
+    set machine_id = #{machineId,jdbcType=VARCHAR},
+      heart_rate = #{heartRate,jdbcType=DECIMAL},
+      respiratory_rate = #{respiratoryRate,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      `timestamp` = #{timestamp,jdbcType=BIGINT}
+    where temperature_id = #{temperatureId,jdbcType=INTEGER}
+  </update>
+</mapper>

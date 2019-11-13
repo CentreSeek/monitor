@@ -26,7 +26,7 @@ public interface ZsMachineInfoMapper {
      * @param machineInfo
      * @return
      */
-    int insertByMachineNums(ZsMachineInfo machineInfo);
+    int insertByMachineNum(ZsMachineInfo machineInfo);
 
     /**
      * select---查询设备总数(machineId, usageState)

@@ -19,12 +19,18 @@
         from zs_machine_type_info
         where id = #{id,jdbcType=INTEGER}
     </select>
-    <select id="selectMachineTypes" resultMap="BaseResultMap">
+    <select id="selectRepeaterTypes" resultMap="BaseResultMap">
     SELECT id,NAME FROM `zs_machine_type_info` WHERE TYPE = 1 AND LEVEL=0;
   </select>
-
-    <select id="selectMachineNums" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    <select id="selectRepeaterNums" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     SELECT id,NAME FROM `zs_machine_type_info` WHERE parent_id = #{id,jdbcType=INTEGER} and TYPE = 1 AND LEVEL = 1;
+  </select>
+
+    <select id="selectMachineTypes" resultMap="BaseResultMap">
+    SELECT id,NAME FROM `zs_machine_type_info` WHERE (TYPE = 0 or type = 2) AND LEVEL=0;
+  </select>
+    <select id="selectMachineNums" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    SELECT id,NAME FROM `zs_machine_type_info` WHERE parent_id = #{id,jdbcType=INTEGER} AND LEVEL = 1;
   </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">

@@ -52,15 +52,15 @@ import java.util.Map;
 
 /**
  * @author CentreS
- * @Description: 病人管理模块
+ * @Description: 体温管理模块
  * @create 2019/7/19
  */
-@Api(tags = {"监控管理模块"})
+@Api(tags = {"体温管理模块"})
 @RestController
 @RequestMapping("patient")
-public class PatientController extends BaseController {
+public class TemperatureController extends BaseController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PatientController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TemperatureController.class);
 
     /**
      * 启用设备
@@ -73,7 +73,7 @@ public class PatientController extends BaseController {
      * @param response
      */
     @RequestMapping(value = "/patient", method = RequestMethod.POST)
-    public synchronized void addMachine(@RequestParam(value = "bedId") Integer bedId,
+    public synchronized void startMachine(@RequestParam(value = "bedId") Integer bedId,
                                         @RequestParam(value = "machineId") Integer machineId,
                                         @RequestParam(value = "name") String name,
                                         @RequestParam(value = "caseNum") String caseNum,
@@ -100,6 +100,7 @@ public class PatientController extends BaseController {
                 return;
             } else {
                 zsPatientInfo1.setName(name);
+                zsPatientInfo1.setBedId(bedId);
                 // 更新病人信息
                 super.patientService.updateName(zsPatientInfo1);
             }
@@ -382,7 +383,7 @@ public class PatientController extends BaseController {
     }
 
     @RequestMapping(value = "/export", method = RequestMethod.GET)
-    public void export(@RequestParam(value = "timeList") List<String> timeList,
+    public void exportTemperatureHistory(@RequestParam(value = "timeList") List<String> timeList,
                        @RequestParam(value = "token") String token,
                        HttpServletResponse response) throws IOException {
         if (timeList.size() == 0) {
