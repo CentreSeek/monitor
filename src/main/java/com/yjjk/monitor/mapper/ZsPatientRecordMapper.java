@@ -1,11 +1,8 @@
 package com.yjjk.monitor.mapper;
 
 import com.yjjk.monitor.entity.ZsPatientRecord;
-import com.yjjk.monitor.entity.vo.RecordHistory2Excel;
+import com.yjjk.monitor.entity.vo.*;
 import com.yjjk.monitor.entity.json.TemperatureHistory;
-import com.yjjk.monitor.entity.vo.PatientTemperature;
-import com.yjjk.monitor.entity.vo.RecordHistory;
-import com.yjjk.monitor.entity.vo.UseMachineVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -28,10 +25,16 @@ public interface ZsPatientRecordMapper {
     int updateByPrimaryKey(ZsPatientRecord record);
 
     /**
-     * select---获取监控列表
+     * select---获取体温监控列表
      * @return
      */
     List<UseMachineVO> getMonitorsInfo(Integer departmentId);
+
+    /**
+     * select---获取Ecg监控列表
+     * @return
+     */
+    List<UseMachineVO> getMonitorsInfoForEcg(Integer departmentId);
 
     /**
      * select---获取实时监控信息

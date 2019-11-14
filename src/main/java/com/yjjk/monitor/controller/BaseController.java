@@ -72,6 +72,8 @@ public class BaseController {
     protected TemperatureBoundService temperatureBoundService;
     @Resource
     protected BoxService boxService;
+    @Resource
+    protected EcgService ecgService;
 
 
 

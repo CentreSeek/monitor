@@ -10,9 +10,13 @@
  */
 package com.yjjk.monitor.configer;
 
+import com.alibaba.fastjson.JSONArray;
 import com.yjjk.monitor.controller.BaseController;
+import com.yjjk.monitor.entity.ZsEcgInfo;
+import com.yjjk.monitor.mapper.ZsEcgInfoMapper;
 import com.yjjk.monitor.service.HospitalService;
 import com.yjjk.monitor.utility.DateUtil;
+import com.yjjk.monitor.websocket.WebSocketServer;
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -20,6 +24,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.IOException;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 @Component
 @Configuration      // 1.主要用于标记配置类，兼备Component的效果。
@@ -34,6 +40,8 @@ public class TimingPlan{
     protected static Logger logger = Logger.getLogger(BaseController.class);
     @Resource
     private HospitalService hospitalService;
+    @Resource
+    private ZsEcgInfoMapper zsEcgInfoMapper;
     /**
      * 定时计划：1.清理过期预约
      */
@@ -42,6 +50,22 @@ public class TimingPlan{
         String date = DateUtil.getOneMonthAgo();
         int i = hospitalService.temperatureInfoTask(date);
         logger.info("执行体温定时计划     时间: " + date + "   执行条数:" + i);
+    }
+    @Scheduled(cron = "*/1 * * * * ?")
+    private void pushEcgInfo() {
+        CopyOnWriteArraySet<WebSocketServer> webSocketSet =
+                WebSocketServer.getWebSocketSet();
+        int i = 0 ;
+        webSocketSet.forEach(c->{
+            try {
+                ZsEcgInfo newEcg = zsEcgInfoMapper.getNewEcg(c.getMachineId());
+                String s = JSONArray.toJSONString(newEcg);
+                c.sendMessage(s);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
     }
 //    @Scheduled(cron = "0 0 0 * * ?")
 //    private void configureTimerCountTasks() {

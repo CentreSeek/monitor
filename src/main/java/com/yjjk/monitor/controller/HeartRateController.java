@@ -12,6 +12,7 @@ package com.yjjk.monitor.controller;
 
 import com.yjjk.monitor.configer.CommonResult;
 import com.yjjk.monitor.entity.ZsManagerInfo;
+import com.yjjk.monitor.entity.vo.EcgMonitorVO;
 import com.yjjk.monitor.entity.vo.UseMachineVO;
 import com.yjjk.monitor.utility.ResultUtil;
 import com.yjjk.monitor.utility.StringUtils;
@@ -45,7 +46,7 @@ public class HeartRateController extends BaseController{
      */
     @ApiOperation("心电监测信息")
     @RequestMapping(value = "/monitor", method = RequestMethod.GET)
-    public CommonResult<List<UseMachineVO>> getMinitors(@ApiParam(value = "管理员id", required = true) @RequestParam(value = "managerId") Integer managerId,
+    public CommonResult<List<EcgMonitorVO>> getMinitors(@ApiParam(value = "管理员id", required = true) @RequestParam(value = "managerId") Integer managerId,
                                                         @ApiParam(value = "使用中设备0：使用中 1：未使用") @RequestParam(value = "used", required = false) Integer used,
                                                         @ApiParam(value = "起始床位id") @RequestParam(value = "start", required = false) Integer start,
                                                         @ApiParam(value = "结束床位id") @RequestParam(value = "end", required = false) Integer end) {
@@ -56,7 +57,7 @@ public class HeartRateController extends BaseController{
             departmentId = managerInfo.getDepartmentId();
         }
         // 监控信息
-        List<UseMachineVO> monitorsInfo = super.patientRecordService.getMonitorsInfo(departmentId);
+        List<UseMachineVO> monitorsInfo = super.ecgService.getMonitorsInfo(departmentId);
         // 根据病床id筛选监控信息
         monitorsInfo = super.patientRecordService.selectiveByBedId(monitorsInfo, start == null ? 0 : start, end == null ? Integer.MAX_VALUE : end);
         // 设备是否为使用中设备
@@ -67,11 +68,9 @@ public class HeartRateController extends BaseController{
         for (int i = 0; i < monitorsInfo.size(); i++) {
             monitorsInfo.get(i).setPatientName(StringUtils.replaceNameX(monitorsInfo.get(i).getPatientName()));
         }
-        // 设置温度帖盒子信息，默认为NORMAL，低电量赋值为LOW
-        monitorsInfo = super.boxService.setBoxesInfo(monitorsInfo);
         // 设置体温规则
-        monitorsInfo = super.temperatureBoundService.updateUseMachine(monitorsInfo, departmentId);
-        return ResultUtil.returnSuccess(monitorsInfo);
+        List<EcgMonitorVO> list = super.ecgService.updateUseMachine(monitorsInfo, departmentId);
+        return ResultUtil.returnSuccess(list);
     }
 
 }

@@ -65,7 +65,37 @@
         FROM `zs_patient_record` zpr
         LEFT JOIN zs_patient_info zpi ON zpr.`patient_id` = zpi.`patient_id`
         LEFT JOIN `zs_machine_info` zmi ON zpr.`machine_id` = zmi.`machine_id`
-        WHERE zpr.`usage_state` = 0) b ON b.bed_id = a.bedId
+        WHERE zpr.`usage_state` = 0 and zpr.record_type=0) b ON b.bed_id = a.bedId
+        order by a.bedId
+    </select>
+
+    <select id="getMonitorsInfoForEcg" resultType="com.yjjk.monitor.entity.vo.UseMachineVO" parameterType="java.lang.Integer" useCache="true">
+        SELECT a.bedId,a.`department_id`,a.departmentName,a.roomName,
+        a.bedName,
+        b.recordId, b.machineId,
+        b.patientName,b.caseNum,
+        b.machineNum, b.machineNo,
+        b.endTime, b.startTime, b.`bed_id`,b.pattery
+        FROM ( SELECT zbi.`bed_id` as bedId,zdi.`department_id`,zdi.name AS departmentName,zri.name AS roomName,
+        zbi.name AS bedName
+        FROM zs_bed_info zbi
+        LEFT JOIN zs_room_info zri ON zbi.`room_id` = zri.room_id
+        LEFT JOIN `zs_department_info` zdi ON zri.`department_id` = zdi.`department_id`
+        <where>
+            <if test="departmentId != null">
+                zdi.department_id = #{departmentId, jdbcType=INTEGER}
+            </if>
+        </where>
+        ) a
+        LEFT JOIN
+        (SELECT zpr.`record_id` AS recordId, zpr.`machine_id` AS machineId,
+        zpi.`name` AS patientName, zpi.`case_num` AS caseNum,
+        zmi.machine_num AS machineNum, zmi.machine_no as machineNo,
+        NOW() AS endTime, zpr.start_time AS startTime, zpi.`bed_id`, zmi.pattery
+        FROM `zs_patient_record` zpr
+        LEFT JOIN zs_patient_info zpi ON zpr.`patient_id` = zpi.`patient_id`
+        LEFT JOIN `zs_machine_info` zmi ON zpr.`machine_id` = zmi.`machine_id`
+        WHERE zpr.`usage_state` = 0 and zpr.record_type=1) b ON b.bed_id = a.bedId
         order by a.bedId
     </select>
 
@@ -99,8 +129,13 @@
         LEFT JOIN `zs_bed_info` zbi ON zbi.`bed_id` = zpi.`bed_id`
         LEFT JOIN `zs_room_info` zri ON zbi.`room_id` = zri.`room_id`
         LEFT JOIN `zs_department_info` zdi ON zri.`department_id` = zdi.`department_id`
+        left join zs_machine_info zmi on zmi.machine_id = zpr.machine_id
+        left join zs_machine_type_info zmti on zmti.id = zmi.machine_type_id
         <where>
             zpr.status = 0
+            <if test="machineTypeId != null">
+                and zmti.parent_id = #{machineTypeId, jdbcType=INTEGER}
+            </if>
             <if test="startDate != null">
                 and zpr.create_time <![CDATA[>=]]> CONCAT(#{startDate, jdbcType=VARCHAR},' 00:00:00')
             </if>
@@ -129,8 +164,13 @@
         LEFT JOIN `zs_bed_info` zbi ON zbi.`bed_id` = zpi.`bed_id`
         LEFT JOIN `zs_room_info` zri ON zbi.`room_id` = zri.`room_id`
         LEFT JOIN `zs_department_info` zdi ON zri.`department_id` = zdi.`department_id`
+        left join zs_machine_info zmi on zmi.machine_id = zpr.machine_id
+        left join zs_machine_type_info zmti on zmti.id = zmi.machine_type_id
         <where>
             zpr.status = 0
+            <if test="machineTypeId != null">
+                and zmti.parent_id = #{machineTypeId, jdbcType=INTEGER}
+            </if>
             <if test="startDate != null">
                 and zpr.create_time <![CDATA[>=]]> CONCAT(#{startDate, jdbcType=VARCHAR},' 00:00:00')
             </if>

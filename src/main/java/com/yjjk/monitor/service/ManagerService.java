@@ -76,4 +76,11 @@ public interface ManagerService {
      */
     ZsManagerInfo selectByAccount(ZsManagerInfo managerInfo);
 
+    /**
+     * 使用token查找管理员信息
+     *
+     * @param token
+     * @return
+     */
+    ZsManagerInfo selectByToken(String token);
 }

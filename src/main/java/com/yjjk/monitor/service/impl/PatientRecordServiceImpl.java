@@ -65,49 +65,7 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
     @Override
     public List<UseMachineVO> getMonitorsInfo(Integer departmentId) {
         List<UseMachineVO> monitorList = super.ZsPatientRecordMapper.getMonitorsInfo(departmentId);
-        List<PatientTemperature> temperatureList = super.ZsPatientRecordMapper.getMinitorsTemperature(departmentId);
-        for (int i = 0; i < monitorList.size(); i++) {
-            // 初始化监控状态为：未使用
-            monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_UNUSED);
-            if (monitorList.get(i).getRecordId() != null) {
-                monitorList.get(i).setUseTimes(DateUtil.timeDifferent(monitorList.get(i).getStartTime(), monitorList.get(i).getEndTime()));
-                monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_USAGE);
-                for (int j = 0; j < temperatureList.size(); j++) {
-                    if (monitorList.get(i).getMachineId().equals(temperatureList.get(j).getMachineId())) {
-                        Long recordTime = DateUtil.timeDifferentLong(monitorList.get(i).getStartTime(), DateUtil.getCurrentTime());
-                        // 监测时间小于2分钟为预热中
-                        if (recordTime <= 2) {
-                            monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_READY);
-                        } else {
-                            monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_USAGE);
-                            // 温度小于30℃提示未按规范粘贴
-                            if (Double.parseDouble(temperatureList.get(j).getTemperature()) < 30.0) {
-                                monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_ERR_USED);
-                            }
-                            Long temperatureTimeDifferent = DateUtil.timeDifferentLong(temperatureList.get(j).getCreateTime(),
-                                    DateUtil.getCurrentTime());
-                            // 连接异常判断：最后一条体温数据为3分钟前的数据
-                            if (temperatureTimeDifferent >= 3) {
-                                monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_ERR);
-                            }
-                            // 是否佩戴判断：最后一条体温数据为60分钟前的数据或无温度数据
-                            if (temperatureTimeDifferent >= 60) {
-                                monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_ERR_WEAR);
-                            }
-                        }
-                        // 填充体温数据
-                        monitorList.get(i).setTemperature(temperatureList.get(j).getTemperature());
-                        monitorList.get(i).setTemperatureStatus(temperatureList.get(j).getTemperatureStatus());
-                        monitorList.get(i).setPattery(temperatureList.get(j).getPattery());
-                        break;
-                    }
-                }
-                // 填补特殊漏洞
-                if (temperatureList.size() == 0 || monitorList.get(i).getTemperature() == null) {
-                    monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_ERR_WEAR);
-                }
-            }
-        }
+
         return monitorList;
     }
 
@@ -280,6 +238,54 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
         paraMap.put("highestTemperatureCount", count);
         paraMap.put("highestTemperature", highestTemperature);
         return paraMap;
+    }
+
+    @Override
+    public List<UseMachineVO> updateTemperature(List<UseMachineVO> monitorList, Integer departmentId) {
+        List<PatientTemperature> temperatureList = super.ZsPatientRecordMapper.getMinitorsTemperature(departmentId);
+        for (int i = 0; i < monitorList.size(); i++) {
+            // 初始化监控状态为：未使用
+            monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_UNUSED);
+            if (monitorList.get(i).getRecordId() != null) {
+                monitorList.get(i).setUseTimes(DateUtil.timeDifferent(monitorList.get(i).getStartTime(), monitorList.get(i).getEndTime()));
+                monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_USAGE);
+                for (int j = 0; j < temperatureList.size(); j++) {
+                    if (monitorList.get(i).getMachineId().equals(temperatureList.get(j).getMachineId())) {
+                        Long recordTime = DateUtil.timeDifferentLong(monitorList.get(i).getStartTime(), DateUtil.getCurrentTime());
+                        // 监测时间小于2分钟为预热中
+                        if (recordTime <= 2) {
+                            monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_READY);
+                        } else {
+                            monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_USAGE);
+                            // 温度小于30℃提示未按规范粘贴
+                            if (Double.parseDouble(temperatureList.get(j).getTemperature()) < 30.0) {
+                                monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_ERR_USED);
+                            }
+                            Long temperatureTimeDifferent = DateUtil.timeDifferentLong(temperatureList.get(j).getCreateTime(),
+                                    DateUtil.getCurrentTime());
+                            // 连接异常判断：最后一条体温数据为3分钟前的数据
+                            if (temperatureTimeDifferent >= 3) {
+                                monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_ERR);
+                            }
+                            // 是否佩戴判断：最后一条体温数据为60分钟前的数据或无温度数据
+                            if (temperatureTimeDifferent >= 60) {
+                                monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_ERR_WEAR);
+                            }
+                        }
+                        // 填充体温数据
+                        monitorList.get(i).setTemperature(temperatureList.get(j).getTemperature());
+                        monitorList.get(i).setTemperatureStatus(temperatureList.get(j).getTemperatureStatus());
+                        monitorList.get(i).setPattery(temperatureList.get(j).getPattery());
+                        break;
+                    }
+                }
+                // 填补特殊漏洞
+                if (temperatureList.size() == 0 || monitorList.get(i).getTemperature() == null) {
+                    monitorList.get(i).setRecordState(MonitorRecord.RECORD_STATE_ERR_WEAR);
+                }
+            }
+        }
+        return monitorList;
     }
 
 }

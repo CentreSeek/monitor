@@ -62,4 +62,9 @@ public class ManagerServiceImpl extends BaseService implements ManagerService {
         return super.ZsManagerInfoMapper.selectByAccount(managerInfo);
     }
 
+    @Override
+    public ZsManagerInfo selectByToken(String token) {
+        return super.ZsManagerInfoMapper.selectByToken(token);
+    }
+
 }

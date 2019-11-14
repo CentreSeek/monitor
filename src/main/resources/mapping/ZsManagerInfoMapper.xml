@@ -81,6 +81,18 @@
         </where>
     </select>
 
+    <select id="selectByToken" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        zmi.manager_id, zmi.account, zmi.`password`, zmi.`name`, zmi.phone, zmi.post, zmi.department_id, zmi.sex, zmi.`role`, zmi.login_time,
+        zmi.create_time, zmi.`status`
+        FROM `zs_login_state` zls
+        LEFT JOIN zs_manager_info zmi ON zmi.`manager_id` = zls.`manager_id`
+        <where>
+            zls.`token` = #{token,jdbcType=VARCHAR}
+            and zmi.status = 0
+        </where>
+    </select>
+
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from zs_manager_info
     where manager_id = #{managerId,jdbcType=INTEGER}

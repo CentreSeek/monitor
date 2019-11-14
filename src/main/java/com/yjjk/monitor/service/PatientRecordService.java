@@ -154,4 +154,12 @@ public interface PatientRecordService {
      * @return
      */
     Map<String, Object> parseTemperature(List<TemperatureHistory> list, Map<String, Object> paraMap, Integer machineId);
+
+    /**
+     * 添加体温数据
+     * @param list
+     * @param departmentId
+     * @return
+     */
+    List<UseMachineVO> updateTemperature(List<UseMachineVO> list, Integer departmentId);
 }

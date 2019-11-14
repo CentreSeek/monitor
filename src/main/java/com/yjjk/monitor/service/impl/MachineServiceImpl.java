@@ -96,4 +96,14 @@ public class MachineServiceImpl extends BaseService implements MachineService {
     public List<ZsMachineTypeInfo> selectMachineNums(Integer id) {
         return super.zsMachineTypeInfoMapper.selectMachineNums(id);
     }
+
+    @Override
+    public List<ZsMachineInfo> selectTemperatureMachines(Integer departmentId) {
+        return super.ZsMachineInfoMapper.selectTemperatureMachines(departmentId);
+    }
+
+    @Override
+    public List<ZsMachineInfo> selectHeartMachines(Integer departmentId) {
+        return super.ZsMachineInfoMapper.selectHeartMachines(departmentId);
+    }
 }

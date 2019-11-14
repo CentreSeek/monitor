@@ -39,4 +39,11 @@ public interface ZsManagerInfoMapper {
      */
     ZsManagerInfo selectByAccount(ZsManagerInfo managerInfo);
 
+    /**
+     * 使用token查询管理员信息
+     * @param Token
+     * @return
+     */
+    ZsManagerInfo selectByToken(String Token);
+
 }

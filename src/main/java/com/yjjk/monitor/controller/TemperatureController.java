@@ -239,6 +239,7 @@ public class TemperatureController extends BaseController {
         }
         // 监控信息
         List<UseMachineVO> monitorsInfo = super.patientRecordService.getMonitorsInfo(departmentId);
+        monitorsInfo = super.patientRecordService.updateTemperature(monitorsInfo, departmentId);
         // 根据病床id筛选监控信息
         monitorsInfo = super.patientRecordService.selectiveByBedId(monitorsInfo, start == null ? 0 : start, end == null ? Integer.MAX_VALUE : end);
         // 设备是否为使用中设备

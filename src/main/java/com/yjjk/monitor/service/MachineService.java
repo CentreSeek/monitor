@@ -106,4 +106,18 @@ public interface MachineService {
      * @return
      */
     List<ZsMachineTypeInfo> selectMachineNums(Integer id);
+
+    /**
+     * 查询体温设备编号列表
+     * @param departmentId
+     * @return
+     */
+    List<ZsMachineInfo> selectTemperatureMachines(Integer departmentId);
+
+    /**
+     * 查询心电设备编号列表
+     * @param departmentId
+     * @return
+     */
+    List<ZsMachineInfo> selectHeartMachines(Integer departmentId);
 }

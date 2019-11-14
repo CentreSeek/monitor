@@ -15,6 +15,7 @@ import com.yjjk.monitor.configer.ErrorCodeEnum;
 import com.yjjk.monitor.constant.MachineConstant;
 import com.yjjk.monitor.entity.ZsMachineInfo;
 import com.yjjk.monitor.entity.ZsMachineTypeInfo;
+import com.yjjk.monitor.entity.ZsManagerInfo;
 import com.yjjk.monitor.entity.export.MachineExportVO;
 import com.yjjk.monitor.utility.ExcelUtils;
 import com.yjjk.monitor.utility.ResultUtil;
@@ -86,8 +87,8 @@ public class MachineController extends BaseController {
      */
     @RequestMapping(value = "/machine", method = RequestMethod.DELETE)
     public void stopMachine(@RequestParam(value = "machineId") Integer machineId,
-                              @RequestParam(value = "remark", required = false) String remark,
-                              HttpServletRequest request, HttpServletResponse response) {
+                            @RequestParam(value = "remark", required = false) String remark,
+                            HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
         long startTime = System.currentTimeMillis();
         boolean resultCode = false;
@@ -111,7 +112,7 @@ public class MachineController extends BaseController {
     }
 
     /**
-     * 获取体温设备信息
+     * 获取设备信息
      *
      * @param usageState
      * @param currentPage
@@ -125,6 +126,7 @@ public class MachineController extends BaseController {
                               @RequestParam(value = "departmentId", required = false) Integer departmentId,
                               @RequestParam(value = "currentPage", required = false) Integer currentPage,
                               @RequestParam(value = "pageSize", required = false) Integer pageSize,
+                              @RequestParam(value = "machineTypeId", required = false) Integer machineTypeId,
                               HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
         long startTime = System.currentTimeMillis();
@@ -146,8 +148,13 @@ public class MachineController extends BaseController {
                 return;
             }
         }
-
-        machineInfo.setDepartmentId(departmentId);
+        if (departmentId != null) {
+            machineInfo.setDepartmentId(departmentId);
+        }
+        // 设置查找设备类型
+        if (machineTypeId != null) {
+            machineInfo.setMachineTypeId(machineTypeId);
+        }
         if (!StringUtils.isNullorEmpty(currentPage) && !StringUtils.isNullorEmpty(pageSize)) {
             // 查询总条数
             int totalCount = super.machineService.selectCount(machineInfo);
@@ -179,8 +186,8 @@ public class MachineController extends BaseController {
     @ApiOperation(value = "设备信息导出")
     @RequestMapping(value = "/export", method = RequestMethod.GET)
     public void exportMachinesInfo(@RequestParam(value = "usageState", required = false) Integer usageState,
-                       @RequestParam(value = "departmentId", required = false) Integer departmentId,
-                       HttpServletRequest request, HttpServletResponse response) {
+                                   @RequestParam(value = "departmentId", required = false) Integer departmentId,
+                                   HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
         ZsMachineInfo machineInfo = new ZsMachineInfo();
         // 设备检索条件
@@ -207,6 +214,7 @@ public class MachineController extends BaseController {
 
     /**
      * 获取设备名称
+     *
      * @return
      */
     @ApiOperation(value = "获取设备名称")
@@ -224,6 +232,7 @@ public class MachineController extends BaseController {
 
     /**
      * 获取设备型号
+     *
      * @param id
      * @return
      */
@@ -237,6 +246,31 @@ public class MachineController extends BaseController {
         } catch (Exception e) {
             return ResultUtil.returnError(ErrorCodeEnum.UNKNOWN_ERROR);
         }
+    }
 
+    @ApiOperation(value = "获取体温设备编号列表")
+    @RequestMapping(value = "/temperature", method = RequestMethod.GET)
+    public CommonResult getTemperatureMachine(@RequestParam String token) {
+        try {
+            /********************** 参数初始化 **********************/
+            ZsManagerInfo zsManagerInfo = super.managerService.selectByToken(token);
+            List<ZsMachineInfo> list = super.machineService.selectTemperatureMachines(zsManagerInfo.getDepartmentId());
+            return ResultUtil.returnSuccess(list);
+        } catch (Exception e) {
+            return ResultUtil.returnError(ErrorCodeEnum.UNKNOWN_ERROR);
+        }
+    }
+
+    @ApiOperation(value = "获取心电设备编号列表")
+    @RequestMapping(value = "/heart", method = RequestMethod.GET)
+    public CommonResult getHeartMachine(@RequestParam String token) {
+        try {
+            /********************** 参数初始化 **********************/
+            ZsManagerInfo zsManagerInfo = super.managerService.selectByToken(token);
+            List<ZsMachineInfo> list = super.machineService.selectHeartMachines(zsManagerInfo.getDepartmentId());
+            return ResultUtil.returnSuccess(list);
+        } catch (Exception e) {
+            return ResultUtil.returnError(ErrorCodeEnum.UNKNOWN_ERROR);
+        }
     }
 }

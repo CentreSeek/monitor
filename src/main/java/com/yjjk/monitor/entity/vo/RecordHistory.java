@@ -38,6 +38,7 @@ public class RecordHistory {
     private String endDate;
     private Integer startLine;
     private Integer pageSize;
+    private Integer machineTypeId;
 
     /** requestParam */
     private Integer currentPage;

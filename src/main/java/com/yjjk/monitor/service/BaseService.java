@@ -50,6 +50,10 @@ public class BaseService {
     protected ZsTemperatureBoundMapper zsTemperatureBoundMapper;
     @Resource
     protected ZsBoxInfoMapper zsBoxInfoMapper;
+    @Resource
+    protected ZsHealthInfoMapper zsHealthInfoMapper;
+    @Resource
+    protected ZsEcgInfoMapper zsEcgInfoMapper;
 
 
 }

@@ -16,4 +16,11 @@ public interface ZsEcgInfoMapper {
     int updateByPrimaryKeyWithBLOBs(ZsEcgInfo record);
 
     int updateByPrimaryKey(ZsEcgInfo record);
+
+    /**
+     * 获取心电贴最新心电数据
+     * @param machineId
+     * @return
+     */
+    ZsEcgInfo getNewEcg(Integer machineId);
 }
