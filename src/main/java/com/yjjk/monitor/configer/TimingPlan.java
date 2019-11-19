@@ -14,6 +14,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.yjjk.monitor.controller.BaseController;
 import com.yjjk.monitor.entity.ZsEcgInfo;
 import com.yjjk.monitor.mapper.ZsEcgInfoMapper;
+import com.yjjk.monitor.mapper.ZsHealthInfoMapper;
+import com.yjjk.monitor.service.EcgService;
 import com.yjjk.monitor.service.HospitalService;
 import com.yjjk.monitor.utility.DateUtil;
 import com.yjjk.monitor.websocket.WebSocketServer;
@@ -42,6 +44,10 @@ public class TimingPlan{
     private HospitalService hospitalService;
     @Resource
     private ZsEcgInfoMapper zsEcgInfoMapper;
+    @Resource
+    private ZsHealthInfoMapper zsHealthInfoMapper;
+    @Resource
+    private EcgService ecgService;
     /**
      * 定时计划：1.清理过期预约
      */
@@ -49,8 +55,14 @@ public class TimingPlan{
     private void configureTasks() {
         String date = DateUtil.getOneMonthAgo();
         int i = hospitalService.temperatureInfoTask(date);
+        int j = zsHealthInfoMapper.healthInfoTask(date);
         logger.info("执行体温定时计划     时间: " + date + "   执行条数:" + i);
+        logger.info("执行心率定时计划     时间: " + date + "   执行条数:" + j);
     }
+
+    /**
+     * 实时心电数据推送
+     */
     @Scheduled(cron = "*/1 * * * * ?")
     private void pushEcgInfo() {
         CopyOnWriteArraySet<WebSocketServer> webSocketSet =
@@ -65,7 +77,16 @@ public class TimingPlan{
                 e.printStackTrace();
             }
         });
+    }
 
+    /**
+     * 心电数据清除计划
+     */
+    @Scheduled(cron = "0 0 0 1/7 * ?")
+    private void cleanEcgExport() {
+        String date = DateUtil.getCurrentTime();
+        int j = ecgService.cleanEcgExport();
+        logger.info("执行心电数据清理计划     时间: " + date + "   执行条数:" + j);
     }
 //    @Scheduled(cron = "0 0 0 * * ?")
 //    private void configureTimerCountTasks() {

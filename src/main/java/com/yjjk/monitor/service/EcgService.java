@@ -35,11 +35,15 @@ public interface EcgService {
 
     List<EcgMonitorVO> updateUseMachine(List<UseMachineVO> monitorsInfo, Integer departmentId);
 
-    public abstract List<HealthHistory> getHealthHistory(Long paramLong);
+    List<HealthHistory> getHealthHistory(Long paramLong);
 
-    public abstract HealthHistoryVO parseRateHistory(List<HealthHistory> paramList, HealthHistoryVO paramHealthHistoryVO);
+    HealthHistoryVO parseRateHistory(List<HealthHistory> paramList, HealthHistoryVO paramHealthHistoryVO);
 
-    public abstract boolean stopEcg(ZsPatientRecord paramZsPatientRecord);
+    boolean stopEcg(ZsPatientRecord paramZsPatientRecord);
 
-    public abstract int cleanEcgExport();
+    /**
+     * 清理导出心电数据
+     * @return
+     */
+    int cleanEcgExport();
 }

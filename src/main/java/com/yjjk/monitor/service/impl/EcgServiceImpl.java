@@ -39,35 +39,36 @@ public class EcgServiceImpl
         List<EcgMonitorVO> list = new ArrayList();
         List<ZsHealthInfo> healthInfo = this.zsHealthInfoMapper.getHealthInfo(departmentId);
         for (int i = 0; i < monitorsInfo.size(); i++) {
-            EcgMonitorVO ecgMonitorVO = (EcgMonitorVO) ReflectUtils.transformToBean(monitorsInfo.get(i), EcgMonitorVO.class);
+            EcgMonitorVO ecgMonitorVO = ReflectUtils.transformToBean(monitorsInfo.get(i), EcgMonitorVO.class);
 
             ecgMonitorVO.setRecordState(Integer.valueOf(2));
-            for (int j = 0; j < healthInfo.size(); j++) {
-                if (ecgMonitorVO.getMachineId() == null) {
-                    break;
-                }
-                if (ecgMonitorVO.getMachineId().intValue() == Integer.parseInt(((ZsHealthInfo) healthInfo.get(j)).getMachineId())) {
-                    ecgMonitorVO.setHeartRate(((ZsHealthInfo) healthInfo.get(j)).getHeartRate()).setPattery(((UseMachineVO) monitorsInfo.get(i)).getPattery().toString());
-                    ecgMonitorVO.setRespiratoryRate(((ZsHealthInfo) healthInfo.get(j)).getRespiratoryRate());
-                    ecgMonitorVO.setUseTimes(DateUtil.timeDifferent(((UseMachineVO) monitorsInfo.get(i)).getStartTime(),
-                            ((UseMachineVO) monitorsInfo.get(i)).getEndTime()));
-                    if (DateUtil.getCurrentTimeLong().longValue() - ((ZsHealthInfo) healthInfo.get(j)).getTimestamp().longValue() >= 300000L) {
+            if (ecgMonitorVO.getMachineId() != null) {
+                for (int j = 0; j < healthInfo.size(); j++) {
+                    if (ecgMonitorVO.getMachineId().intValue() == Integer.parseInt((healthInfo.get(j)).getMachineId())) {
+                        ecgMonitorVO.setHeartRate((healthInfo.get(j)).getHeartRate()).setPattery((monitorsInfo.get(i)).getPattery().toString());
+                        ecgMonitorVO.setRespiratoryRate((healthInfo.get(j)).getRespiratoryRate());
+                        ecgMonitorVO.setUseTimes(DateUtil.timeDifferent((monitorsInfo.get(i)).getStartTime(),
+                                (monitorsInfo.get(i)).getEndTime()));
+                        // 如果为三分钟前的数据则判定为 1：连接异常
+                        if (DateUtil.getCurrentTimeLong().longValue() - (healthInfo.get(j)).getTimestamp().longValue() >= 300000L) {
+                            ecgMonitorVO.setRecordState(Integer.valueOf(1));
+                        } else {
+                            ecgMonitorVO.setRecordState(Integer.valueOf(0));
+                        }
+                        if (((healthInfo.get(j)).getHeartRate().doubleValue() > 100.0D) || ((healthInfo.get(j)).getHeartRate().doubleValue() < 50.0D)) {
+                            ecgMonitorVO.setHeartRateStatus(Integer.valueOf(1));
+                        } else {
+                            ecgMonitorVO.setHeartRateStatus(Integer.valueOf(0));
+                        }
+                        if (((healthInfo.get(j)).getRespiratoryRate().doubleValue() > 24.0D) || ((healthInfo.get(j)).getRespiratoryRate().doubleValue() < 12.0D)) {
+                            ecgMonitorVO.setRespiratoryRateStatus(Integer.valueOf(1));
+                        } else {
+                            ecgMonitorVO.setRespiratoryRateStatus(Integer.valueOf(0));
+                        }
+                    }
+                    if (j == healthInfo.size() - 1 && ecgMonitorVO.getMachineId().intValue() != Integer.parseInt((healthInfo.get(j)).getMachineId())) {
                         ecgMonitorVO.setRecordState(Integer.valueOf(1));
-                    } else {
-                        ecgMonitorVO.setRecordState(Integer.valueOf(0));
                     }
-                    if ((((ZsHealthInfo) healthInfo.get(j)).getHeartRate().doubleValue() > 100.0D) || (((ZsHealthInfo) healthInfo.get(j)).getHeartRate().doubleValue() < 50.0D)) {
-                        ecgMonitorVO.setHeartRateStatus(Integer.valueOf(1));
-                    } else {
-                        ecgMonitorVO.setHeartRateStatus(Integer.valueOf(0));
-                    }
-                    if ((((ZsHealthInfo) healthInfo.get(j)).getRespiratoryRate().doubleValue() > 24.0D) || (((ZsHealthInfo) healthInfo.get(j)).getRespiratoryRate().doubleValue() < 12.0D)) {
-                        ecgMonitorVO.setRespiratoryRateStatus(Integer.valueOf(1));
-                    } else {
-                        ecgMonitorVO.setRespiratoryRateStatus(Integer.valueOf(0));
-                    }
-                } else {
-                    ecgMonitorVO.setRecordState(Integer.valueOf(1));
                 }
             }
             list.add(ecgMonitorVO);
@@ -149,12 +150,12 @@ public class EcgServiceImpl
         String path = FileUtils.getRootPath() + "\\ExportData\\EcgExport";
         File file = new File(path);
         String[] list = file.list();
-        Long sevenDaysAge = Long.valueOf(DateUtil.getCurrentTimeLong().longValue() - 604800000L);
+        Long sevenDaysAgo = Long.valueOf(DateUtil.getCurrentTimeLong().longValue() - 604800000L);
         int count = 0;
         try {
             for (String s : list) {
                 String fileDate = FileNameUtils.getPrefix(s);
-                if (sevenDaysAge.longValue() > Long.valueOf(fileDate).longValue()) {
+                if (sevenDaysAgo.longValue() > Long.valueOf(fileDate).longValue()) {
                     File tempFile = new File(path + "\\\\" + s);
                     FileUtils.delFile(tempFile);
                     count++;

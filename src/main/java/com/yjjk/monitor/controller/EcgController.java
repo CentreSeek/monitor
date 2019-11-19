@@ -76,7 +76,7 @@ public class EcgController extends BaseController {
             monitorsInfo = this.patientRecordService.isUsed(monitorsInfo);
         }
         for (int i = 0; i < monitorsInfo.size(); i++) {
-            ((UseMachineVO) monitorsInfo.get(i)).setPatientName(StringUtils.replaceNameX(((UseMachineVO) monitorsInfo.get(i)).getPatientName()));
+            (monitorsInfo.get(i)).setPatientName(StringUtils.replaceNameX((monitorsInfo.get(i)).getPatientName()));
         }
         List<EcgMonitorVO> list = this.ecgService.updateUseMachine(monitorsInfo, departmentId);
         return ResultUtil.returnSuccess(list);
