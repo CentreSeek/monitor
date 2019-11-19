@@ -1,6 +1,8 @@
 package com.yjjk.monitor.mapper;
 
 import com.yjjk.monitor.entity.ZsHealthInfo;
+import com.yjjk.monitor.entity.export.HealthHistoryExport;
+import com.yjjk.monitor.entity.json.HealthHistory;
 
 import java.util.List;
 
@@ -23,4 +25,12 @@ public interface ZsHealthInfoMapper {
      * @return
      */
     List<ZsHealthInfo> getHealthInfo(Integer departmentId);
+
+    List<HealthHistory> getHealthHistory(Long paramLong);
+
+    List<HealthHistoryExport> getHealthHistoryAsJson(Long paramLong);
+
+    List<String> getExportHealth(String paramString);
+
+    int healthInfoTask(String paramString);
 }

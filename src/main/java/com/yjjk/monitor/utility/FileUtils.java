@@ -23,8 +23,9 @@ import java.io.IOException;
 public class FileUtils {
     /**
      * 上传文件
-     * @param file 文件
-     * @param path 文件存放路径
+     *
+     * @param file     文件
+     * @param path     文件存放路径
      * @param fileName 源文件名
      * @return
      */
@@ -47,5 +48,32 @@ public class FileUtils {
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * 获取当前路径
+     * @return
+     */
+    public static String getRootPath() {
+        return System.getProperty("user.dir");
+    }
+
+    /**
+     * 删除文件
+     * @param file
+     * @return
+     */
+    public static boolean delFile(File file) {
+        if (!file.exists()) {
+            return false;
+        }
+        if (file.isFile()) {
+            return file.delete();
+        }
+        File[] files = file.listFiles();
+        for (File f : files) {
+            delFile(f);
+        }
+        return file.delete();
     }
 }

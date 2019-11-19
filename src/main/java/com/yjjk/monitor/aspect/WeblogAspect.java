@@ -1,22 +1,6 @@
-/**
- * Copyright (C), 2019, 义金(杭州)健康科技有限公司
- * FileName: WeblogAspect
- * Author:   CentreS
- * Date:     2019/6/27 15:23
- * Description: 纪录日志
- * History:
- * <author>          <time>          <version>          <desc>
- * 作者姓名           修改时间           版本号              描述
- */
 package com.yjjk.monitor.aspect;
 
-/**
- * @Description: 纪录日志
- * @author CentreS
- * @create 2019/6/27
- */
-
-import com.yjjk.monitor.configer.ErrorCodeEnum;
+import com.yjjk.monitor.constant.ErrorCodeEnum;
 import com.yjjk.monitor.service.LoginStateService;
 import com.yjjk.monitor.utility.ResultUtil;
 import org.aspectj.lang.JoinPoint;
@@ -38,50 +22,47 @@ import java.util.Arrays;
 
 @Aspect
 @Component
-public class WeblogAspect {
-
-    final static Logger logger = LoggerFactory.getLogger(WeblogAspect.class);
-
+public class WeblogAspect
+{
+    static final Logger logger = LoggerFactory.getLogger(WeblogAspect.class);
     @Resource
     LoginStateService loginStateService;
 
-    public WeblogAspect() {
-
-    }
-
     @Pointcut("execution(public * com.yjjk.monitor.controller.*.*(..))")
-    private void controllerAspect() {
+    private void controllerAspect() {}
 
-    }
-
-    @Before(value = "controllerAspect()")
-    public void doBefore(JoinPoint joinPoint) {
-        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+    @Before("controllerAspect()")
+    public void doBefore(JoinPoint joinPoint)
+    {
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = requestAttributes.getRequest();
-        logger.info("[ip:{}] [url:{}] [method:({}) {}]", request.getRemoteAddr(), request.getRequestURI(),
-                request.getMethod(), joinPoint.getSignature());
+        logger.info("[ip:{}] [url:{}] [method:({}) {}]", new Object[] { request.getRemoteAddr(), request.getRequestURI(), request
+                .getMethod(), joinPoint.getSignature() });
         logger.info("args: " + Arrays.toString(joinPoint.getArgs()));
     }
 
-    @Around(value = "controllerAspect()")
-    public synchronized Object loginCheck(ProceedingJoinPoint joinPoint) throws Throwable {
-        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+    @Around("controllerAspect()")
+    public synchronized Object loginCheck(ProceedingJoinPoint joinPoint)
+            throws Throwable
+    {
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = requestAttributes.getRequest();
         String token = request.getParameter("token");
         Signature signature = joinPoint.getSignature();
-        if (!signature.getName().equals("managerLogin") && !signature.getName().equals("managerLoginOut")) {
-            if (token == null) {
-                logger.error("登录失败：  token为空");
+        if ((!signature.getName().equals("managerLogin")) && (!signature.getName().equals("managerLoginOut")))
+        {
+            if (token == null)
+            {
+                logger.error("登录失败  token为空");
                 return ResultUtil.returnError(ErrorCodeEnum.TOKEN_ERROR);
-            } else {
-                boolean check = loginStateService.checkLogin(token, request.getRemoteAddr());
-                if (!check) {
-                    logger.error("登录失败：  token = " + token);
-                    return ResultUtil.returnError(ErrorCodeEnum.TOKEN_ERROR);
-                }
+            }
+            boolean check = this.loginStateService.checkLogin(token, request.getRemoteAddr());
+            if (!check)
+            {
+                logger.error("登录失败  token = " + token);
+                return ResultUtil.returnError(ErrorCodeEnum.TOKEN_ERROR);
             }
         }
         return joinPoint.proceed();
     }
 }
-

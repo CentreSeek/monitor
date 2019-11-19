@@ -12,15 +12,15 @@ package com.yjjk.monitor.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.yjjk.monitor.configer.CommonResult;
-import com.yjjk.monitor.configer.ErrorCodeEnum;
+import com.yjjk.monitor.constant.ErrorCodeEnum;
 import com.yjjk.monitor.constant.TemperatureConstant;
 import com.yjjk.monitor.entity.ZsManagerInfo;
 import com.yjjk.monitor.entity.ZsPatientInfo;
 import com.yjjk.monitor.entity.ZsPatientRecord;
+import com.yjjk.monitor.entity.export.RecordHistory2Excel;
 import com.yjjk.monitor.entity.json.TemperatureHistory;
 import com.yjjk.monitor.entity.param.TemperatureBound;
 import com.yjjk.monitor.entity.vo.RecordHistory;
-import com.yjjk.monitor.entity.vo.RecordHistory2Excel;
 import com.yjjk.monitor.entity.vo.TemperatureBoundVO;
 import com.yjjk.monitor.entity.vo.UseMachineVO;
 import com.yjjk.monitor.utility.DateUtil;
@@ -74,46 +74,42 @@ public class TemperatureController extends BaseController {
      */
     @RequestMapping(value = "/patient", method = RequestMethod.POST)
     public synchronized void startMachine(@RequestParam(value = "bedId") Integer bedId,
-                                        @RequestParam(value = "machineId") Integer machineId,
-                                        @RequestParam(value = "name") String name,
-                                        @RequestParam(value = "caseNum") String caseNum,
-                                        @RequestParam(value = "managerId") Integer managerId,
-                                        HttpServletRequest request, HttpServletResponse response) {
+                                          @RequestParam(value = "machineId") Integer machineId,
+                                          @RequestParam(value = "name") String name,
+                                          @RequestParam(value = "caseNum") String caseNum,
+                                          @RequestParam(value = "managerId") Integer managerId,
+                                          @ApiParam(value = "监测类型 0：体温 1：心率、呼吸率", required = true) @RequestParam("recordType") Integer recordType,
+                                          HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
         long startTime = System.currentTimeMillis();
         boolean resultCode = false;
         String message = "";
 
-        int patientCount = patientRecordService.selectByBedId(bedId);
-        if (!StringUtils.isNullorEmpty(patientCount)) {
-            message = "该病床已绑定病人";
-            returnResult(startTime, request, response, resultCode, message, "");
-            return;
-        }
-        ZsManagerInfo managerInfo = super.managerService.getManagerInfo(managerId);
-        ZsPatientInfo zsPatientInfo1 = super.patientService.selectByCaseNum(caseNum);
+        ZsManagerInfo managerInfo = this.managerService.getManagerInfo(managerId);
+        ZsPatientInfo zsPatientInfo1 = this.patientService.selectByCaseNum(caseNum);
         if (zsPatientInfo1 != null) {
-            ZsPatientRecord zsPatientRecord = super.patientRecordService.selectByPatientId(zsPatientInfo1.getPatientId());
+            ZsPatientRecord zsPatientRecord = this.patientRecordService.selectByPatientId(zsPatientInfo1.getPatientId());
             if (zsPatientRecord != null) {
-                message = "该病人已在其他病床启用设备";
+                message = "该病人已在其他床位启用设备";
                 returnResult(startTime, request, response, resultCode, message, "");
                 return;
-            } else {
-                zsPatientInfo1.setName(name);
-                zsPatientInfo1.setBedId(bedId);
-                // 更新病人信息
-                super.patientService.updateName(zsPatientInfo1);
             }
+            zsPatientInfo1.setName(name);
+            zsPatientInfo1.setBedId(bedId);
+
+            this.patientService.updateName(zsPatientInfo1);
         }
-        ZsPatientInfo zsPatientInfo = super.patientService.addPatient(name, caseNum, bedId, managerInfo.getDepartmentId());
+        ZsPatientInfo zsPatientInfo = this.patientService.addPatient(name, caseNum, bedId, managerInfo.getDepartmentId());
         if (StringUtils.isNullorEmpty(zsPatientInfo)) {
             message = "新增病人信息失败";
             returnResult(startTime, request, response, resultCode, message, "");
             return;
         }
         ZsPatientRecord patientRecord = new ZsPatientRecord();
+        patientRecord.setBedId(bedId);
         patientRecord.setStartTime(DateUtil.getCurrentTime()).setMachineId(machineId).setPatientId(zsPatientInfo.getPatientId());
-        int i = super.patientRecordService.addPatientRecord(patientRecord);
+        patientRecord.setRecordType(recordType);
+        int i = this.patientRecordService.addPatientRecord(patientRecord);
         if (i == 0) {
             message = "新增使用信息失败";
             returnResult(startTime, request, response, resultCode, message, "");
@@ -200,26 +196,26 @@ public class TemperatureController extends BaseController {
     public void stopRecord(@RequestParam(value = "recordId") Long recordId,
                            HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
+
         long startTime = System.currentTimeMillis();
         boolean resultCode = false;
         String message = "";
 
-        ZsPatientRecord patientRecord = super.patientRecordService.selectByPrimaryKey(recordId);
+        ZsPatientRecord patientRecord = this.patientRecordService.selectByPrimaryKey(recordId);
         if (StringUtils.isNullorEmpty(patientRecord)) {
-            message = "未找到该记录";
+            message = "未找到该条记录";
             returnResult(startTime, request, response, resultCode, message, "");
             return;
         }
-
-        int i = super.patientRecordService.stopMonitoring(patientRecord);
+        int i = this.patientRecordService.stopMonitoring(patientRecord);
         if (i == 0) {
             message = "停用失败";
-            returnResult(startTime, request, response, resultCode, message, i);
+            returnResult(startTime, request, response, resultCode, message, Integer.valueOf(i));
             return;
         }
         message = "停用成功";
         resultCode = true;
-        returnResult(startTime, request, response, resultCode, message, i);
+        returnResult(startTime, request, response, resultCode, message, Integer.valueOf(i));
     }
 
     /**
@@ -227,33 +223,32 @@ public class TemperatureController extends BaseController {
      */
     @ApiOperation("获取监控信息")
     @RequestMapping(value = "/monitor", method = RequestMethod.GET)
-    public CommonResult<List<UseMachineVO>> getMinitors(@ApiParam(value = "管理员id", required = true) @RequestParam(value = "managerId") Integer managerId,
+    public CommonResult<List<UseMachineVO>> getMinitors(@ApiParam(value = "管理员id", required = true) @RequestParam(value = "managerId") Integer
+                                                                managerId,
                                                         @ApiParam(value = "使用中设备0：使用中 1：未使用") @RequestParam(value = "used", required = false) Integer used,
                                                         @ApiParam(value = "起始床位id") @RequestParam(value = "start", required = false) Integer start,
                                                         @ApiParam(value = "结束床位id") @RequestParam(value = "end", required = false) Integer end) {
         /********************** 参数初始化 **********************/
-        ZsManagerInfo managerInfo = super.managerService.getManagerInfo(managerId);
+
+        ZsManagerInfo managerInfo = this.managerService.getManagerInfo(managerId);
         Integer departmentId = null;
-        if (managerInfo.getRole() == 2) {
+        if (managerInfo.getRole().intValue() == 2) {
             departmentId = managerInfo.getDepartmentId();
         }
-        // 监控信息
-        List<UseMachineVO> monitorsInfo = super.patientRecordService.getMonitorsInfo(departmentId);
-        monitorsInfo = super.patientRecordService.updateTemperature(monitorsInfo, departmentId);
-        // 根据病床id筛选监控信息
-        monitorsInfo = super.patientRecordService.selectiveByBedId(monitorsInfo, start == null ? 0 : start, end == null ? Integer.MAX_VALUE : end);
-        // 设备是否为使用中设备
-        if (used != null && used == 0) {
-            monitorsInfo = super.patientRecordService.isUsed(monitorsInfo);
+        List<UseMachineVO> monitorsInfo = this.patientRecordService.getMonitorsInfo(departmentId);
+        monitorsInfo = this.patientRecordService.updateTemperature(monitorsInfo, departmentId);
+
+        monitorsInfo = this.patientRecordService.selectiveByBedId(monitorsInfo, Integer.valueOf(start == null ? 0 : start.intValue()),
+                Integer.valueOf(end == null ? Integer.MAX_VALUE : end.intValue()));
+        if ((used != null) && (used.intValue() == 0)) {
+            monitorsInfo = this.patientRecordService.isUsed(monitorsInfo);
         }
-        // 姓名隐私
         for (int i = 0; i < monitorsInfo.size(); i++) {
-            monitorsInfo.get(i).setPatientName(StringUtils.replaceNameX(monitorsInfo.get(i).getPatientName()));
+            (monitorsInfo.get(i)).setPatientName(StringUtils.replaceNameX((monitorsInfo.get(i)).getPatientName()));
         }
-        // 设置温度帖盒子信息，默认为NORMAL，低电量赋值为LOW
-        monitorsInfo = super.boxService.setBoxesInfo(monitorsInfo);
-        // 设置体温规则
-        monitorsInfo = super.temperatureBoundService.updateUseMachine(monitorsInfo, departmentId);
+        monitorsInfo = this.boxService.setBoxesInfo(monitorsInfo);
+
+        monitorsInfo = this.temperatureBoundService.updateUseMachine(monitorsInfo, departmentId);
         return ResultUtil.returnSuccess(monitorsInfo);
     }
 
@@ -305,28 +300,26 @@ public class TemperatureController extends BaseController {
         long startTime = System.currentTimeMillis();
         boolean resultCode = false;
         String message = "";
-        Map<String, Object> map = new HashMap<>();
-
-        if (!StringUtils.isNullorEmpty(recordHistory.getCurrentPage()) && !StringUtils.isNullorEmpty(recordHistory.getPageSize())) {
-            if (recordHistory.getCurrentPage() <= 0) {
+        Map<String, Object> map = new HashMap();
+        if ((!StringUtils.isNullorEmpty(recordHistory.getCurrentPage())) && (!StringUtils.isNullorEmpty(recordHistory.getPageSize()))) {
+            if (recordHistory.getCurrentPage().intValue() <= 0) {
                 message = "页码出错";
                 returnResult(startTime, request, response, resultCode, message, "");
                 return;
             }
-            int currentPage = recordHistory.getCurrentPage();
-            int pageSize = recordHistory.getPageSize();
-            // 查询总条数
-            int totalCount = super.patientRecordService.getRecordHistoryCount(recordHistory);
-            // 分页必须信息
-            int startLine = (currentPage - 1) * (pageSize);
-            // 计算总页数
-            int totalPage = (totalCount + pageSize - 1) / pageSize;
-            recordHistory.setStartLine(startLine);
-            map.put("totalPage", totalPage);
-            map.put("currentPage", currentPage);
-        }
+            int currentPage = recordHistory.getCurrentPage().intValue();
+            int pageSize = recordHistory.getPageSize().intValue();
 
-        List<RecordHistory> list = super.patientRecordService.getRecordHistory(recordHistory);
+            int totalCount = this.patientRecordService.getRecordHistoryCount(recordHistory);
+
+            int startLine = (currentPage - 1) * pageSize;
+
+            int totalPage = (totalCount + pageSize - 1) / pageSize;
+            recordHistory.setStartLine(Integer.valueOf(startLine));
+            map.put("totalPage", Integer.valueOf(totalPage));
+            map.put("currentPage", Integer.valueOf(currentPage));
+        }
+        List<RecordHistory> list = this.patientRecordService.getRecordHistory(recordHistory);
         map.put("list", list == null ? "" : list);
         message = "查询成功";
         resultCode = true;
@@ -347,37 +340,36 @@ public class TemperatureController extends BaseController {
         long startTime = System.currentTimeMillis();
         boolean resultCode = false;
         String message = "";
-        Map<String, Object> reqMap = new HashMap<>(2);
-        Map<String, Object> paraMap = new HashMap<>();
+        Map<String, Object> reqMap = new HashMap(2);
+        Map<String, Object> paraMap = new HashMap();
 
-        ZsPatientRecord patientRecord = super.patientRecordService.selectByPrimaryKey(recordId);
+        ZsPatientRecord patientRecord = this.patientRecordService.selectByPrimaryKey(recordId);
         if (StringUtils.isNullorEmpty(patientRecord)) {
-            message = "未找到该记录信息";
+            message = "未找到该条记录";
             returnResult(startTime, request, response, resultCode, message, "");
             return;
         }
         String endTime = patientRecord.getEndTime();
         if (StringUtils.isNullorEmpty(endTime)) {
-            // 实时查询体温记录
             paraMap.put("endTime", DateUtil.getCurrentTime());
         } else {
-            // 查询历史体温记录
             paraMap.put("endTime", endTime);
         }
         paraMap.put("patientId", patientRecord.getPatientId());
         paraMap.put("times", DateUtil.timeDifferentLong(patientRecord.getStartTime(), (String) paraMap.get("endTime")));
 
-        List<TemperatureHistory> list = super.patientRecordService.getCurrentTemperatureRecord(paraMap);
+        List<TemperatureHistory> list = this.patientRecordService.getCurrentTemperatureRecord(paraMap);
         if (StringUtils.isNullorEmpty(patientRecord.getTemperatureHistory())) {
             reqMap.put("useTimes", DateUtil.timeDifferent(patientRecord.getStartTime()));
         } else {
             list = JSON.parseArray(patientRecord.getTemperatureHistory(), TemperatureHistory.class);
             reqMap.put("useTimes", DateUtil.timeDifferent(patientRecord.getStartTime(), patientRecord.getEndTime()));
         }
-        reqMap = super.patientRecordService.parseTemperature(list, reqMap, patientRecord.getMachineId());
+        reqMap = this.patientRecordService.parseTemperature(list, reqMap, patientRecord.getMachineId());
         reqMap.put("list", StringUtils.isNullorEmpty(list) ? "" : list);
-        reqMap.put("startTime", StringUtils.isNullorEmpty(list) ? "" : DateUtil.integerForward(list.get(0).getDateTime()));
-        reqMap.put("endTime", StringUtils.isNullorEmpty(list) ? "" : DateUtil.integerForward(list.get(list.size() - 1).getDateTime()));
+        reqMap.put("startTime", StringUtils.isNullorEmpty(list) ? "" : DateUtil.integerForward(((TemperatureHistory) list.get(0)).getDateTime()));
+        reqMap.put("endTime", StringUtils.isNullorEmpty(list) ? "" :
+                DateUtil.integerForward(((TemperatureHistory) list.get(list.size() - 1)).getDateTime()));
         message = "查询成功";
         resultCode = true;
         returnResult(startTime, request, response, resultCode, message, reqMap);
@@ -385,8 +377,8 @@ public class TemperatureController extends BaseController {
 
     @RequestMapping(value = "/export", method = RequestMethod.GET)
     public void exportTemperatureHistory(@RequestParam(value = "timeList") List<String> timeList,
-                       @RequestParam(value = "token") String token,
-                       HttpServletResponse response) throws IOException {
+                                         @RequestParam(value = "token") String token,
+                                         HttpServletResponse response) throws IOException {
         if (timeList.size() == 0) {
             return;
         }
@@ -494,6 +486,29 @@ public class TemperatureController extends BaseController {
             LOGGER.error("业务异常信息：[{}]", e.getMessage(), e);
             return ResultUtil.returnError(ErrorCodeEnum.UNKNOWN_ERROR);
         }
+    }
+
+    @ApiOperation("更换床位")
+    @RequestMapping(value = {"/bed"}, method = {org.springframework.web.bind.annotation.RequestMethod.PUT})
+    public CommonResult changeBed(@ApiParam(value = "recordId", required = true) @RequestParam("recordId") Long recordId,
+                                  @ApiParam(value = "新床位号", required = true) @RequestParam("newBedId") Integer newBedId) {
+        try {
+            ZsPatientRecord patientRecord = this.patientRecordService.selectByPrimaryKey(recordId);
+            if (StringUtils.isNullorEmpty(patientRecord)) {
+                return ResultUtil.returnError(ErrorCodeEnum.NON_RECORD);
+            }
+            ZsPatientRecord zsPatientRecord = new ZsPatientRecord();
+            zsPatientRecord.setBedId(newBedId);
+            zsPatientRecord.setRecordId(recordId);
+            int i = this.patientRecordService.updateByPrimaryKey(zsPatientRecord);
+            if (i == 1) {
+                return ResultUtil.returnSuccess(Integer.valueOf(i));
+            }
+            return ResultUtil.returnError(ErrorCodeEnum.UPDATE_ERROR);
+        } catch (Exception e) {
+            LOGGER.error("业务异常信息：[{}]", e.getMessage(), e);
+        }
+        return ResultUtil.returnError(ErrorCodeEnum.UNKNOWN_ERROR);
     }
 
 //    @RequestMapping(value = "/test", method = RequestMethod.GET)

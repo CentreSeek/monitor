@@ -108,7 +108,33 @@
     <select id="getNewEcg" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
         SELECT<include refid="Base_Column_List"/>,
         <include refid="Blob_Column_List"/>
-        FROM `zs_ecg_info` WHERE machine_id = #{machineId,jdbcType=INTEGER} ORDER BY TIMESTAMP DESC LIMIT 0,1;
+        FROM `zs_ecg_info` WHERE machine_id = #{machineId,jdbcType=INTEGER} AND UNIX_TIMESTAMP()*1000 <![CDATA[<=]]> TIMESTAMP+1000*3  ORDER BY temperature_id DESC LIMIT 0,1;
     </select>
+
+    <select id="getEcgHistoryAsJson" resultType="com.yjjk.monitor.entity.json.EcgHistory"
+            parameterType="java.lang.Long">
+        SELECT
+        zei.ecg, zei.`timestamp` AS dateTime
+        FROM `zs_ecg_info` zei
+        LEFT JOIN zs_patient_record zpr on  zpr.`machine_id` = zei.`machine_id`
+        WHERE
+        zpr.status = 0
+        and zei.`create_time` <![CDATA[>=]]> zpr.`start_time`
+        AND zei.`create_time` <![CDATA[<=]]> now()
+        AND zpr.`record_id` = #{record_id, jdbcType=BIGINT}
+        ORDER BY zei.`temperature_id`;
+    </select>
+
+    <select id="getExportHealth" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT
+        CONCAT('{',zpr.`record_id`,',',zei.`ecg`,',',zei.create_time,'}',',')
+        FROM zs_ecg_info zei
+        LEFT JOIN `zs_patient_record` zpr ON zei.`machine_id`=zpr.`machine_id`
+        WHERE zei.create_time <![CDATA[<]]> #{dateOfOneMonthAgo,jdbcType=VARCHAR};
+    </select>
+    <delete id="deleteByMachineId" parameterType="java.lang.Integer">
+    delete from zs_ecg_info
+    where machine_id = #{machineId,jdbcType=INTEGER}
+  </delete>
 
 </mapper>

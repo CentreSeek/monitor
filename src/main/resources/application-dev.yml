@@ -15,7 +15,7 @@ spring:
     password: YJjk_2018
     #    password: 123qqq...A
     #    url: jdbc:mysql://118.31.14.197:3306/test?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
-#    url: jdbc:mysql://192.168.31.84:3306/test?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+    #    url: jdbc:mysql://192.168.31.84:3306/test?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
     url: jdbc:mysql://192.168.31.84:3306/monitor?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
     driver-class-name: com.mysql.cj.jdbc.Driver
   jackson:
@@ -37,9 +37,6 @@ spring:
   #        filters: stat
   #        connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
   #        use-global-data-source-stat: true
-  servlet:
-    multipart:
-      max-file-size: 2MB
 
 
 mybatis:

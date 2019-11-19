@@ -15,11 +15,11 @@
         <result column="temperature_history" jdbcType="LONGVARCHAR" property="temperatureHistory"/>
     </resultMap>
     <sql id="Base_Column_List">
-    record_id, patient_id, machine_id, start_time, end_time, usage_state, create_time, 
-    `status`
+    record_id, patient_id, machine_id, bed_id, start_time, end_time, usage_state, create_time,
+    `status`,record_type
   </sql>
     <sql id="Blob_Column_List">
-    temperature_history
+    temperature_history, ecg_history, rate_history
   </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
         select
@@ -61,7 +61,7 @@
         (SELECT zpr.`record_id` AS recordId, zpr.`machine_id` AS machineId,
         zpi.`name` AS patientName, zpi.`case_num` AS caseNum,
         zmi.machine_num AS machineNum, zmi.machine_no as machineNo,
-        NOW() AS endTime, zpr.start_time AS startTime, zpi.`bed_id`
+        NOW() AS endTime, zpr.start_time AS startTime, zpr.`bed_id`
         FROM `zs_patient_record` zpr
         LEFT JOIN zs_patient_info zpi ON zpr.`patient_id` = zpi.`patient_id`
         LEFT JOIN `zs_machine_info` zmi ON zpr.`machine_id` = zmi.`machine_id`
@@ -91,7 +91,7 @@
         (SELECT zpr.`record_id` AS recordId, zpr.`machine_id` AS machineId,
         zpi.`name` AS patientName, zpi.`case_num` AS caseNum,
         zmi.machine_num AS machineNum, zmi.machine_no as machineNo,
-        NOW() AS endTime, zpr.start_time AS startTime, zpi.`bed_id`, zmi.pattery
+        NOW() AS endTime, zpr.start_time AS startTime, zpr.`bed_id`, zmi.pattery
         FROM `zs_patient_record` zpr
         LEFT JOIN zs_patient_info zpi ON zpr.`patient_id` = zpi.`patient_id`
         LEFT JOIN `zs_machine_info` zmi ON zpr.`machine_id` = zmi.`machine_id`
@@ -122,7 +122,7 @@
             parameterType="com.yjjk.monitor.entity.vo.RecordHistory">
         SELECT
         zpr.`record_id` AS recordId, zpi.`name` AS patientName, zpi.`case_num` AS caseNum,
-        zdi.`name` AS departmentName,zdi.department_id, zri.`name` AS roomName, zbi.`name` AS bedName,
+        zdi.`name` AS departmentName,zdi.department_id, zri.`name` AS roomName, zbi.`name` AS bedName, zmti2.name as machineName,
         zpr.`start_time` AS startTime, zpr.`end_time` AS endTime, zpr.usage_state as usageState
         FROM`zs_patient_record` zpr
         LEFT JOIN `zs_patient_info` zpi ON zpr.`patient_id` = zpi.`patient_id`
@@ -131,6 +131,7 @@
         LEFT JOIN `zs_department_info` zdi ON zri.`department_id` = zdi.`department_id`
         left join zs_machine_info zmi on zmi.machine_id = zpr.machine_id
         left join zs_machine_type_info zmti on zmti.id = zmi.machine_type_id
+        left join zs_machine_type_info zmti2 on zmti.parent_id = zmti2.id
         <where>
             zpr.status = 0
             <if test="machineTypeId != null">
@@ -224,7 +225,7 @@
         order by create_time desc limit 0,1
     </select>
 
-    <select id="getExportList" resultType="com.yjjk.monitor.entity.vo.RecordHistory2Excel"
+    <select id="getExportList" resultType="com.yjjk.monitor.entity.export.RecordHistory2Excel"
             parameterType="java.util.Map">
         SELECT
         zpi.`name` AS patientName,
@@ -239,7 +240,7 @@
         LEFT JOIN `zs_patient_info` zpi
         ON zpr.`patient_id` = zpi.`patient_id`
         LEFT JOIN `zs_bed_info` zbi
-        ON zbi.`bed_id` = zpi.`bed_id`
+        ON zbi.`bed_id` = zpr.`bed_id`
         LEFT JOIN `zs_room_info` zri
         ON zbi.`room_id` = zri.`room_id`
         LEFT JOIN `zs_department_info` zdi
@@ -250,7 +251,41 @@
         a.create_time <![CDATA[<=]]> #{threshold, jdbcType=VARCHAR} GROUP BY a.machine_num ORDER BY a.create_time DESC)
         b
         ON b.`machine_num` = zmi.`machine_num`
-        WHERE zpr.status = 0
+        WHERE zpr.status = 0 AND zpr.`record_type`=0
+        AND zpr.`start_time`<![CDATA[<=]]> #{time, jdbcType=VARCHAR}
+        AND (zpr.`end_time` is NULL OR zpr.`end_time` <![CDATA[>=]]> #{time, jdbcType=VARCHAR})
+        <if test="departmentId != null">
+            and zpi.department_id = #{departmentId,jdbcType=INTEGER}
+        </if>
+    </select>
+
+
+    <select id="getHealthExportList" resultType="com.yjjk.monitor.entity.export.HealthRecordHistory2Excel"
+            parameterType="java.util.Map">
+        SELECT
+        zpi.`name` AS patientName,
+        zpi.`case_num` AS caseNum,
+        zdi.`name` AS departmentName,
+        zri.`name` AS room,
+        zbi.`name` AS bed,
+        b.create_time as time,
+        b.heart_rate as heartRate,
+        b.respiratory_rate as respiratoryRate
+        FROM
+        `zs_patient_record` zpr
+        LEFT JOIN `zs_patient_info` zpi
+        ON zpr.`patient_id` = zpi.`patient_id`
+        LEFT JOIN `zs_bed_info` zbi
+        ON zbi.`bed_id` = zpr.`bed_id`
+        LEFT JOIN `zs_room_info` zri
+        ON zbi.`room_id` = zri.`room_id`
+        LEFT JOIN `zs_department_info` zdi
+        ON zri.`department_id` = zdi.`department_id`
+        LEFT JOIN (SELECT a.heart_rate,a.respiratory_rate,a.create_time,a.machine_id FROM zs_health_info a WHERE a.create_time <![CDATA[>=]]> #{time, jdbcType=VARCHAR} AND
+        a.create_time <![CDATA[<=]]> #{threshold, jdbcType=VARCHAR} GROUP BY a.machine_id ORDER BY a.create_time DESC)
+        b
+        ON b.`machine_id` = zpr.`machine_id`
+        WHERE zpr.status = 0 AND zpr.`record_type`=1
         AND zpr.`start_time`<![CDATA[<=]]> #{time, jdbcType=VARCHAR}
         AND (zpr.`end_time` is NULL OR zpr.`end_time` <![CDATA[>=]]> #{time, jdbcType=VARCHAR})
         <if test="departmentId != null">
@@ -284,6 +319,9 @@
             <if test="machineId != null">
                 machine_id,
             </if>
+            <if test="bedId != null">
+                bed_id,
+            </if>
             <if test="startTime != null">
                 start_time,
             </if>
@@ -302,6 +340,9 @@
             <if test="temperatureHistory != null">
                 temperature_history,
             </if>
+            <if test="recordType != null">
+                record_type,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="recordId != null">
@@ -312,6 +353,9 @@
             </if>
             <if test="machineId != null">
                 #{machineId,jdbcType=INTEGER},
+            </if>
+            <if test="bedId != null">
+                #{bedId,jdbcType=INTEGER},
             </if>
             <if test="startTime != null">
                 #{startTime,jdbcType=VARCHAR},
@@ -331,6 +375,9 @@
             <if test="temperatureHistory != null">
                 #{temperatureHistory,jdbcType=LONGVARCHAR},
             </if>
+            <if test="recordType != null">
+                #{recordType,jdbcType=INTEGER},
+            </if>
         </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.yjjk.monitor.entity.ZsPatientRecord">
@@ -341,6 +388,9 @@
             </if>
             <if test="machineId != null">
                 machine_id = #{machineId,jdbcType=INTEGER},
+            </if>
+            <if test="bedId != null">
+                bed_id = #{bedId,jdbcType=INTEGER},
             </if>
             <if test="startTime != null">
                 start_time = #{startTime,jdbcType=VARCHAR},
@@ -409,6 +459,12 @@
             </if>
             <if test="temperatureHistory != null">
                 temperature_history = #{temperatureHistory,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="rateHistory != null">
+                rate_history = #{rateHistory,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="ecgHistory != null">
+                ecg_history = #{ecgHistory,jdbcType=LONGVARCHAR},
             </if>
         </set>
         where patient_id = #{patientId,jdbcType=INTEGER} and status = 0 and usage_state = 0

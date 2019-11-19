@@ -28,82 +28,83 @@ import java.util.List;
  */
 @Service
 public class MachineServiceImpl extends BaseService implements MachineService {
-
     @Override
-    public int insertSelective(ZsMachineInfo machineInfo) {
-        return super.ZsMachineInfoMapper.insertSelective(machineInfo);
+    public int insertSelective(ZsMachineInfo machineInfo)
+    {
+        return this.ZsMachineInfoMapper.insertSelective(machineInfo);
     }
-
     @Override
-    public int deleteMachine(Integer machineId, String remark) {
+    public int deleteMachine(Integer machineId, String remark)
+    {
         ZsMachineInfo machineInfo = new ZsMachineInfo();
         machineInfo.setMachineId(machineId);
         machineInfo.setRemark(remark);
-        machineInfo.setUsageState(1);
-        return super.ZsMachineInfoMapper.updateByPrimaryKeySelective(machineInfo);
-    }
-
-    @Override
-    public int insertByMachineNum(ZsMachineInfo machineInfo) {
-        return super.ZsMachineInfoMapper.insertByMachineNum(machineInfo);
-    }
-
-    @Override
-    public int selectCount(ZsMachineInfo machineInfo) {
-        return super.ZsMachineInfoMapper.selectCount(machineInfo);
-    }
-
-    @Override
-    public List<ZsMachineInfo> selectByUsageState(ZsMachineInfo machineInfo) {
-        return super.ZsMachineInfoMapper.selectByUsageState(machineInfo);
+        machineInfo.setUsageState(Integer.valueOf(1));
+        return this.ZsMachineInfoMapper.updateByPrimaryKeySelective(machineInfo);
     }
     @Override
-    public List<MachineExportVO> export(ZsMachineInfo machineInfo) {
-        List<MachineExport> list = super.ZsMachineInfoMapper.export(machineInfo);
-        List<MachineExportVO> reqList = new ArrayList<>();
+    public int insertByMachineNum(ZsMachineInfo machineInfo)
+    {
+        return this.ZsMachineInfoMapper.insertByMachineNum(machineInfo);
+    }
+    @Override
+    public int selectCount(ZsMachineInfo machineInfo)
+    {
+        return this.ZsMachineInfoMapper.selectCount(machineInfo);
+    }
+    @Override
+    public List<ZsMachineInfo> selectByUsageState(ZsMachineInfo machineInfo)
+    {
+        return this.ZsMachineInfoMapper.selectByUsageState(machineInfo);
+    }
+    @Override
+    public List<MachineExportVO> export(ZsMachineInfo machineInfo)
+    {
+        List<MachineExport> list = this.ZsMachineInfoMapper.export(machineInfo);
+        List<MachineExportVO> reqList = new ArrayList();
         for (int i = 0; i < list.size(); i++) {
-            reqList.add(list.get(i).transBean(list.get(i)));
+            reqList.add(((MachineExport)list.get(i)).transBean((MachineExport)list.get(i)));
         }
         return reqList;
     }
-
     @Override
-    public int updateByMachineId(ZsMachineInfo machineInfo) {
-        return super.ZsMachineInfoMapper.updateByPrimaryKeySelective(machineInfo);
+    public int updateByMachineId(ZsMachineInfo machineInfo)
+    {
+        return this.ZsMachineInfoMapper.updateByPrimaryKeySelective(machineInfo);
     }
-
     @Override
-    public ZsMachineInfo selectByPrimaryKey(Integer machineId) {
-        return super.ZsMachineInfoMapper.selectByPrimaryKey(machineId);
+    public ZsMachineInfo selectByPrimaryKey(Integer machineId)
+    {
+        return this.ZsMachineInfoMapper.selectByPrimaryKey(machineId);
     }
-
     @Override
-    public int selectByMachineNum(String machineNum) {
-        return super.ZsMachineInfoMapper.selectByMachineNum(machineNum);
+    public int selectByMachineNum(String machineNum)
+    {
+        return this.ZsMachineInfoMapper.selectByMachineNum(machineNum);
     }
-
     @Override
-    public int selectByMachineNo(String machineNo) {
-        return super.ZsMachineInfoMapper.selectCountByMachineNo(machineNo);
+    public int selectByMachineNo(String machineNo)
+    {
+        return this.ZsMachineInfoMapper.selectCountByMachineNo(machineNo);
     }
-
     @Override
-    public List<ZsMachineTypeInfo> selectMachineTypes() {
-        return super.zsMachineTypeInfoMapper.selectMachineTypes();
+    public List<ZsMachineTypeInfo> selectMachineTypes()
+    {
+        return this.zsMachineTypeInfoMapper.selectMachineTypes();
     }
-
     @Override
-    public List<ZsMachineTypeInfo> selectMachineNums(Integer id) {
-        return super.zsMachineTypeInfoMapper.selectMachineNums(id);
+    public List<ZsMachineTypeInfo> selectMachineNums(Integer id)
+    {
+        return this.zsMachineTypeInfoMapper.selectMachineNums(id);
     }
-
     @Override
-    public List<ZsMachineInfo> selectTemperatureMachines(Integer departmentId) {
-        return super.ZsMachineInfoMapper.selectTemperatureMachines(departmentId);
+    public List<ZsMachineInfo> selectTemperatureMachines(Integer departmentId)
+    {
+        return this.ZsMachineInfoMapper.selectTemperatureMachines(departmentId);
     }
-
     @Override
-    public List<ZsMachineInfo> selectHeartMachines(Integer departmentId) {
-        return super.ZsMachineInfoMapper.selectHeartMachines(departmentId);
+    public List<ZsMachineInfo> selectHeartMachines(Integer departmentId)
+    {
+        return this.ZsMachineInfoMapper.selectHeartMachines(departmentId);
     }
 }

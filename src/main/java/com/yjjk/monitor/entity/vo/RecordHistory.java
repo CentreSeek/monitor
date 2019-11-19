@@ -28,11 +28,14 @@ public class RecordHistory {
     private String departmentName;
     private String roomName;
     private String bedName;
+    private String machineName;
     private String startTime;
     private String endTime;
     private Integer usageState;
 
-    /** mappingParam */
+    /**
+     * mappingParam
+     */
     private Integer departmentId;
     private String startDate;
     private String endDate;
@@ -40,7 +43,9 @@ public class RecordHistory {
     private Integer pageSize;
     private Integer machineTypeId;
 
-    /** requestParam */
+    /**
+     * requestParam
+     */
     private Integer currentPage;
     private Integer timestamp;
 

@@ -10,15 +10,17 @@
  */
 package com.yjjk.monitor.service.impl;
 
-import com.yjjk.monitor.constant.ExportConstant;
+import com.yjjk.monitor.entity.ZsBedInfo;
 import com.yjjk.monitor.entity.ZsDepartmentInfo;
 import com.yjjk.monitor.entity.ZsRoomInfo;
 import com.yjjk.monitor.service.BaseService;
 import com.yjjk.monitor.service.HospitalService;
 import com.yjjk.monitor.utility.ExcelUtils;
+import com.yjjk.monitor.utility.FileUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description: 医院信息
@@ -28,32 +30,51 @@ import java.util.List;
 @Service
 public class HospitalServiceImpl extends BaseService implements HospitalService {
 
-
     @Override
-    public List<ZsDepartmentInfo> selectDetail(Integer departmentId) {
-        return super.ZsDepartmentInfoMapper.selectDetail(departmentId);
+    public List<ZsDepartmentInfo> selectDetail(Integer departmentId)
+    {
+        return this.ZsDepartmentInfoMapper.selectDetail(departmentId);
     }
-
     @Override
-    public int temperatureInfoTask(String dateOfOneMonthAgo) {
+    public int temperatureInfoTask(String dateOfOneMonthAgo)
+    {
         temperatureInfoPersistent(dateOfOneMonthAgo);
-        return super.zsTemperatureInfoMapper.temperatureInfoTask(dateOfOneMonthAgo);
+        return this.zsTemperatureInfoMapper.temperatureInfoTask(dateOfOneMonthAgo);
     }
-
     @Override
-    public int temperatureInfoPersistent(String dateOfOneMonthAgo) {
-        List<String> exportTemperatures = super.zsTemperatureInfoMapper.getExportTemperatures(dateOfOneMonthAgo);
-        ExcelUtils.writeToTxt(exportTemperatures,ExportConstant.TEMPERATURE_EXPORT_PATH);
+    public int healthInfoTask(String dateOfOneMonthAgo)
+    {
+        healthInfoPersistent(dateOfOneMonthAgo);
+        return this.zsHealthInfoMapper.healthInfoTask(dateOfOneMonthAgo);
+    }
+    @Override
+    public int temperatureInfoPersistent(String dateOfOneMonthAgo)
+    {
+        List<String> exportTemperatures = this.zsTemperatureInfoMapper.getExportTemperatures(dateOfOneMonthAgo);
+        ExcelUtils.writeToTxt(exportTemperatures, FileUtils.getRootPath() + "\\ExportData\\TemperatureExport");
         return exportTemperatures.size();
     }
-
     @Override
-    public List<ZsDepartmentInfo> selectDepartments() {
-        return super.ZsDepartmentInfoMapper.selectDepartments();
+    public int healthInfoPersistent(String dateOfOneMonthAgo)
+    {
+        List<String> list = this.zsHealthInfoMapper.getExportHealth(dateOfOneMonthAgo);
+        ExcelUtils.writeToTxt(list, FileUtils.getRootPath() + "\\ExportData\\HealthExport");
+        return list.size();
+    }
+    @Override
+    public List<ZsDepartmentInfo> selectDepartments()
+    {
+        return this.ZsDepartmentInfoMapper.selectDepartments();
+    }
+    @Override
+    public List<ZsRoomInfo> selectRooms(Integer departmentId)
+    {
+        return this.ZsRoomInfoMapper.selectRooms(departmentId);
+    }
+    @Override
+    public List<ZsBedInfo> selectEmptyBeds(Map<String, Object> paraMap)
+    {
+        return this.ZsBedInfoMapper.selectEmptyBeds(paraMap);
     }
 
-    @Override
-    public List<ZsRoomInfo> selectRooms(Integer departmentId) {
-        return super.ZsRoomInfoMapper.selectRooms(departmentId);
-    }
 }

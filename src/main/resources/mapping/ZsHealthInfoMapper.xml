@@ -120,4 +120,46 @@
             and zmi.department_id = #{departmentId, jdbcType=INTEGER}
         </if>
     </select>
+
+    <select id="getHealthHistory" resultType="com.yjjk.monitor.entity.json.HealthHistory"
+            parameterType="java.lang.Long">
+        SELECT zhi.`heart_rate`, zhi.`respiratory_rate`, zhi.create_time as dateTime
+        FROM `zs_health_info` zhi
+        LEFT JOIN `zs_patient_record` zpr ON zhi.`machine_id` = zpr.`machine_id`
+        WHERE
+        zpr.status = 0
+        AND zhi.`create_time` <![CDATA[>=]]> zpr.`start_time`
+        <if test="endTime != null">
+            AND zhi.`create_time` <![CDATA[<=]]> now()
+        </if>
+        <if test="recordId != null">
+            AND zpr.record_id = #{recordId, jdbcType=BIGINT}
+        </if>
+        ORDER BY zhi.`temperature_id`;
+    </select>
+
+    <select id="getHealthHistoryAsJson" resultType="com.yjjk.monitor.entity.export.HealthHistoryExport"
+            parameterType="java.lang.Long">
+        SELECT
+        zhi.heart_rate, zhi.respiratory_rate, zhi.`timestamp` AS dateTime
+        FROM `zs_health_info` zhi
+        LEFT JOIN zs_patient_record zpr on  zpr.`machine_id` = zhi.`machine_id`
+        WHERE
+        zpr.status = 0
+        and zhi.`create_time` <![CDATA[>=]]> zpr.`start_time`
+        AND zhi.`create_time` <![CDATA[<=]]> now()
+        AND zpr.`record_id` = #{record_id, jdbcType=BIGINT}
+        ORDER BY zhi.`temperature_id`;
+    </select>
+
+    <select id="getExportHealth" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT CONCAT('{',zmi.machine_num,',',zhi.`heart_rate`,',',zhi.`respiratory_rate`,',',zhi.create_time,'}',',')
+        FROM zs_health_info zhi
+        LEFT JOIN zs_machine_info zmi ON zhi.machine_id = zmi.`machine_id`
+        WHERE create_time <![CDATA[<]]> #{dateOfOneMonthAgo,jdbcType=VARCHAR};
+    </select>
+
+    <delete id="healthInfoTask" parameterType="java.lang.String">
+      DELETE FROM `zs_health_info` WHERE create_time <![CDATA[<]]> #{dateOfOneMonthAgo,jdbcType=VARCHAR};
+    </delete>
 </mapper>

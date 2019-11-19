@@ -19,6 +19,7 @@ public class FileNameUtils {
 
     /**
      * 获取文件后缀
+     *
      * @param fileName
      * @return
      */
@@ -27,7 +28,19 @@ public class FileNameUtils {
     }
 
     /**
+     * 获取文件前缀
+     *
+     * @param fileName
+     * @return
+     */
+    public static String getPrefix(String fileName) {
+        return fileName.split("\\.")[0];
+    }
+
+
+    /**
      * 生成新的文件名
+     *
      * @param fileOriginName
      * @return
      */

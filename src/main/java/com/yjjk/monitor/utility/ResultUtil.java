@@ -17,7 +17,7 @@ package com.yjjk.monitor.utility;
  */
 
 import com.yjjk.monitor.configer.CommonResult;
-import com.yjjk.monitor.configer.ErrorCodeEnum;
+import com.yjjk.monitor.constant.ErrorCodeEnum;
 
 /**
  * 公共响应结果成功失败的静态方法调用

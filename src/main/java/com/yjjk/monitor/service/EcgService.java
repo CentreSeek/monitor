@@ -10,7 +10,10 @@
  */
 package com.yjjk.monitor.service;
 
+import com.yjjk.monitor.entity.ZsPatientRecord;
+import com.yjjk.monitor.entity.json.HealthHistory;
 import com.yjjk.monitor.entity.vo.EcgMonitorVO;
+import com.yjjk.monitor.entity.vo.HealthHistoryVO;
 import com.yjjk.monitor.entity.vo.UseMachineVO;
 
 import java.util.List;
@@ -31,4 +34,12 @@ public interface EcgService {
     List<UseMachineVO> getMonitorsInfo(Integer departmentId);
 
     List<EcgMonitorVO> updateUseMachine(List<UseMachineVO> monitorsInfo, Integer departmentId);
+
+    public abstract List<HealthHistory> getHealthHistory(Long paramLong);
+
+    public abstract HealthHistoryVO parseRateHistory(List<HealthHistory> paramList, HealthHistoryVO paramHealthHistoryVO);
+
+    public abstract boolean stopEcg(ZsPatientRecord paramZsPatientRecord);
+
+    public abstract int cleanEcgExport();
 }

@@ -10,10 +10,14 @@
  */
 package com.yjjk.monitor.controller;
 
+import com.yjjk.monitor.configer.CommonResult;
+import com.yjjk.monitor.constant.PatientRecordConstant;
+import com.yjjk.monitor.entity.ZsBedInfo;
 import com.yjjk.monitor.entity.ZsDepartmentInfo;
-import com.yjjk.monitor.entity.ZsMachineInfo;
+import com.yjjk.monitor.entity.ZsManagerInfo;
 import com.yjjk.monitor.entity.ZsRoomInfo;
-import com.yjjk.monitor.utility.StringUtils;
+import com.yjjk.monitor.utility.ResultUtil;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,7 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author CentreS
@@ -92,5 +98,33 @@ public class HospitalController extends BaseController {
         message = "信息查询成功";
         resultCode = true;
         returnResult(startTime, request, response, resultCode, message, list == null ? "":list);
+    }
+
+    @ApiOperation("体温监测获取空床位")
+    @RequestMapping(value={"/temperatureEmptyBeds"}, method={org.springframework.web.bind.annotation.RequestMethod.GET})
+    public CommonResult<List<ZsBedInfo>> getTemperatureEmptyBeds(@RequestParam("token") String token)
+    {
+        ZsManagerInfo managerInfo = this.managerService.selectByToken(token);
+        Integer departmentId = managerInfo.getDepartmentId();
+        Map<String, Object> paraMap = new HashMap();
+        paraMap.put("departmentId", departmentId);
+        paraMap.put("recordType", PatientRecordConstant.TYPE_TEMPERATURE);
+        List<ZsBedInfo> zsBedInfos = this.hospitalService.selectEmptyBeds(paraMap);
+
+        return ResultUtil.returnSuccess(zsBedInfos);
+    }
+
+    @ApiOperation("心电监测获取空床位")
+    @RequestMapping(value={"/healthEmptyBeds"}, method={org.springframework.web.bind.annotation.RequestMethod.GET})
+    public CommonResult<List<ZsBedInfo>> getHealthEmptyBeds(@RequestParam("token") String token)
+    {
+        ZsManagerInfo managerInfo = this.managerService.selectByToken(token);
+        Integer departmentId = managerInfo.getDepartmentId();
+        Map<String, Object> paraMap = new HashMap();
+        paraMap.put("departmentId", departmentId);
+        paraMap.put("recordType", PatientRecordConstant.TYPE_HEALTH);
+        List<ZsBedInfo> zsBedInfos = this.hospitalService.selectEmptyBeds(paraMap);
+
+        return ResultUtil.returnSuccess(zsBedInfos);
     }
 }

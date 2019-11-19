@@ -62,17 +62,29 @@ public class DateUtil {
 
 
     /**
-     * 历史记录导出文件名
+     * 体温历史记录导出文件名
+     *
      * @return
      */
     public static String getHistoryFileName() {
         Date date = new Date();
         SimpleDateFormat ft = new SimpleDateFormat("yyyyMMddHHmm");
         StringBuffer buffer = new StringBuffer();
-        buffer.append("th").append(ft.format(date));
+        buffer.append("th").append(ft.format(date)).append("tem");
         return buffer.toString();
     }
 
+    /**
+     * 心电历史记录导出文件名
+     * @return
+     */
+    public static String getHealthHistoryFileName() {
+        Date date = new Date();
+        SimpleDateFormat ft = new SimpleDateFormat("yyyyMMddHHmm");
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("th").append(ft.format(date)).append("hr");
+        return buffer.toString();
+    }
 
     @Deprecated
     public static String getDatePoor(String startTime) {

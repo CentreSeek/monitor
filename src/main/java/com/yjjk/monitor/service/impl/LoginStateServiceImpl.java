@@ -28,46 +28,48 @@ import javax.servlet.http.HttpServletRequest;
 @Service
 public class LoginStateServiceImpl extends BaseService implements LoginStateService {
 
-    @Transactional
     @Override
-    public String login(HttpServletRequest request, Integer managerId) {
-        ZsLoginState loginState = super.zsLoginStateMapper.selectByManagerId(managerId);
+    @Transactional
+    public String login(HttpServletRequest request, Integer managerId)
+    {
+        ZsLoginState loginState = this.zsLoginStateMapper.selectByManagerId(managerId);
         String token = "";
         int i = 0;
         int j = 0;
-        if (loginState != null) {
-            i = super.zsLoginStateMapper.updateByPrimaryKeySelective(loginState.setIp(request.getRemoteAddr()));
+        if (loginState != null)
+        {
+            i = this.zsLoginStateMapper.updateByPrimaryKeySelective(loginState.setIp(request.getRemoteAddr()));
             token = loginState.getToken();
-        } else {
-            // 生成登录信息
+        }
+        else
+        {
             loginState = new ZsLoginState();
             token = PasswordUtils.salt();
             loginState.setToken(token);
             loginState.setIp(request.getRemoteAddr());
             loginState.setManagerId(managerId);
-            loginState.setStatus(0);
-            j = super.zsLoginStateMapper.insertSelective(loginState);
+            loginState.setStatus(Integer.valueOf(0));
+            j = this.zsLoginStateMapper.insertSelective(loginState);
         }
         return token;
     }
-
     @Override
-    public int loginOut(String token) {
+    public int loginOut(String token)
+    {
         ZsLoginState loginState = new ZsLoginState();
         loginState.setToken(token);
-        loginState.setStatus(1);
+        loginState.setStatus(Integer.valueOf(1));
         loginState.setLoginOut(DateUtil.getCurrentTime());
-        int i = super.zsLoginStateMapper.updateByPrimaryKeySelective(loginState);
+        int i = this.zsLoginStateMapper.updateByPrimaryKeySelective(loginState);
         return i;
     }
-
     @Override
-    public boolean checkLogin(String token, String ip) {
-        ZsLoginState loginState = super.zsLoginStateMapper.selectByPrimaryKey(token);
+    public boolean checkLogin(String token, String ip)
+    {
+        ZsLoginState loginState = this.zsLoginStateMapper.selectByPrimaryKey(token);
         if (loginState == null) {
             return false;
-        } else {
-            return ip.equals(loginState.getIp());
         }
+        return ip.equals(loginState.getIp());
     }
 }

@@ -11,7 +11,7 @@
 package com.yjjk.monitor.controller;
 
 import com.yjjk.monitor.configer.CommonResult;
-import com.yjjk.monitor.configer.ErrorCodeEnum;
+import com.yjjk.monitor.constant.ErrorCodeEnum;
 import com.yjjk.monitor.constant.MachineConstant;
 import com.yjjk.monitor.entity.ZsMachineInfo;
 import com.yjjk.monitor.entity.ZsMachineTypeInfo;

@@ -16,7 +16,10 @@ package com.yjjk.monitor.constant;
  * @create 2019/10/12
  */
 public class ExportConstant {
-    /** 体温导出目录 */
-    public static final String TEMPERATURE_EXPORT_PATH = "temperatureExport";
-
+    /**
+     * 体温导出目录
+     */
+    public static final String TEMPERATURE_EXPORT_PATH = "\\ExportData\\TemperatureExport";
+    public static final String HEALTH_EXPORT_PATH = "\\ExportData\\HealthExport";
+    public static final String ECG_EXPORT_PATH = "\\ExportData\\EcgExport";
 }

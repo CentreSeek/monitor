@@ -1,8 +1,12 @@
 package com.yjjk.monitor.mapper;
 
 import com.yjjk.monitor.entity.ZsPatientRecord;
-import com.yjjk.monitor.entity.vo.*;
+import com.yjjk.monitor.entity.export.HealthRecordHistory2Excel;
+import com.yjjk.monitor.entity.export.RecordHistory2Excel;
 import com.yjjk.monitor.entity.json.TemperatureHistory;
+import com.yjjk.monitor.entity.vo.PatientTemperature;
+import com.yjjk.monitor.entity.vo.RecordHistory;
+import com.yjjk.monitor.entity.vo.UseMachineVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -95,6 +99,8 @@ public interface ZsPatientRecordMapper {
      * @return
      */
     List<RecordHistory2Excel> getExportList(Map<String, Object> paraMap);
+
+    List<HealthRecordHistory2Excel> getHealthExportList(Map<String, Object> paramMap);
 
     ZsPatientRecord selectByRecordId(Long recordId);
 }
