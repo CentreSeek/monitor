@@ -57,6 +57,7 @@ public class EcgController extends BaseController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EcgController.class);
 
+    
     @ApiOperation("心电监测信息")
     @RequestMapping(value = {"/monitor"}, method = {org.springframework.web.bind.annotation.RequestMethod.GET})
     public CommonResult<List<EcgMonitorVO>> getMonitors(@ApiParam(value = "管理员", required = true) @RequestParam("managerId") Integer managerId,
