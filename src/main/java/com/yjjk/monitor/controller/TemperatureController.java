@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -72,6 +73,7 @@ public class TemperatureController extends BaseController {
      * @param request
      * @param response
      */
+    @ApiOperation(value = "启用设备")
     @RequestMapping(value = "/patient", method = RequestMethod.POST)
     public synchronized void startMachine(@RequestParam(value = "bedId") Integer bedId,
                                           @RequestParam(value = "machineId") Integer machineId,
@@ -369,7 +371,7 @@ public class TemperatureController extends BaseController {
         reqMap.put("list", StringUtils.isNullorEmpty(list) ? "" : list);
         reqMap.put("startTime", StringUtils.isNullorEmpty(list) ? "" : DateUtil.integerForward(((TemperatureHistory) list.get(0)).getDateTime()));
         reqMap.put("endTime", StringUtils.isNullorEmpty(list) ? "" :
-                DateUtil.integerForward(((TemperatureHistory) list.get(list.size() - 1)).getDateTime()));
+                DateUtil.integerForward((list.get(list.size() - 1)).getDateTime()));
         message = "查询成功";
         resultCode = true;
         returnResult(startTime, request, response, resultCode, message, reqMap);
@@ -511,7 +513,7 @@ public class TemperatureController extends BaseController {
         return ResultUtil.returnError(ErrorCodeEnum.UNKNOWN_ERROR);
     }
 
-//    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    //    @RequestMapping(value = "/test", method = RequestMethod.GET)
 //    public void test() {
 //        try {
 //            /********************** 参数初始化 **********************/
@@ -521,5 +523,11 @@ public class TemperatureController extends BaseController {
 //            LOGGER.error("业务异常信息：[{}]", e.getMessage(), e);
 //        }
 //    }
+    public static void main(String[] args) {
+        SimpleDateFormat format = new SimpleDateFormat();
+
+        String format1 = format.format(0001574232271023L);
+        System.out.println(format1);
+    }
 
 }

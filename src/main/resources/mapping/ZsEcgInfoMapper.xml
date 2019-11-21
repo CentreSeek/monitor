@@ -4,7 +4,7 @@
     <resultMap id="BaseResultMap" type="com.yjjk.monitor.entity.ZsEcgInfo">
         <id column="temperature_id" jdbcType="INTEGER" property="temperatureId"/>
         <result column="machine_id" jdbcType="VARCHAR" property="machineId"/>
-        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
         <result column="timestamp" jdbcType="BIGINT" property="timestamp"/>
     </resultMap>
     <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.yjjk.monitor.entity.ZsEcgInfo">
@@ -105,10 +105,11 @@
     where temperature_id = #{temperatureId,jdbcType=INTEGER}
   </update>
 
-    <select id="getNewEcg" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    <select id="getNewEcg" parameterType="java.util.Map" resultMap="ResultMapWithBLOBs">
         SELECT<include refid="Base_Column_List"/>,
         <include refid="Blob_Column_List"/>
-        FROM `zs_ecg_info` WHERE machine_id = #{machineId,jdbcType=INTEGER} AND UNIX_TIMESTAMP()*1000 <![CDATA[<=]]> TIMESTAMP+1000*3  ORDER BY temperature_id DESC LIMIT 0,1;
+        FROM `zs_ecg_info` WHERE machine_id = #{machineId,jdbcType=INTEGER} AND UNIX_TIMESTAMP()*1000 <![CDATA[<=]]> TIMESTAMP+1000*5 ORDER BY
+        temperature_id DESC LIMIT 0,1;
     </select>
 
     <select id="getEcgHistoryAsJson" resultType="com.yjjk.monitor.entity.json.EcgHistory"

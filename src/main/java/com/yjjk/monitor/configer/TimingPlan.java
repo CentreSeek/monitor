@@ -27,6 +27,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @Component
@@ -70,7 +72,10 @@ public class TimingPlan{
         int i = 0 ;
         webSocketSet.forEach(c->{
             try {
-                ZsEcgInfo newEcg = zsEcgInfoMapper.getNewEcg(c.getMachineId());
+                Map<String,Object> paraMap = new HashMap<>();
+                paraMap.put("machineId",c.getMachineId());
+                paraMap.put("timeStamp",DateUtil.getCurrentTimeLong());
+                ZsEcgInfo newEcg = zsEcgInfoMapper.getNewEcg(paraMap);
                 String s = JSONArray.toJSONString(newEcg);
                 c.sendMessage(s);
             } catch (IOException e) {

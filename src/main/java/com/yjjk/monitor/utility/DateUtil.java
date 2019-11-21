@@ -68,9 +68,9 @@ public class DateUtil {
      */
     public static String getHistoryFileName() {
         Date date = new Date();
-        SimpleDateFormat ft = new SimpleDateFormat("yyyyMMddHHmm");
+        SimpleDateFormat ft = new SimpleDateFormat("yyyyMMdd");
         StringBuffer buffer = new StringBuffer();
-        buffer.append("th").append(ft.format(date)).append("tem");
+        buffer.append("th").append(ft.format(date));
         return buffer.toString();
     }
 
@@ -80,9 +80,9 @@ public class DateUtil {
      */
     public static String getHealthHistoryFileName() {
         Date date = new Date();
-        SimpleDateFormat ft = new SimpleDateFormat("yyyyMMddHHmm");
+        SimpleDateFormat ft = new SimpleDateFormat("yyyyMMdd");
         StringBuffer buffer = new StringBuffer();
-        buffer.append("th").append(ft.format(date)).append("hr");
+        buffer.append("bpm").append(ft.format(date));
         return buffer.toString();
     }
 

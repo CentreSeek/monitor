@@ -4,6 +4,7 @@ import com.yjjk.monitor.entity.ZsEcgInfo;
 import com.yjjk.monitor.entity.json.EcgHistory;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ZsEcgInfoMapper {
     int deleteByPrimaryKey(Integer temperatureId);
@@ -23,10 +24,10 @@ public interface ZsEcgInfoMapper {
     /**
      * 获取心电贴最新心电数据
      *
-     * @param machineId
+     * @param paraMap
      * @return
      */
-    ZsEcgInfo getNewEcg(Integer machineId);
+    ZsEcgInfo getNewEcg(Map<String, Object> paraMap);
 
     List<EcgHistory> getEcgHistoryAsJson(Long paramLong);
 
