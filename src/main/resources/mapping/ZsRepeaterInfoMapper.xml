@@ -25,7 +25,8 @@
         where id = #{id,jdbcType=INTEGER}
     </select>
 
-    <select id="selectRepeaters" parameterType="com.yjjk.monitor.entity.ZsRepeaterInfo" resultType="com.yjjk.monitor.entity.ZsRepeaterInfo">
+    <select id="selectRepeaters" parameterType="com.yjjk.monitor.entity.ZsRepeaterInfo"
+            resultType="com.yjjk.monitor.entity.ZsRepeaterInfo">
         SELECT
         zri.id AS id,zri.MAC AS mac,zri.IP AS ip,zri.linkstatus AS linkstatus,zri.remark AS remark,zmti.`name` AS
         repeaterNum,zmti2.`name` AS repeaterName,zdi.`name` AS departmentName, zri2.`name` AS roomName
@@ -61,6 +62,24 @@
                 and department_id = #{departmentId, jdbcType=INTEGER}
             </if>
         </where>
+    </select>
+
+    <select id="isExistRepeater" resultType="java.lang.Integer" parameterType="com.yjjk.monitor.entity.ZsRepeaterInfo">
+        select
+        count(1)
+        from zs_repeater_info
+        <where>
+            status = 0
+            <if test="roomId != null">
+                and roomId = #{roomId, jdbcType=INTEGER}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectByBedId" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT zri.id FROM `zs_repeater_info` zri
+        LEFT JOIN zs_bed_info zbi ON zbi.`room_id` = zri.`room_id`
+        WHERE zbi.`bed_id` = #{bedId,jdbcType=INTEGER}
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
@@ -197,4 +216,6 @@
       fail_count = #{failCount,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+
 </mapper>

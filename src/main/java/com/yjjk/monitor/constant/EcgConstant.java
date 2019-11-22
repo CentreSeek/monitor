@@ -27,4 +27,9 @@ public class EcgConstant {
     public static final double RESPIRATORY_RATE_LOW = 12;
     public static final double RESPIRATORY_RATE_HEIGHT = 24;
 
+    /** 心电设备连接接口 */
+    public static final String ECG_CONNECTION_URL = "http://192.168.31.165:8084/web/isSMPConnectNotice";
+
+
+
 }

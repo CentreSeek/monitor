@@ -13,11 +13,15 @@ package com.yjjk.monitor.controller;
 import com.alibaba.fastjson.JSON;
 import com.yjjk.monitor.configer.CommonResult;
 import com.yjjk.monitor.constant.ErrorCodeEnum;
+import com.yjjk.monitor.constant.MachineConstant;
 import com.yjjk.monitor.constant.PatientRecordConstant;
+import com.yjjk.monitor.entity.ZsMachineInfo;
 import com.yjjk.monitor.entity.ZsManagerInfo;
 import com.yjjk.monitor.entity.ZsPatientRecord;
 import com.yjjk.monitor.entity.export.HealthRecordHistory2Excel;
 import com.yjjk.monitor.entity.json.HealthHistory;
+import com.yjjk.monitor.entity.transaction.BackgroundResult;
+import com.yjjk.monitor.entity.transaction.BackgroundSend;
 import com.yjjk.monitor.entity.vo.EcgMonitorVO;
 import com.yjjk.monitor.entity.vo.HealthHistoryVO;
 import com.yjjk.monitor.entity.vo.UseMachineVO;
@@ -140,9 +144,14 @@ public class EcgController extends BaseController {
         return ResultUtil.returnSuccess(healthHistoryVO);
     }
 
+    /**
+     * @Description 
+     * @param recordId
+     * @return com.yjjk.monitor.configer.CommonResult 
+     */
     @ApiOperation("停止监测")
     @RequestMapping(value = {"/stopRecord"}, method = {org.springframework.web.bind.annotation.RequestMethod.PUT})
-    public CommonResult stopEcgMonitor(@ApiParam(value = "记录id", required = true) @RequestParam("recordId") Long recordId) {
+    public CommonResult stopEcgMonitor(@ApiParam(value = "记录id", required = true) @RequestParam("recordId") Long recordId) throws Exception {
         ZsPatientRecord patientRecord = this.patientRecordService.selectByPrimaryKey(recordId);
         if (StringUtils.isNullorEmpty(patientRecord)) {
             return ResultUtil.returnError(ErrorCodeEnum.NON_RECORD);
@@ -154,8 +163,16 @@ public class EcgController extends BaseController {
         if (!b) {
             return ResultUtil.returnError(ErrorCodeEnum.UNKNOWN_ERROR);
         }
+        BackgroundResult backgroundResult = super.ecgService.connectEcgMachine(patientRecord.getMachineId(), patientRecord.getBedId(), BackgroundSend.DATA_LOSE_CONNECTION);
+        if ("false".equals(backgroundResult.getSuccess())){
+            return ResultUtil.returnError(backgroundResult.getCode(),backgroundResult.getMessage());
+        }
+        ZsMachineInfo machineInfo = new ZsMachineInfo();
+        machineInfo.setMachineId(patientRecord.getMachineId()).setUsageState(MachineConstant.USAGE_STATE_USED);
+        super.machineService.updateByMachineId(machineInfo);
         return ResultUtil.returnSuccess(Boolean.valueOf(b));
     }
+
 
     @ApiOperation("心电设备记录信息导出")
     @RequestMapping(value = {"/export"}, method = {org.springframework.web.bind.annotation.RequestMethod.GET})

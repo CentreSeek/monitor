@@ -120,4 +120,5 @@ public interface MachineService {
      * @return
      */
     List<ZsMachineInfo> selectHeartMachines(Integer departmentId);
+
 }

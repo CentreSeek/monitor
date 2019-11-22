@@ -27,6 +27,7 @@ import com.yjjk.monitor.service.PatientRecordService;
 import com.yjjk.monitor.utility.DateUtil;
 import com.yjjk.monitor.utility.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
@@ -41,13 +42,12 @@ import java.util.Map;
  */
 @Service
 public class PatientRecordServiceImpl extends BaseService implements PatientRecordService {
+    @Transactional(propagation = Propagation.REQUIRED)
     @Override
-    public int addPatientRecord(ZsPatientRecord patientRecord) {
+    public int addPatientRecord(ZsPatientRecord patientRecord){
         ZsMachineInfo machineInfo = new ZsMachineInfo();
-        if (patientRecord.getMachineId() != null) {
-            machineInfo.setMachineId(patientRecord.getMachineId()).setUsageState(Integer.valueOf(2));
-            this.ZsMachineInfoMapper.updateByPrimaryKeySelective(machineInfo);
-        }
+        machineInfo.setMachineId(patientRecord.getMachineId()).setUsageState(Integer.valueOf(2));
+        this.ZsMachineInfoMapper.updateByPrimaryKeySelective(machineInfo);
         return this.ZsPatientRecordMapper.insertSelective(patientRecord);
     }
 

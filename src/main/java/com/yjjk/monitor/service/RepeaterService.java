@@ -71,4 +71,11 @@ public interface RepeaterService {
      * @return
      */
     int selectRepeaterCount(ZsRepeaterInfo record);
+
+    /**
+     * @Description 当前房间是否绑定中继器
+     * @param zsRepeaterInfo
+     * @return boolean
+     */
+    boolean isExistRepeater(ZsRepeaterInfo zsRepeaterInfo);
 }

@@ -12,6 +12,7 @@ package com.yjjk.monitor.service;
 
 import com.yjjk.monitor.entity.ZsPatientRecord;
 import com.yjjk.monitor.entity.json.HealthHistory;
+import com.yjjk.monitor.entity.transaction.BackgroundResult;
 import com.yjjk.monitor.entity.vo.EcgMonitorVO;
 import com.yjjk.monitor.entity.vo.HealthHistoryVO;
 import com.yjjk.monitor.entity.vo.UseMachineVO;
@@ -39,11 +40,20 @@ public interface EcgService {
 
     HealthHistoryVO parseRateHistory(List<HealthHistory> paramList, HealthHistoryVO paramHealthHistoryVO);
 
-    boolean stopEcg(ZsPatientRecord paramZsPatientRecord);
+    boolean stopEcg(ZsPatientRecord paramZsPatientRecord) throws Exception;
 
     /**
      * 清理导出心电数据
      * @return
      */
     int cleanEcgExport();
+
+    /**
+     * @Description 连接心电设备
+     * @param machineId
+     * @param bedId
+     * @param connectionType
+     * @return com.yjjk.monitor.entity.transaction.BackgroundResult
+     */
+    BackgroundResult connectEcgMachine(Integer machineId, Integer bedId, String connectionType);
 }

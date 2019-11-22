@@ -13,13 +13,17 @@ package com.yjjk.monitor.controller;
 import com.alibaba.fastjson.JSON;
 import com.yjjk.monitor.configer.CommonResult;
 import com.yjjk.monitor.constant.ErrorCodeEnum;
+import com.yjjk.monitor.constant.MachineConstant;
 import com.yjjk.monitor.constant.TemperatureConstant;
+import com.yjjk.monitor.entity.ZsMachineInfo;
 import com.yjjk.monitor.entity.ZsManagerInfo;
 import com.yjjk.monitor.entity.ZsPatientInfo;
 import com.yjjk.monitor.entity.ZsPatientRecord;
 import com.yjjk.monitor.entity.export.RecordHistory2Excel;
 import com.yjjk.monitor.entity.json.TemperatureHistory;
 import com.yjjk.monitor.entity.param.TemperatureBound;
+import com.yjjk.monitor.entity.transaction.BackgroundResult;
+import com.yjjk.monitor.entity.transaction.BackgroundSend;
 import com.yjjk.monitor.entity.vo.RecordHistory;
 import com.yjjk.monitor.entity.vo.TemperatureBoundVO;
 import com.yjjk.monitor.entity.vo.UseMachineVO;
@@ -35,6 +39,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,7 +50,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,6 +77,7 @@ public class TemperatureController extends BaseController {
      * @param request
      * @param response
      */
+    @Transactional
     @ApiOperation(value = "启用设备")
     @RequestMapping(value = "/patient", method = RequestMethod.POST)
     public synchronized void startMachine(@RequestParam(value = "bedId") Integer bedId,
@@ -81,7 +86,7 @@ public class TemperatureController extends BaseController {
                                           @RequestParam(value = "caseNum") String caseNum,
                                           @RequestParam(value = "managerId") Integer managerId,
                                           @ApiParam(value = "监测类型 0：体温 1：心率、呼吸率", required = true) @RequestParam("recordType") Integer recordType,
-                                          HttpServletRequest request, HttpServletResponse response) {
+                                          HttpServletRequest request, HttpServletResponse response) throws Exception {
         /********************** 参数初始化 **********************/
         long startTime = System.currentTimeMillis();
         boolean resultCode = false;
@@ -107,16 +112,26 @@ public class TemperatureController extends BaseController {
             returnResult(startTime, request, response, resultCode, message, "");
             return;
         }
+
         ZsPatientRecord patientRecord = new ZsPatientRecord();
-        patientRecord.setBedId(bedId);
-        patientRecord.setStartTime(DateUtil.getCurrentTime()).setMachineId(machineId).setPatientId(zsPatientInfo.getPatientId());
-        patientRecord.setRecordType(recordType);
+        patientRecord.setBedId(bedId).setRecordType(recordType).setStartTime(DateUtil.getCurrentTime()).setMachineId(machineId).
+                setPatientId(zsPatientInfo.getPatientId());
         int i = this.patientRecordService.addPatientRecord(patientRecord);
         if (i == 0) {
             message = "新增使用信息失败";
             returnResult(startTime, request, response, resultCode, message, "");
             return;
         }
+        // 连接心电设备
+        BackgroundResult backgroundResult = super.ecgService.connectEcgMachine(machineId, bedId, BackgroundSend.DATA_CONNECTION);
+        if ("false".equals(backgroundResult.getSuccess())) {
+            message = backgroundResult.getMessage();
+            returnResult(startTime, request, response, resultCode, message, "");
+            return;
+        }
+        ZsMachineInfo machineInfo = new ZsMachineInfo();
+        machineInfo.setMachineId(machineId).setUsageState(MachineConstant.USAGE_STATE_USED);
+        super.machineService.updateByMachineId(machineInfo);
         message = "成功";
         resultCode = true;
         returnResult(startTime, request, response, resultCode, message, "");
@@ -128,7 +143,7 @@ public class TemperatureController extends BaseController {
      * @param name
      * @param caseNum
      * @param request
-     * @param response
+     * @param response`
      */
     @RequestMapping(value = "/check", method = RequestMethod.GET)
     public synchronized void checkPatient(@RequestParam(value = "name") String name,
@@ -523,11 +538,5 @@ public class TemperatureController extends BaseController {
 //            LOGGER.error("业务异常信息：[{}]", e.getMessage(), e);
 //        }
 //    }
-    public static void main(String[] args) {
-        SimpleDateFormat format = new SimpleDateFormat();
-
-        String format1 = format.format(0001574232271023L);
-        System.out.println(format1);
-    }
 
 }

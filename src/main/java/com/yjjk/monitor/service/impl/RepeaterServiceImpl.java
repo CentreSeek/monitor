@@ -60,4 +60,12 @@ public class RepeaterServiceImpl extends BaseService implements RepeaterService 
     public int selectRepeaterCount(ZsRepeaterInfo record) {
         return super.zsRepeaterInfoMapper.selectRepeaterCount(record);
     }
+
+    @Override
+    public boolean isExistRepeater(ZsRepeaterInfo zsRepeaterInfo) {
+        if (super.zsRepeaterInfoMapper.isExistRepeater(zsRepeaterInfo) > 0){
+            return true;
+        }
+        return false;
+    }
 }

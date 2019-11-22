@@ -2,9 +2,7 @@ package com.yjjk.monitor.mapper;
 
 import com.yjjk.monitor.entity.ZsRepeaterInfo;
 import org.apache.ibatis.annotations.Mapper;
-import org.mybatis.spring.annotation.MapperScan;
 
-import javax.validation.constraints.Max;
 import java.util.List;
 
 @Mapper
@@ -34,4 +32,18 @@ public interface ZsRepeaterInfoMapper {
      * @return
      */
     int selectRepeaterCount(ZsRepeaterInfo record);
+
+    /**
+     * @Description 查询repeaterId
+     * @param bedId
+     * @return int
+     */
+    int selectByBedId(Integer bedId);
+
+    /**
+     * @Description 获取当前房间绑定的路由总数
+     * @param zsRepeaterInfo
+     * @return int
+     */
+    int isExistRepeater(ZsRepeaterInfo zsRepeaterInfo);
 }

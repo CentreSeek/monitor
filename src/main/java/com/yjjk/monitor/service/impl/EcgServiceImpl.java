@@ -1,19 +1,30 @@
 package com.yjjk.monitor.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.yjjk.monitor.constant.EcgConstant;
 import com.yjjk.monitor.entity.ZsHealthInfo;
 import com.yjjk.monitor.entity.ZsMachineInfo;
 import com.yjjk.monitor.entity.ZsPatientRecord;
 import com.yjjk.monitor.entity.json.HealthHistory;
+import com.yjjk.monitor.entity.transaction.BackgroundResult;
+import com.yjjk.monitor.entity.transaction.BackgroundSend;
 import com.yjjk.monitor.entity.vo.EcgMonitorVO;
 import com.yjjk.monitor.entity.vo.HealthHistoryVO;
 import com.yjjk.monitor.entity.vo.UseMachineVO;
 import com.yjjk.monitor.service.BaseService;
 import com.yjjk.monitor.service.EcgService;
-import com.yjjk.monitor.utility.*;
+import com.yjjk.monitor.utility.CalculateUtils;
+import com.yjjk.monitor.utility.DateUtil;
+import com.yjjk.monitor.utility.ExcelUtils;
+import com.yjjk.monitor.utility.FileNameUtils;
+import com.yjjk.monitor.utility.FileUtils;
+import com.yjjk.monitor.utility.NetUtils;
+import com.yjjk.monitor.utility.ReflectUtils;
+import com.yjjk.monitor.utility.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -25,9 +36,7 @@ import java.util.List;
  * 心电模块
  */
 @Service
-public class EcgServiceImpl
-        extends BaseService
-        implements EcgService {
+public class EcgServiceImpl extends BaseService implements EcgService {
     @Override
     public List<UseMachineVO> getMonitorsInfo(Integer departmentId) {
         List<UseMachineVO> monitorsInfoForEcg = this.ZsPatientRecordMapper.getMonitorsInfoForEcg(departmentId);
@@ -115,7 +124,7 @@ public class EcgServiceImpl
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = {Exception.class})
+    @Transactional(propagation = Propagation.REQUIRED)
     public boolean stopEcg(ZsPatientRecord zsPatientRecord) {
         String endTime = DateUtil.getCurrentTime();
         List<HealthHistory> healthList = this.zsHealthInfoMapper.getHealthHistory(zsPatientRecord.getRecordId());
@@ -165,5 +174,25 @@ public class EcgServiceImpl
             e.printStackTrace();
         }
         return count;
+    }
+
+    @Override
+    public BackgroundResult connectEcgMachine(Integer machineId, Integer bedId, String connectionType) {
+        try {
+            // 连接心电设备
+            BackgroundSend backgroundSend = new BackgroundSend();
+            backgroundSend.setActionId(backgroundSend.getActionId());
+            int repeaterId = super.zsRepeaterInfoMapper.selectByBedId(bedId);
+            if (StringUtils.isNullorEmpty(repeaterId)) {
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            }
+            backgroundSend.setDeviceId(String.valueOf(repeaterId));
+            backgroundSend.setData(connectionType);
+            String s = NetUtils.doPost(EcgConstant.ECG_CONNECTION_URL, backgroundSend);
+            return JSON.parseObject(s, BackgroundResult.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+            return null;
     }
 }

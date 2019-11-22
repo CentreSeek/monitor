@@ -19,4 +19,7 @@ public class MachineConstant {
 
     public static final String[] EXPORT = {"编号", "名称", "型号", "SN序列号", "使用科室", "状态", "添加日期", "备注"};
 
+    // 设备使用状态
+    public static final int USAGE_STATE_NORMAL = 0;
+    public static final int USAGE_STATE_USED = 2;
 }

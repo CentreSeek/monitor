@@ -33,7 +33,7 @@ public interface PatientRecordService {
      * @param patientRecord
      * @return
      */
-    int addPatientRecord(ZsPatientRecord patientRecord);
+    int addPatientRecord(ZsPatientRecord patientRecord) throws Exception;
 
     /**
      * 更新历史记录信息

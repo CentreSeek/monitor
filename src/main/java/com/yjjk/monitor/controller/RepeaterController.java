@@ -86,8 +86,16 @@ public class RepeaterController extends BaseController {
         boolean resultCode = false;
         String message = "";
 
-
-        int i = super.repeaterService.insertSelective(new ZsRepeaterInfo().setMachineTypeId(machineTypeId).setMac(mac).setDepartmentId(departmentId).setRoomId(roomId).setIp(ip));
+        ZsRepeaterInfo zsRepeaterInfo = new ZsRepeaterInfo();
+        zsRepeaterInfo.setRoomId(roomId);
+        boolean existRepeater = super.repeaterService.isExistRepeater(zsRepeaterInfo);
+        if (existRepeater){
+            message = "同一个房间只能绑定一个路由中继器";
+            returnResult(startTime, request, response, resultCode, message, "");
+            return ;
+        }
+        zsRepeaterInfo.setMachineTypeId(machineTypeId).setMac(mac).setDepartmentId(departmentId).setIp(ip);
+        int i = super.repeaterService.insertSelective(zsRepeaterInfo);
         message = "新增成功";
         resultCode = true;
         returnResult(startTime, request, response, resultCode, message, i);
