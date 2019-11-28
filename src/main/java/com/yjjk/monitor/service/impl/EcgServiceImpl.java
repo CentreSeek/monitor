@@ -92,23 +92,42 @@ public class EcgServiceImpl extends BaseService implements EcgService {
 
     @Override
     public HealthHistoryVO parseRateHistory(List<HealthHistory> list, HealthHistoryVO healthHistoryVO) {
+        // 初始化心率信息
         Double heartRateMax = Double.valueOf(0.0D);
         Double heartRateMin = Double.valueOf(1000.0D);
         BigDecimal heartRateAvg = new BigDecimal("0");
+        // 初始化呼吸率信息
+        Double respiratoryRateMax = Double.valueOf(0.0D);
+        Double respiratoryRateMin = Double.valueOf(1000.0D);
+        BigDecimal respiratoryRateAvg = new BigDecimal("0");
         List<HealthHistory> paraList = new ArrayList();
         int count = 0;
         if (StringUtils.isNullorEmpty(list)) {
             heartRateMax = null;
             heartRateMin = null;
+            respiratoryRateMax = null;
+            respiratoryRateMin = null;
         } else {
             for (HealthHistory tmp : list) {
+                // 求平均值
                 heartRateAvg = CalculateUtils.avg(heartRateAvg, new BigDecimal(tmp.getHeartRate()));
+                respiratoryRateAvg = CalculateUtils.avg(respiratoryRateAvg, new BigDecimal(tmp.getRespiratoryRate()));
+                // 心率最大值和最小值
                 if (Double.parseDouble(tmp.getHeartRate()) > heartRateMax.doubleValue()) {
                     heartRateMax = Double.valueOf(Double.parseDouble(tmp.getHeartRate()));
                 }
                 if (Double.parseDouble(tmp.getHeartRate()) < heartRateMin.doubleValue()) {
                     heartRateMin = Double.valueOf(Double.parseDouble(tmp.getHeartRate()));
                 }
+
+                // 呼吸率最大值和最小值
+                if (Double.parseDouble(tmp.getRespiratoryRate()) > respiratoryRateMax.doubleValue()) {
+                    respiratoryRateMax = Double.valueOf(Double.parseDouble(tmp.getRespiratoryRate()));
+                }
+                if (Double.parseDouble(tmp.getRespiratoryRate()) < respiratoryRateMin.doubleValue()) {
+                    respiratoryRateMin = Double.valueOf(Double.parseDouble(tmp.getRespiratoryRate()));
+                }
+
                 if (count == 0) {
                     paraList.add(tmp);
                     count++;
@@ -119,7 +138,10 @@ public class EcgServiceImpl extends BaseService implements EcgService {
             }
         }
         healthHistoryVO.setHighestHeartRate(heartRateMax).setLowestHeartRate(heartRateMin).setAvgHeartRate(Double.valueOf(heartRateAvg.setScale(1,
-                RoundingMode.HALF_UP).doubleValue())).setList(paraList);
+                RoundingMode.HALF_UP).doubleValue()));
+        healthHistoryVO.setHighestRespiratoryRate(respiratoryRateMax).setLowestRespiratoryRate(respiratoryRateMin).setAvgRespiratoryRate(Double.valueOf(respiratoryRateAvg.setScale(1,
+                RoundingMode.HALF_UP).doubleValue()));
+        healthHistoryVO.setList(paraList);
         return healthHistoryVO;
     }
 
@@ -181,12 +203,12 @@ public class EcgServiceImpl extends BaseService implements EcgService {
         try {
             // 连接心电设备
             BackgroundSend backgroundSend = new BackgroundSend();
-            backgroundSend.setActionId(backgroundSend.getActionId());
             int repeaterId = super.zsRepeaterInfoMapper.selectByBedId(bedId);
+            backgroundSend.setActionId(String.valueOf(repeaterId));
             if (StringUtils.isNullorEmpty(repeaterId)) {
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             }
-            backgroundSend.setDeviceId(String.valueOf(repeaterId));
+            backgroundSend.setDeviceId(String.valueOf(machineId));
             backgroundSend.setData(connectionType);
             String s = NetUtils.doPost(EcgConstant.ECG_CONNECTION_URL, backgroundSend);
             return JSON.parseObject(s, BackgroundResult.class);

@@ -30,19 +30,15 @@ public class LoginStateServiceImpl extends BaseService implements LoginStateServ
 
     @Override
     @Transactional
-    public String login(HttpServletRequest request, Integer managerId)
-    {
+    public String login(HttpServletRequest request, Integer managerId) {
         ZsLoginState loginState = this.zsLoginStateMapper.selectByManagerId(managerId);
         String token = "";
         int i = 0;
         int j = 0;
-        if (loginState != null)
-        {
+        if (loginState != null) {
             i = this.zsLoginStateMapper.updateByPrimaryKeySelective(loginState.setIp(request.getRemoteAddr()));
             token = loginState.getToken();
-        }
-        else
-        {
+        } else {
             loginState = new ZsLoginState();
             token = PasswordUtils.salt();
             loginState.setToken(token);
@@ -53,9 +49,9 @@ public class LoginStateServiceImpl extends BaseService implements LoginStateServ
         }
         return token;
     }
+
     @Override
-    public int loginOut(String token)
-    {
+    public int loginOut(String token) {
         ZsLoginState loginState = new ZsLoginState();
         loginState.setToken(token);
         loginState.setStatus(Integer.valueOf(1));
@@ -63,9 +59,9 @@ public class LoginStateServiceImpl extends BaseService implements LoginStateServ
         int i = this.zsLoginStateMapper.updateByPrimaryKeySelective(loginState);
         return i;
     }
+
     @Override
-    public boolean checkLogin(String token, String ip)
-    {
+    public boolean checkLogin(String token, String ip) {
         ZsLoginState loginState = this.zsLoginStateMapper.selectByPrimaryKey(token);
         if (loginState == null) {
             return false;

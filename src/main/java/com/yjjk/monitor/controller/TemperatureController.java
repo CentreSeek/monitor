@@ -77,7 +77,7 @@ public class TemperatureController extends BaseController {
      * @param request
      * @param response
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @ApiOperation(value = "启用设备")
     @RequestMapping(value = "/patient", method = RequestMethod.POST)
     public synchronized void startMachine(@RequestParam(value = "bedId") Integer bedId,
@@ -213,7 +213,6 @@ public class TemperatureController extends BaseController {
     public void stopRecord(@RequestParam(value = "recordId") Long recordId,
                            HttpServletRequest request, HttpServletResponse response) {
         /********************** 参数初始化 **********************/
-
         long startTime = System.currentTimeMillis();
         boolean resultCode = false;
         String message = "";

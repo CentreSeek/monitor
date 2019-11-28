@@ -126,7 +126,7 @@
         zpr.`start_time` AS startTime, zpr.`end_time` AS endTime, zpr.usage_state as usageState
         FROM`zs_patient_record` zpr
         LEFT JOIN `zs_patient_info` zpi ON zpr.`patient_id` = zpi.`patient_id`
-        LEFT JOIN `zs_bed_info` zbi ON zbi.`bed_id` = zpi.`bed_id`
+        LEFT JOIN `zs_bed_info` zbi ON zbi.`bed_id` = zpr.`bed_id`
         LEFT JOIN `zs_room_info` zri ON zbi.`room_id` = zri.`room_id`
         LEFT JOIN `zs_department_info` zdi ON zri.`department_id` = zdi.`department_id`
         left join zs_machine_info zmi on zmi.machine_id = zpr.machine_id

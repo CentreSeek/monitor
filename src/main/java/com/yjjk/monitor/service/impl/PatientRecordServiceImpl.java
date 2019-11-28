@@ -130,7 +130,7 @@ public class PatientRecordServiceImpl extends BaseService implements PatientReco
         machineInfo.setMachineId(patientRecord.getMachineId()).setUsageState(Integer.valueOf(0));
         int j = this.ZsMachineInfoMapper.updateByPrimaryKeySelective(machineInfo);
         if ((z == 0) || (j == 0)) {
-            throw new RuntimeException("��������");
+            throw new RuntimeException("数据录入错误");
         }
         return z;
     }
