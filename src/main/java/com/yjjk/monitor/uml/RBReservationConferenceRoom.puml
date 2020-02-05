@@ -1,0 +1,26 @@
+@startuml
+left to right direction
+actor 管理员 as admin
+actor 超级管理员 as superAdmin
+user <|-- admin
+user <|-- superAdmin
+admin --|> superAdmin
+rectangle 《后台管理系统》{
+admin -- (个人信息管理)
+admin -- (体检预约)
+admin --> (会议室预约)
+superAdmin --> (系统设置)
+(个人信息管理) ..> (登录) : 《includes》
+(个人信息管理) ..> (修改个人信息) : 《includes》
+(个人信息管理) ..> (查看) : 《includes》
+(体检预约) ..> (预约管理模块) : 《includes》
+(体检预约) ..> (名单管理) : 《includes》
+(体检预约) ..> (卡券管理) : 《includes》
+(会议室预约) ..> (预约查询) : 《includes》
+(会议室预约) ..> (预约设置) : 《includes》
+(会议室预约) ..> (预约白名单) : 《includes》
+(系统设置) ..> (账户管理) : 《includes》
+(系统设置) ..> (角色权限) : 《includes》
+}
+
+@enduml

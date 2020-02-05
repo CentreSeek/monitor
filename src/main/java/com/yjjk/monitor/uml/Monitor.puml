@@ -1,0 +1,26 @@
+@startuml
+left to right direction
+actor 科室管理员 as admin
+actor 超级管理员 as superAdmin
+user <|-- admin
+user <|-- superAdmin
+rectangle 《后台管理系统》{
+admin -- (监控平台)
+admin -- (历史记录)
+superAdmin --> (床位管理)
+superAdmin --> (设备管理)
+superAdmin --> (路由管理)
+superAdmin --> (账号管理)
+(监控平台) ..> (查询监控信息) : 《include》
+(监控平台) ..> (启用设备) : 《include》
+(监控平台) ..> (更换设备) : 《include》
+(监控平台) ..> (查询体温记录) : 《include》
+(监控平台) ..> (停止监测) : 《include》
+(历史记录) ..> (查询监测信息) : 《include》
+(历史记录) ..> (导出监测信息) : 《include》
+(床位管理) ..> (床位信息：增、删、改、查、导出) : 《include》
+(设备管理) ..> (设备信息：增、删、改、查、导出) : 《include》
+(路由管理) ..> (路由信息：增、删、改、查、导出) : 《include》
+(账号管理) ..> (账号信息：增、删、改、查) : 《include》
+}
+@enduml

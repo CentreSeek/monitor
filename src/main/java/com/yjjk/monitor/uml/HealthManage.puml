@@ -1,0 +1,15 @@
+@startuml
+left to right direction
+actor 业务人员 as admin
+actor 超级管理员 as superAdmin
+user <|-- admin
+user <|-- superAdmin
+superAdmin <|-- admin
+rectangle 《后台管理系统》{
+admin -- (体检预约)
+superAdmin --> (系统设置)
+(体检预约) ..> (订单管理) : 《include》
+(体检预约) ..> (预约管理) : 《include》
+(系统设置) ..> (账号管理) : 《include》
+}
+@enduml
