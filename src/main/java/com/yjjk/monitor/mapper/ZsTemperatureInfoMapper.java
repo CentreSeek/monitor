@@ -1,5 +1,6 @@
 package com.yjjk.monitor.mapper;
 
+import com.yjjk.monitor.entity.CurrentTemperature;
 import com.yjjk.monitor.entity.ZsTemperatureInfo;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -32,4 +33,10 @@ public interface ZsTemperatureInfoMapper {
      * @return
      */
     List<String> getExportTemperatures(String dateOfOneMonthAgo);
+
+    /**
+     * 获取体温数据
+     * @return
+     */
+    List<CurrentTemperature> getTemperatureInfoList();
 }

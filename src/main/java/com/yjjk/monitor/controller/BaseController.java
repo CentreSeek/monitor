@@ -12,18 +12,11 @@ package com.yjjk.monitor.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.yjjk.monitor.configer.CommonResult;
-import com.yjjk.monitor.constant.ErrorCodeEnum;
 import com.yjjk.monitor.filter.AliValueFilter;
-import com.yjjk.monitor.service.*;
-import com.yjjk.monitor.utility.ResultUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -45,35 +38,8 @@ public class BaseController {
     private static String RESULT_CODE_SUCCESS = "200";
     private static String RESULT_CODE_FAIL = "300";
 
-    /** 模块编号 */
-    protected static Integer PLATEFORM = 0;
-    protected static Integer HISTORY_RECORD = 1;
-    protected static Integer BED_MANAGE = 2;
-    protected static Integer MACHINE_MANAGE = 3;
-    protected static Integer ACCOUNT_MANAGE = 4;
-    protected static Integer REPEATER_MANAGE = 5;
 
 
-    @Resource
-    protected ManagerService managerService;
-    @Resource
-    protected MachineService machineService;
-    @Resource
-    protected HospitalService hospitalService;
-    @Resource
-    protected PatientService patientService;
-    @Resource
-    protected PatientRecordService patientRecordService;
-    @Resource
-    protected LoginStateService loginStateService;
-    @Resource
-    protected RepeaterService repeaterService;
-    @Resource
-    protected TemperatureBoundService temperatureBoundService;
-    @Resource
-    protected BoxService boxService;
-    @Resource
-    protected EcgService ecgService;
 
 
 
@@ -111,63 +77,63 @@ public class BaseController {
         }
     }
 
-    /**
-     * validate params
-     *
-     * @param bindingResult
-     * @return
-     */
-    protected CommonResult validParams(BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            FieldError fieldError = bindingResult.getFieldError();
-            return processBindingError(fieldError);
-        }
-        return ResultUtil.returnSuccess("");
-    }
+//    /**
+//     * validate params
+//     *
+//     * @param bindingResult
+//     * @return
+//     */
+//    protected CommonResult validParams(BindingResult bindingResult) {
+//        if (bindingResult.hasErrors()) {
+//            FieldError fieldError = bindingResult.getFieldError();
+//            return processBindingError(fieldError);
+//        }
+//        return ResultUtil.returnSuccess("");
+//    }
 
-    /**
-     * 根据spring binding 错误信息自定义返回错误码和错误信息
-     *
-     * @param fieldError
-     * @return
-     */
-    private CommonResult processBindingError(FieldError fieldError) {
-        String code = fieldError.getCode();
-        logger.debug("validator error code: {}", code);
-        switch (code) {
-            case "NotEmpty":
-                return ResultUtil.returnError(ErrorCodeEnum.PARAM_EMPTY.getCode(), fieldError.getDefaultMessage());
-            case "NotBlank":
-                return ResultUtil.returnError(ErrorCodeEnum.PARAM_EMPTY.getCode(), fieldError.getDefaultMessage());
-            case "NotNull":
-                return ResultUtil.returnError(ErrorCodeEnum.PARAM_EMPTY.getCode(), fieldError.getDefaultMessage());
-            case "Pattern":
-                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
-            case "Min":
-                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
-            case "Max":
-                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
-            case "Length":
-                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
-            case "Range":
-                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
-            case "Email":
-                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
-            case "DecimalMin":
-                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
-            case "DecimalMax":
-                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
-            case "Size":
-                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
-            case "Digits":
-                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
-            case "Past":
-                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
-            case "Future":
-                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
-            default:
-                return ResultUtil.returnError(ErrorCodeEnum.UNKNOWN_ERROR);
-        }
-    }
+//    /**
+//     * 根据spring binding 错误信息自定义返回错误码和错误信息
+//     *
+//     * @param fieldError
+//     * @return
+//     */
+//    private CommonResult processBindingError(FieldError fieldError) {
+//        String code = fieldError.getCode();
+//        logger.debug("validator error code: {}", code);
+//        switch (code) {
+//            case "NotEmpty":
+//                return ResultUtil.returnError(ErrorCodeEnum.PARAM_EMPTY.getCode(), fieldError.getDefaultMessage());
+//            case "NotBlank":
+//                return ResultUtil.returnError(ErrorCodeEnum.PARAM_EMPTY.getCode(), fieldError.getDefaultMessage());
+//            case "NotNull":
+//                return ResultUtil.returnError(ErrorCodeEnum.PARAM_EMPTY.getCode(), fieldError.getDefaultMessage());
+//            case "Pattern":
+//                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
+//            case "Min":
+//                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
+//            case "Max":
+//                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
+//            case "Length":
+//                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
+//            case "Range":
+//                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
+//            case "Email":
+//                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
+//            case "DecimalMin":
+//                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
+//            case "DecimalMax":
+//                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
+//            case "Size":
+//                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
+//            case "Digits":
+//                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
+//            case "Past":
+//                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
+//            case "Future":
+//                return ResultUtil.returnError(ErrorCodeEnum.PARAM_ERROR.getCode(), fieldError.getDefaultMessage());
+//            default:
+//                return ResultUtil.returnError(ErrorCodeEnum.UNKNOWN_ERROR);
+//        }
+//    }
 
 }

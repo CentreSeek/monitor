@@ -25,35 +25,7 @@ import javax.annotation.Resource;
 public class BaseService {
     protected static Logger logger = LoggerFactory.getLogger(BaseService.class);
     @Resource
-    protected ZsBedInfoMapper ZsBedInfoMapper;
-    @Resource
-    protected ZsDepartmentInfoMapper ZsDepartmentInfoMapper;
-    @Resource
-    protected ZsMachineInfoMapper ZsMachineInfoMapper;
-    @Resource
-    protected ZsManagerInfoMapper ZsManagerInfoMapper;
-    @Resource
-    protected ZsPatientInfoMapper ZsPatientInfoMapper;
-    @Resource
-    protected ZsPatientRecordMapper ZsPatientRecordMapper;
-    @Resource
-    protected ZsRoomInfoMapper ZsRoomInfoMapper;
-    @Resource
     protected ZsTemperatureInfoMapper zsTemperatureInfoMapper;
-    @Resource
-    protected ZsLoginStateMapper zsLoginStateMapper;
-    @Resource
-    protected ZsMachineTypeInfoMapper zsMachineTypeInfoMapper;
-    @Resource
-    protected ZsRepeaterInfoMapper zsRepeaterInfoMapper;
-    @Resource
-    protected ZsTemperatureBoundMapper zsTemperatureBoundMapper;
-    @Resource
-    protected ZsBoxInfoMapper zsBoxInfoMapper;
-    @Resource
-    protected ZsHealthInfoMapper zsHealthInfoMapper;
-    @Resource
-    protected ZsEcgInfoMapper zsEcgInfoMapper;
 
 
 }

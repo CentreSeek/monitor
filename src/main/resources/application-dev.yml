@@ -8,15 +8,13 @@ server:
 #    keyStoreType: JKS
 
 spring:
-  application:
-    name: monitor
   datasource:
     username: yjjk
     password: YJjk_2018
     #    password: 123qqq...A
     #    url: jdbc:mysql://118.31.14.197:3306/test?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
     #    url: jdbc:mysql://192.168.31.84:3306/test?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
-    url: jdbc:mysql://192.168.31.84:3306/monitor?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+    url: jdbc:mysql://192.168.31.84:3306/monitor_pt?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
     driver-class-name: com.mysql.cj.jdbc.Driver
   jackson:
     default-property-inclusion: non_null
